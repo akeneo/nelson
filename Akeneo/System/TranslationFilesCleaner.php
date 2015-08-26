@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Akeneo\Archive;
+namespace Akeneo\System;
 
 /**
  * Class TranslationFilesCleaner
@@ -20,7 +20,6 @@ class TranslationFilesCleaner
         $iterator    = new \RecursiveIteratorIterator($dirIterator, \RecursiveIteratorIterator::SELF_FIRST);
 
         foreach ($iterator as $file) {
-
             $pathinfo = pathinfo($file);
             if (!isset($pathinfo['extension']) || $pathinfo['extension'] !== 'yml') {
                 continue;
@@ -69,15 +68,15 @@ class TranslationFilesCleaner
      */
     protected function cleanCrowdinYamlTranslation(\SplFileInfo $file)
     {
-        $array = file($file->getRealPath());
+        $fileContent = file($file->getRealPath());
 
-        if (count($array)) {
+        if (count($fileContent)) {
             // Crowdin adds --- on the beginning of every Yaml during the export.
-            if (1 === preg_match("/^---/", $array[0])) {
-                unset($array[0]);
+            if (1 === preg_match("/^---/", $fileContent[0])) {
+                unset($fileContent[0]);
             }
 
-            file_put_contents($file->getRealPath(), $array);
+            file_put_contents($file->getRealPath(), $fileContent);
         }
     }
 }

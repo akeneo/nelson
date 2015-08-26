@@ -4,16 +4,18 @@ namespace Akeneo\Command;
 
 use Akeneo\Archive\Extractor;
 use Akeneo\Archive\PackagesExtractor;
-use Akeneo\Archive\TranslationFilesCleaner;
 use Akeneo\Crowdin\Downloader;
 use Akeneo\Crowdin\PackagesDownloader;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
 use Akeneo\System\Executor;
+use Akeneo\System\TranslationFilesCleaner;
 use Crowdin\Client as CrowdinClient;
 use Github\Client as GithubClient;
+use Github\Exception\ValidationFailedException;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,22 +23,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
-
 /**
- * Prepare the project in tmp, download translations from crowdin, and open a pull request
+ * Clone the project in a temporary directory, download translations from Crowdin, clean the translation files, open
+ * a pull request on Github
  *
  * @author Nicolas Dupont <nicolas@akeneo.com>
  */
-class CreatePullRequestCommand extends Command
+class PullTranslationsCommand extends Command
 {
+    /** @var string */
+    const LOG_FILE = 'pull-translations.log';
+
     /**
      * @inheritdoc
      */
     protected function configure()
     {
         $this
-            ->setName('crowdin:create-pull-request')
-            ->setDescription('Fetch new translations and create a pull request on the PIM repository')
+            ->setName('crowdin:pull-translations')
+            ->setDescription('Fetch new translations from Crowdin and create pull requests to the Github repository')
             ->addArgument('username', InputArgument::REQUIRED, 'Github username')
             ->addArgument('edition', InputArgument::REQUIRED, 'PIM edition, community or enterprise');
     }
@@ -73,7 +78,17 @@ class CreatePullRequestCommand extends Command
             $downloader->download($packages, $downloadBaseDir);
             $extractor->extract($packages, $downloadBaseDir, $updateDir);
             $translationsCleaner->cleanFiles($localesMap, $projectDir);
-            $pullRequestCreator->create($baseBranch, $downloadBaseDir, $projectDir, $edition, $username);
+            try {
+                $pullRequestCreator->create($baseBranch, $downloadBaseDir, $projectDir, $edition, $username);
+            } catch (ValidationFailedException $exception) {
+                $message = sprintf(
+                    'No PR created for version "%s", message "%s"',
+                    $baseBranch,
+                    $exception->getMessage()
+                );
+                $output->writeln(sprintf('<warning>%s<warning>', $message));
+                $logger->addWarning($message);
+            }
         }
 
         $cmd = sprintf('rm -rf %s', $updateDir);
@@ -88,7 +103,7 @@ class CreatePullRequestCommand extends Command
         $configPath = realpath('./app/config.yml');
         $config = Yaml::parse(file_get_contents($configPath));
 
-        $optionResolver =new OptionsResolver();
+        $optionResolver = new OptionsResolver();
         $optionResolver->setRequired(['github', 'crowdin']);
         $config = $optionResolver->resolve($config);
 
@@ -110,11 +125,16 @@ class CreatePullRequestCommand extends Command
     }
 
     /**
-     * @return Logger
+     * @return LoggerInterface
      */
     protected function getLogger()
     {
-        $logPath = realpath('./app/crowdin.log');
+        $logPath = sprintf('./app/%s', self::LOG_FILE);
+        if (!is_file($logPath)) {
+            $resource = fopen($logPath, 'w');
+            fwrite($resource, '');
+            fclose($resource);
+        }
         $logger  = new Logger('crowdin');
         $logger->pushHandler(new StreamHandler($logPath, Logger::INFO));
 
@@ -146,7 +166,7 @@ class CreatePullRequestCommand extends Command
     protected function getCrowdinClient(array $config)
     {
         $optionResolver = new OptionsResolver();
-        $optionResolver->setRequired(['project', 'key', 'download', 'update-file']);
+        $optionResolver->setRequired(['project', 'key', 'download', 'upload']);
         $crowdinOptions = $optionResolver->resolve($config['crowdin']);
         $crowdinProject = $crowdinOptions['project'];
         $crowdinKey = $crowdinOptions['key'];

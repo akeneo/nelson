@@ -23,9 +23,9 @@ class Executor
     }
 
     /**
-     * @param string          $command
+     * @param string $command
      */
-    function execute($command)
+    public function execute($command)
     {
         $returnVar = null;
         system($command, $returnVar);

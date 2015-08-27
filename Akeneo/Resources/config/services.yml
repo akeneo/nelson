@@ -1,0 +1,23 @@
+services:
+    akeneo.system.executor:
+        class: Akeneo\System\Executor
+        arguments:
+            - @logger
+
+    akeneo.system.translation_files.cleaner:
+        class: Akeneo\System\TranslationFilesCleaner
+
+    akeneo.system.translation_files.provider:
+        class: Akeneo\System\TranslationFilesProvider
+
+    logger.handler:
+        class: Monolog\Handler\StreamHandler
+        arguments:
+            - app/logs/application.log
+            - 200
+
+    logger:
+        class: Monolog\Logger
+        arguments:
+            - 'crowdin'
+            - [@logger.handler]

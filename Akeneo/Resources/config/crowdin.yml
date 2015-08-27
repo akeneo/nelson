@@ -1,0 +1,25 @@
+services:
+    crowdin.client:
+        class: Crowdin\Client
+        arguments:
+            - %crowdin.project%
+            - %crowdin.key%
+
+    crowdin.packages.extractor:
+        class: Akeneo\Archive\PackagesExtractor
+
+    crowdin.packages.downloader:
+        class: Akeneo\Crowdin\PackagesDownloader
+        arguments:
+            - @crowdin.client
+
+    crowdin.packages.builder:
+        class: Akeneo\Crowdin\PackagesBuilder
+        arguments:
+            - @crowdin.client
+
+    crowdin.translation_files.updater:
+        class: Akeneo\Crowdin\TranslationFilesUpdater
+        arguments:
+            - @crowdin.client
+            - @logger

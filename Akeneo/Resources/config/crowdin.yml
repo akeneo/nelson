@@ -23,3 +23,8 @@ services:
         arguments:
             - @crowdin.client
             - @logger
+
+    crowdin.translated_progress.selector:
+        class: Akeneo\Crowdin\TranslatedProgressSelector
+        arguments:
+            - @crowdin.client

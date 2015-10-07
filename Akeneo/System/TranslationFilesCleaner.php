@@ -49,12 +49,13 @@ class TranslationFilesCleaner
                 continue;
             }
 
-            if (array_key_exists($locale, $localeMap)) {
+            $simpleLocale = $this->getSimpleLocale($locale, $localeMap);
+            if ($simpleLocale) {
                 $target = sprintf(
                     '%s/%s.%s.%s',
                     $pathinfo['dirname'],
                     pathinfo($pathinfo['filename'], PATHINFO_FILENAME),
-                    $localeMap[$locale],
+                    $simpleLocale,
                     $pathinfo['extension']
                 );
 
@@ -78,5 +79,26 @@ class TranslationFilesCleaner
 
             file_put_contents($file->getRealPath(), $fileContent);
         }
+    }
+
+    /**
+     * Returns a 2-letters locale if any map is needed
+     *
+     * @param string $locale
+     * @param array  $localeMap
+     *
+     * @return null|string
+     */
+    protected function getSimpleLocale($locale, array $localeMap)
+    {
+        if (array_key_exists($locale, $localeMap)) {
+            return $localeMap[$locale];
+        }
+
+        if (preg_match("/^[a-z]{2}_/i", $locale)) {
+            return substr($locale, 0, 2);
+        }
+
+        return null;
     }
 }

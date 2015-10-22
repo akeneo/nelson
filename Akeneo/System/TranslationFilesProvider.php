@@ -21,9 +21,11 @@ class TranslationFilesProvider
         $finder = new Finder();
 
         $translationFiles = $finder
-            ->files()
+            ->in($projectDir . '/src/')
+            ->notPath('/Oro/')
+            ->path('/Resources\/translations/')
             ->name('*.en.yml')
-            ->in($projectDir . '/src/*/*/*/Resources/translations');
+            ->files();
 
         $files = [];
 

@@ -39,7 +39,9 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
         $cloner     = $this->container->get('github.cloner');
         $updateDir  = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
         $projectDir = $cloner->cloneProject($username, $updateDir, $edition);
-        $files      = $this->container->get('akeneo.system.translation_files.provider')->provideTranslations($projectDir);
+        $files      = $this->container
+            ->get('akeneo.system.translation_files.provider')
+            ->provideTranslations($projectDir, $edition);
 
         $this->container->get('crowdin.translation_files.updater')->update($files);
         $this->container->get('akeneo.system.executor')->execute(sprintf('rm -rf %s', $updateDir));

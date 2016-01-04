@@ -12,11 +12,12 @@ use Symfony\Component\Finder\Finder;
 class TranslationFilesProvider
 {
     /**
-     * @param $projectDir
+     * @param string $projectDir
+     * @param string $edition    'community'|'enterprise'
      *
      * @return array
      */
-    public function provideTranslations($projectDir)
+    public function provideTranslations($projectDir, $edition)
     {
         $finder = new Finder();
 
@@ -32,7 +33,7 @@ class TranslationFilesProvider
         foreach ($translationFiles as $translationFile) {
             $files[] = [
                 'source' => $translationFile->getRealPath(),
-                'target' => $this->getTargetCrowdinPath($translationFile->getRealPath(), $projectDir)
+                'target' => $this->getTargetCrowdinPath($translationFile->getRealPath(), $projectDir, $edition)
             ];
         }
 
@@ -43,25 +44,37 @@ class TranslationFilesProvider
      * Transforms
      *    <projectDir>/src/Pim/Bundle/UserBundle/Resources/translations/messages.en.yml
      *    <projectDir>/src/PimEnterprise/Bundle/BaseConnectorBundle/Resources/translations/messages.en.yml
+     *    <projectDir>/src/Akeneo/Bundle/BatchBundle/Resources/translations/validators.en.yml
      * into
      *    PimCommunity/UserBundle/messages.en.yml
      *    PimEnterprise/BaseConnectorBundle/messages.en.yml
+     *    AkeneoCommunity/BatchBundle/validators.en.yml
+     *
+     * @param string $filePath   Absolute file path of the translation file
+     * @param string $projectDir Absolute file directory of the project
+     * @param string $edition    'community'|'enterprise'
+     *
+     * @return string
      */
-    protected function getTargetCrowdinPath($filePath, $projectDir)
+    protected function getTargetCrowdinPath($filePath, $projectDir, $edition)
     {
-        $targetPath = str_replace(
-            [
-                'src/Pim/Bundle',
-                'src/PimEnterprise/Bundle',
-                $projectDir . '/',
-                '/Resources/translations'
-            ],
-            [
-                'PimCommunity',
-                'PimEnterprise'
-            ],
-            $filePath
-        );
+        $search = [
+            'src/Pim/Bundle',
+            'src/PimEnterprise/Bundle',
+            $projectDir . '/',
+            '/Resources/translations',
+        ];
+        $replace = [
+            'PimCommunity',
+            'PimEnterprise',
+            '',
+            '',
+        ];
+        if (preg_match(sprintf('/%s$/i', $edition), $projectDir)) {
+            $search[]  = 'src/Akeneo/Bundle';
+            $replace[] = sprintf('Akeneo%s', ucfirst($edition));
+        }
+        $targetPath = str_replace($search, $replace, $filePath);
 
         return $targetPath;
     }

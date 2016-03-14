@@ -2,6 +2,7 @@
 
 namespace Akeneo\Crowdin;
 
+use Akeneo\TranslationFile;
 use Crowdin\Client;
 use Psr\Log\LoggerInterface;
 
@@ -34,7 +35,7 @@ class TranslationFilesUpdater
     }
 
     /**
-     * @param array $files
+     * @param TranslationFile[] $files
      */
     public function update(array $files)
     {
@@ -42,8 +43,9 @@ class TranslationFilesUpdater
         foreach ($collections as $files) {
             $service = $this->client->api('update-file');
             foreach ($files as $file) {
-                $service->addTranslation($file['source'], $file['target']);
-                $this->logger->addInfo(sprintf('Push file "%s" to "%s"', $file['source'], $file['target']));
+                /** @var TranslationFile $file */
+                $service->addTranslation($file->getSource(), $file->getTarget());
+                $this->logger->addInfo(sprintf('Push file "%s" to "%s"', $file->getSource(), $file->getTarget()));
             }
             $service->execute();
         }
@@ -52,7 +54,7 @@ class TranslationFilesUpdater
     /**
      * Split files list to respect the max amount of files accepted by the api for each call
      *
-     * @param $files
+     * @param TranslationFile[] $files
      *
      * @return array
      */

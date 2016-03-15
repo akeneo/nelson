@@ -2,11 +2,16 @@
 
 namespace Akeneo\Crowdin;
 
+use \SimpleXMLElement;
 use Crowdin\Api\Info;
 use Crowdin\Client;
 use Psr\Log\LoggerInterface;
-use \SimpleXMLElement;
 
+/**
+ * Get information about the Crowdin project: current branchs, directories and files.
+ *
+ * @author Pierre Allard <pierre.allard@akeneo.com>
+ */
 class TranslationProjectInfo
 {
     /** @var Client */

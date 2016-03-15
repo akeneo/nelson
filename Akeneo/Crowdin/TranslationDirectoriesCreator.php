@@ -49,7 +49,7 @@ class TranslationDirectoriesCreator
         }
 
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
-        foreach($this->getDirectoriesFromFiles($files) as $directory) {
+        foreach ($this->getDirectoriesFromFiles($files) as $directory) {
             if (in_array($directory, $existingFolders)) {
                 $this->logger->info(sprintf('Existing directory "%s"', $directory));
             } else {

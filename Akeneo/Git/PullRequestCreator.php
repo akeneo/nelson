@@ -59,10 +59,10 @@ class PullRequestCreator
             'akeneo',
             'pim-'.$edition.'-dev',
             [
-                'head' => sprintf('%s:crowdin/%s', $username, $branch),
-                'base' => $baseBranch,
+                'head'  => sprintf('%s:crowdin/%s', $username, $branch),
+                'base'  => $baseBranch,
                 'title' => 'Update translations from Crowdin',
-                'body' => 'Updated on ' . $branch,
+                'body'  => 'Updated on ' . $branch,
             ]
         );
 

@@ -50,7 +50,7 @@ class TranslatedProgressSelector
         $xml = simplexml_load_string($response);
         $codesToImport = [];
 
-        foreach($xml as $xmlElement) {
+        foreach ($xml as $xmlElement) {
             $translated_progress = (int) $xmlElement->translated_progress;
             if ($translated_progress >= $minTranslatedProgress) {
                 $code = (string) $xmlElement->code;

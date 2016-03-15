@@ -24,6 +24,24 @@ services:
             - @crowdin.client
             - @logger
 
+    crowdin.translation_files.directories_creator:
+        class: Akeneo\Crowdin\TranslationDirectoriesCreator
+        arguments:
+            - @crowdin.client
+            - @logger
+
+    crowdin.translation_files.files_creator:
+        class: Akeneo\Crowdin\TranslationFilesCreator
+        arguments:
+            - @crowdin.client
+            - @logger
+
+    crowdin.translation_files.project_info:
+        class: Akeneo\Crowdin\TranslationProjectInfo
+        arguments:
+            - @crowdin.client
+            - @logger
+
     crowdin.translated_progress.selector:
         class: Akeneo\Crowdin\TranslatedProgressSelector
         arguments:

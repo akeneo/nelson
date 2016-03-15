@@ -44,8 +44,8 @@ class TranslationFilesUpdater
             $service = $this->client->api('update-file');
             foreach ($files as $file) {
                 /** @var TranslationFile $file */
-                $service->addTranslation($file->getSource(), $file->getTarget());
-                $this->logger->addInfo(sprintf('Push file "%s" to "%s"', $file->getSource(), $file->getTarget()));
+                $service->addTranslation($file->getSource(), $file->getTarget(), $file->getPattern());
+                $this->logger->addInfo(sprintf('Push translation of "%s"', $file->getTarget()));
             }
             $service->execute();
         }

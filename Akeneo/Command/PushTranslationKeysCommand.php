@@ -2,7 +2,6 @@
 
 namespace Akeneo\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,7 +42,18 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
             ->get('akeneo.system.translation_files.provider')
             ->provideTranslations($projectDir, $edition);
 
+        $projectInfo = $this->container->get('crowdin.translation_files.project_info');
+
+        $this->container
+            ->get('crowdin.translation_files.directories_creator')
+            ->create($files, $projectInfo->getExistingFolders());
+
+        $this->container
+            ->get('crowdin.translation_files.files_creator')
+            ->create($files, $projectInfo->getExistingFiles());
+
         $this->container->get('crowdin.translation_files.updater')->update($files);
+
         $this->container->get('akeneo.system.executor')->execute(sprintf('rm -rf %s', $updateDir));
     }
 }

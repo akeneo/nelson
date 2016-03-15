@@ -43,14 +43,6 @@ class TranslationFile
     /**
      * Returns the relative path of the file to translate for Crowdin.
      *
-     * @return string
-     */
-    public function getTarget()
-    {
-        return $this->getTargetCrowdinPath($this->source, $this->projectDir, $this->edition);
-    }
-
-    /**
      * Transforms
      *    <projectDir>/src/Pim/Bundle/UserBundle/Resources/translations/messages.en.yml
      *    <projectDir>/src/PimEnterprise/Bundle/BaseConnectorBundle/Resources/translations/messages.en.yml
@@ -60,18 +52,14 @@ class TranslationFile
      *    PimEnterprise/BaseConnectorBundle/messages.en.yml
      *    AkeneoCommunity/BatchBundle/validators.en.yml
      *
-     * @param string $filePath   Absolute file path of the translation file
-     * @param string $projectDir Absolute file directory of the project
-     * @param string $edition    'community'|'enterprise'
-     *
      * @return string
      */
-    protected function getTargetCrowdinPath($filePath, $projectDir, $edition)
+    public function getTarget()
     {
         $search = [
             'src/Pim/Bundle',
             'src/PimEnterprise/Bundle',
-            $projectDir . '/',
+            $this->projectDir . '/',
             '/Resources/translations',
         ];
         $replace = [
@@ -80,12 +68,35 @@ class TranslationFile
             '',
             '',
         ];
-        if (preg_match(sprintf('/%s$/i', $edition), $projectDir)) {
+        if (preg_match(sprintf('/%s$/i', $this->edition), $this->projectDir)) {
             $search[]  = 'src/Akeneo/Bundle';
-            $replace[] = sprintf('Akeneo%s', ucfirst($edition));
+            $replace[] = sprintf('Akeneo%s', ucfirst($this->edition));
         }
-        $targetPath = str_replace($search, $replace, $filePath);
+        $targetPath = str_replace($search, $replace, $this->source);
 
         return $targetPath;
+    }
+
+    /**
+     * Returns the Crowdin directory of the translation file.
+     *
+     * @return string
+     */
+    public function getTargetDirectory()
+    {
+        return dirname($this->getTarget());
+    }
+
+    /**
+     * Returns the pattern of the file when you download the Crowdin archive.
+     *
+     * @return string
+     */
+    public function getPattern()
+    {
+        $targetPath = str_replace([$this->projectDir], [ucfirst($this->edition)], $this->source);
+        $dir = dirname($targetPath);
+
+        return $dir . '/%file_name%.%locale_with_underscore%.%file_extension%';
     }
 }

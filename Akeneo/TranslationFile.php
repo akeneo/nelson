@@ -95,8 +95,15 @@ class TranslationFile
     public function getPattern()
     {
         $targetPath = str_replace([$this->projectDir], [ucfirst($this->edition)], $this->source);
-        $dir = dirname($targetPath);
+        $dirName = dirname($targetPath);
+        $baseName = basename($targetPath);
+        $filename = '%file_name%';
 
-        return $dir . '/%file_name%.%locale_with_underscore%.%file_extension%';
+        $matches = null;
+        if (preg_match('/^(?P<filename>\w+)\.en.\w+$/', $baseName, $matches)) {
+            $filename = $matches['filename'];
+        }
+
+        return '/'. $dirName . '/' . $filename . '.%locale_with_underscore%.%file_extension%';
     }
 }

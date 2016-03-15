@@ -24,11 +24,18 @@ class Executor
 
     /**
      * @param string $command
+     *
+     * @throws \Exception
      */
     public function execute($command)
     {
         $returnVar = null;
-        system($command, $returnVar);
-        $this->logger->info(sprintf('Executing command: %s (Result: %d)', $command, $returnVar));
+        try {
+            system($command, $returnVar);
+            $this->logger->info(sprintf('Executing command: %s (Result: %d)', $command, $returnVar));
+        } catch (\Exception $exception) {
+            $this->logger->error(sprintf('Error executing command: %s', $command));
+            throw $exception;
+        }
     }
 }

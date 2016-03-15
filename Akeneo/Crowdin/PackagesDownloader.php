@@ -2,6 +2,7 @@
 
 namespace Akeneo\Crowdin;
 
+use Crowdin\Api\Download;
 use Crowdin\Client;
 
 /**
@@ -23,19 +24,27 @@ class PackagesDownloader
     }
 
     /**
-     * @param array  $packages
-     * @param string $baseDir
+     * Download an archive with the translations. If basBranch is set, download only the specified branch.
+     *
+     * @param string[]    $locales
+     * @param string      $baseDir
+     * @param string|null $baseBranch
      */
-    public function download(array $packages, $baseDir)
+    public function download(array $locales, $baseDir, $baseBranch = null)
     {
         $this->client->api('export')->execute();
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
         }
 
-        $download = $this->client->api('download')->setCopyDestination($baseDir);
-        foreach ($packages as $package) {
-            $download->setPackage(sprintf('%s.zip', $package))->execute();
+        /** @var Download $service */
+        $service = $this->client->api('download');
+        if (null !== $baseBranch) {
+            $service->setBranch($baseBranch);
+        }
+        $download = $service->setCopyDestination($baseDir);
+        foreach ($locales as $locale) {
+            $download->setPackage(sprintf('%s.zip', $locale))->execute();
         }
     }
 }

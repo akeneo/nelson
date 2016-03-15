@@ -5,6 +5,7 @@ namespace Akeneo\Crowdin;
 use Crowdin\Api\Info;
 use Crowdin\Client;
 use Psr\Log\LoggerInterface;
+use \SimpleXMLElement;
 
 class TranslationProjectInfo
 {
@@ -76,6 +77,8 @@ class TranslationProjectInfo
     }
 
     /**
+     * Returns true if branch exists in Crowdin.
+     *
      * @param string $baseBranch
      *
      * @return bool
@@ -86,10 +89,12 @@ class TranslationProjectInfo
     }
 
     /**
-     * @param \SimpleXMLElement $rootNode
-     * @param string            $baseBranch
+     * Returns the XML node of the specified branch, null if not found.
      *
-     * @return \SimpleXMLElement|null
+     * @param SimpleXMLElement $rootNode
+     * @param string           $baseBranch
+     *
+     * @return SimpleXMLElement|null
      */
     protected function getBranchNode($rootNode, $baseBranch)
     {
@@ -105,8 +110,8 @@ class TranslationProjectInfo
     /**
      * Recursive method to get folders from current path.
      *
-     * @param \SimpleXMLElement $xmlNode Current XML node
-     * @param string|null       $path    Current folders path
+     * @param SimpleXMLElement $xmlNode Current XML node
+     * @param string|null      $path    Current folders path
      *
      * @return string[]
      */
@@ -127,8 +132,8 @@ class TranslationProjectInfo
     /**
      * Recursive method to get files from current path.
      *
-     * @param \SimpleXMLElement $xmlNode Current XML node
-     * @param string|null       $path    Current folders path
+     * @param SimpleXMLElement $xmlNode Current XML node
+     * @param string|null      $path    Current folders path
      *
      * @return string[]
      */
@@ -150,6 +155,8 @@ class TranslationProjectInfo
 
     /**
      * Load the project information.
+     *
+     * @return SimpleXMLElement
      */
     protected function getInfo()
     {

@@ -47,9 +47,17 @@ class PullTranslationsCommand extends ContainerAwareCommand
         $updateDir = $options['base_dir'] . '/update';
         $packages  = $status->packages($options['min_translated_progress']);
 
+        if (count($packages) <= 0) {
+            $output->writeln(sprintf(
+                "There is no packages with minimal translation of %s%%. Nothing to do.",
+                $options['min_translated_progress']
+            ));
+            return 0;
+        }
+
         foreach ($options[$edition]['branches'] as $baseBranch) {
             $projectDir = $cloner->cloneProject($username, $updateDir, $edition, $baseBranch);
-            $downloader->download($packages, $options['base_dir']);
+            $downloader->download($packages, $options['base_dir'], $baseBranch);
             $extractor->extract($packages, $options['base_dir'], $updateDir);
             $translationsCleaner->cleanFiles($options['locale_map'], $projectDir);
 

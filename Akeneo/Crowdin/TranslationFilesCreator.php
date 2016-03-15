@@ -35,31 +35,47 @@ class TranslationFilesCreator
     /**
      * Create the missing files in Crowdin. Set it by batch using MAX_UPLOAD const.
      *
-     * @param TranslationFile[] $files
-     * @param string[]          $existingFiles
+     * @param TranslationFile[]      $files
+     * @param TranslationProjectInfo $projectInfo
+     * @param string|null            $baseBranch
      */
-    public function create(array $files, array $existingFiles = [])
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch = null)
     {
-        $count = 0;
-        $service = $this->client->api('add-file');
+        $existingFiles = $projectInfo->getExistingFiles($baseBranch);
+        $fileSets = array_chunk($this->filterExistingFiles($files, $existingFiles), self::MAX_UPLOAD);
 
-        foreach ($files as $file) {
-            if (in_array($file->getTarget(), $existingFiles)) {
-                $this->logger->info(sprintf('Existing file "%s"', $file->getTarget()));
-            } else {
-                /** @var AddFile $service */
+        foreach ($fileSets as $fileSet) {
+            /** @var AddFile $service */
+            $service = $this->client->api('add-file');
+            if (null !== $baseBranch) {
+                $service->setBranch($baseBranch);
+            }
+
+            foreach ($fileSet as $file) {
+                /** @var TranslationFile $file */
                 $service->addTranslation($file->getSource(), $file->getTarget(), $file->getPattern());
                 $this->logger->info(sprintf('Create file "%s"', $file->getTarget()));
-                $count ++;
-                if ($count >= self::MAX_UPLOAD) {
-                    $service->execute();
-                    $service = $this->client->api('add-file');
-                    $count = 0;
-                }
             }
-        }
-        if ($count > 0) {
             $service->execute();
         }
+    }
+
+    /**
+     * @param TranslationFile[] $files
+     * @param string[]          $existingFiles
+     *
+     * @return TranslationFile[]
+     */
+    protected function filterExistingFiles($files, $existingFiles)
+    {
+        $result = [];
+
+        foreach ($files as $file) {
+            if (!in_array($file->getTarget(), $existingFiles)) {
+                $result[] = $file;
+            }
+        }
+
+        return $result;
     }
 }

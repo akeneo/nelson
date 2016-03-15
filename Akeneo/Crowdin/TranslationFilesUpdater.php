@@ -36,44 +36,23 @@ class TranslationFilesUpdater
 
     /**
      * @param TranslationFile[] $files
+     * @param string|null       $baseBranch
      */
-    public function update(array $files)
+    public function update(array $files, $baseBranch = null)
     {
-        $collections = $this->splitFilesList($files);
-        foreach ($collections as $files) {
+        $fileSets = array_chunk($files, self::MAX_NB_FILES);
+
+        foreach ($fileSets as $fileSet) {
             $service = $this->client->api('update-file');
-            foreach ($files as $file) {
+            if (null !== $baseBranch) {
+                $service->setBranch($baseBranch);
+            }
+            foreach ($fileSet as $file) {
                 /** @var TranslationFile $file */
                 $service->addTranslation($file->getSource(), $file->getTarget(), $file->getPattern());
                 $this->logger->addInfo(sprintf('Push translation of "%s"', $file->getTarget()));
             }
             $service->execute();
         }
-    }
-
-    /**
-     * Split files list to respect the max amount of files accepted by the api for each call
-     *
-     * @param TranslationFile[] $files
-     *
-     * @return array
-     */
-    protected function splitFilesList($files)
-    {
-        $collections = [];
-        $counter = 0;
-        $indCollection = 0;
-        foreach ($files as $file) {
-            if (!isset($collections[$indCollection])) {
-                $collections[$indCollection] = [];
-            }
-            $collections[$indCollection][] = $file;
-            $counter++;
-            if (0 === $counter % self::MAX_NB_FILES) {
-                $indCollection++;
-            }
-        }
-
-        return $collections;
     }
 }

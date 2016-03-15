@@ -32,14 +32,23 @@ class TranslationDirectoriesCreator
 
     /**
      * Create the new folders in Crowdin.
+     * If baseBranch is specified, create the folders into the specific branch node.
      *
-     * @param TranslationFile[] $files
-     * @param string[]          $existingFolders
+     * @param TranslationFile[]      $files
+     * @param TranslationProjectInfo $projectInfo
+     * @param string|null            $baseBranch
      */
-    public function create(array $files, array $existingFolders = [])
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch = null)
     {
         /** @var AddDirectory $service */
         $service = $this->client->api('add-directory');
+        if (null !== $baseBranch) {
+            $this->createBranchIfNotExists($baseBranch, $projectInfo);
+            $this->logger->info(sprintf('Use branch "%s"', $baseBranch));
+            $service->setBranch($baseBranch);
+        }
+
+        $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach($this->getDirectoriesFromFiles($files) as $directory) {
             if (in_array($directory, $existingFolders)) {
                 $this->logger->info(sprintf('Existing directory "%s"', $directory));
@@ -101,5 +110,25 @@ class TranslationDirectoriesCreator
         sort($allDirs);
 
         return $allDirs;
+    }
+
+    /**
+     * Creates the root node for the branch if not exists.
+     *
+     * @param string                 $baseBranch
+     * @param TranslationProjectInfo $projectInfo
+     */
+    protected function createBranchIfNotExists($baseBranch, $projectInfo)
+    {
+        if (!$projectInfo->isBranchCreated($baseBranch)) {
+            $this->logger->info(sprintf('Create branch "%s"', $baseBranch));
+
+            /** @var AddDirectory $serviceBranch */
+            $serviceBranch = $this->client->api('add-directory');
+            $serviceBranch->setDirectory($baseBranch);
+            $serviceBranch->setIsBranch(true);
+
+            $serviceBranch->execute();
+        }
     }
 }

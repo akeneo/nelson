@@ -14,9 +14,6 @@ class TranslationProjectInfo
     /** @var LoggerInterface */
     protected $logger;
 
-    /** @var \SimpleXMLElement */
-    protected $infos;
-
     /**
      * @param Client          $client
      * @param LoggerInterface $logger
@@ -31,27 +28,78 @@ class TranslationProjectInfo
     /**
      * Returns the list of existing folders in Crowdin project
      * Example : ["AkeneoCommunity", "AkeneoCommunity/BatchBundle"]
+     * If baseBranch is set, returns only folders under this branch.
+     *
+     * @param string|null $baseBranch
      *
      * @return string[]
      */
-    public function getExistingFolders()
+    public function getExistingFolders($baseBranch = null)
     {
-        $this->loadInfos();
+        $rootNode = $this->getInfo();
 
-        return $this->getFolders($this->infos, null);
+        if (null !== $baseBranch) {
+            $branchNode = $this->getBranchNode($rootNode, $baseBranch);
+            if (null !== $branchNode) {
+                $rootNode = $branchNode;
+            } else {
+                return [];
+            }
+        }
+
+        return $this->getFolders($rootNode, null);
     }
 
     /**
      * Returns the list of existing files in Crowdin project.
      * Example: ["PimCommunity/ImportExportBundle/validators.en.yml", "PimCommunity/LocalizationBundle/messages.en.yml"]
+     * If baseBranch is set, returns only files under this branch.
+     *
+     * @param string|null $baseBranch
      *
      * @return string[]
      */
-    public function getExistingFiles()
+    public function getExistingFiles($baseBranch = null)
     {
-        $this->loadInfos();
+        $rootNode = $this->getInfo();
 
-        return $this->getFiles($this->infos, null);
+        if (null !== $baseBranch) {
+            $branchNode = $this->getBranchNode($rootNode, $baseBranch);
+            if (null !== $branchNode) {
+                $rootNode = $branchNode;
+            } else {
+                return [];
+            }
+        }
+
+        return $this->getFiles($rootNode, null);
+    }
+
+    /**
+     * @param string $baseBranch
+     *
+     * @return bool
+     */
+    public function isBranchCreated($baseBranch)
+    {
+        return null !== $this->getBranchNode($this->getInfo(), $baseBranch);
+    }
+
+    /**
+     * @param \SimpleXMLElement $rootNode
+     * @param string            $baseBranch
+     *
+     * @return \SimpleXMLElement|null
+     */
+    protected function getBranchNode($rootNode, $baseBranch)
+    {
+        foreach ($rootNode->xpath('files/item') as $item) {
+            if ('branch' === (string) $item->node_type && $baseBranch === (string) $item->name) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -87,13 +135,13 @@ class TranslationProjectInfo
     protected function getFiles($xmlNode, $path)
     {
         $result = [];
-        foreach ($xmlNode->xpath('files/item') as $dir) {
-            $node_type = (string) $dir->node_type;
+        foreach ($xmlNode->xpath('files/item') as $item) {
+            $node_type = (string) $item->node_type;
             if ('directory' === $node_type) {
-                $subPath = (string) (null === $path ? $dir->name : sprintf("%s/%s", $path, $dir->name));
-                $result = array_merge($result, $this->getFiles($dir, $subPath));
+                $subPath = (string) (null === $path ? $item->name : sprintf("%s/%s", $path, $item->name));
+                $result = array_merge($result, $this->getFiles($item, $subPath));
             } elseif ('file' === $node_type) {
-                $result[] = sprintf("%s/%s", $path, $dir->name);
+                $result[] = sprintf("%s/%s", $path, $item->name);
             }
         }
 
@@ -103,13 +151,11 @@ class TranslationProjectInfo
     /**
      * Load the project information.
      */
-    protected function loadInfos()
+    protected function getInfo()
     {
-        if (null === $this->infos) {
-            /** @var Info $service */
-            $service = $this->client->api('info');
-            $xml = $service->execute();
-            $this->infos = simplexml_load_string($xml);
-        }
+        /** @var Info $service */
+        $service = $this->client->api('info');
+        $xml = $service->execute();
+        return simplexml_load_string($xml);
     }
 }

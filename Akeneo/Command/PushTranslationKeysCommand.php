@@ -35,24 +35,28 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
         $username = $input->getArgument('username');
         $edition  = $input->getArgument('edition');
 
-        $cloner     = $this->container->get('github.cloner');
-        $updateDir  = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
-        $projectDir = $cloner->cloneProject($username, $updateDir, $edition);
-        $files      = $this->container
-            ->get('akeneo.system.translation_files.provider')
-            ->provideTranslations($projectDir, $edition);
-
+        $options     = $this->container->getParameter('crowdin.download');
+        $cloner      = $this->container->get('github.cloner');
+        $updateDir   = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
         $projectInfo = $this->container->get('crowdin.translation_files.project_info');
 
-        $this->container
-            ->get('crowdin.translation_files.directories_creator')
-            ->create($files, $projectInfo->getExistingFolders());
+        foreach ($options[$edition]['branches'] as $baseBranch) {
+            $projectDir = $cloner->cloneProject($username, $updateDir, $edition, $baseBranch);
 
-        $this->container
-            ->get('crowdin.translation_files.files_creator')
-            ->create($files, $projectInfo->getExistingFiles());
+            $files = $this->container
+                ->get('akeneo.system.translation_files.provider')
+                ->provideTranslations($projectDir, $edition);
 
-        $this->container->get('crowdin.translation_files.updater')->update($files);
+            $this->container
+                ->get('crowdin.translation_files.directories_creator')
+                ->create($files, $projectInfo, $baseBranch);
+
+            $this->container
+                ->get('crowdin.translation_files.files_creator')
+                ->create($files, $projectInfo, $baseBranch);
+
+            $this->container->get('crowdin.translation_files.updater')->update($files, $baseBranch);
+        }
 
         $this->container->get('akeneo.system.executor')->execute(sprintf('rm -rf %s', $updateDir));
     }

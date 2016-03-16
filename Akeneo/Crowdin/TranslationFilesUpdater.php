@@ -36,17 +36,16 @@ class TranslationFilesUpdater
 
     /**
      * @param TranslationFile[] $files
-     * @param string|null       $baseBranch
+     * @param string            $baseBranch
      */
-    public function update(array $files, $baseBranch = null)
+    public function update(array $files, $baseBranch)
     {
         $fileSets = array_chunk($files, self::MAX_NB_FILES);
 
         foreach ($fileSets as $fileSet) {
             $service = $this->client->api('update-file');
-            if (null !== $baseBranch) {
-                $service->setBranch($baseBranch);
-            }
+            $service->setBranch($baseBranch);
+
             foreach ($fileSet as $file) {
                 /** @var TranslationFile $file */
                 $service->addTranslation($file->getSource(), $file->getTarget(), $file->getPattern());

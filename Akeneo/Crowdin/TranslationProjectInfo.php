@@ -34,51 +34,41 @@ class TranslationProjectInfo
     /**
      * Returns the list of existing folders in Crowdin project
      * Example : ["AkeneoCommunity", "AkeneoCommunity/BatchBundle"]
-     * If baseBranch is set, returns only folders under this branch.
      *
-     * @param string|null $baseBranch
+     * @param string $baseBranch
      *
      * @return string[]
      */
-    public function getExistingFolders($baseBranch = null)
+    public function getExistingFolders($baseBranch)
     {
         $rootNode = $this->getInfo();
 
-        if (null !== $baseBranch) {
-            $branchNode = $this->getBranchNode($rootNode, $baseBranch);
-            if (null !== $branchNode) {
-                $rootNode = $branchNode;
-            } else {
-                return [];
-            }
+        $branchNode = $this->getBranchNode($rootNode, $baseBranch);
+        if (null !== $branchNode) {
+            return $this->getFolders($branchNode, null);
+        } else {
+            return [];
         }
-
-        return $this->getFolders($rootNode, null);
     }
 
     /**
      * Returns the list of existing files in Crowdin project.
      * Example: ["PimCommunity/ImportExportBundle/validators.en.yml", "PimCommunity/LocalizationBundle/messages.en.yml"]
-     * If baseBranch is set, returns only files under this branch.
      *
-     * @param string|null $baseBranch
+     * @param string $baseBranch
      *
      * @return string[]
      */
-    public function getExistingFiles($baseBranch = null)
+    public function getExistingFiles($baseBranch)
     {
         $rootNode = $this->getInfo();
 
-        if (null !== $baseBranch) {
-            $branchNode = $this->getBranchNode($rootNode, $baseBranch);
-            if (null !== $branchNode) {
-                $rootNode = $branchNode;
-            } else {
-                return [];
-            }
+        $branchNode = $this->getBranchNode($rootNode, $baseBranch);
+        if (null !== $branchNode) {
+            return $this->getFiles($branchNode, null);
+        } else {
+            return [];
         }
-
-        return $this->getFiles($rootNode, null);
     }
 
     /**

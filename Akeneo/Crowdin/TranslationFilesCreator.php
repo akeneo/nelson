@@ -37,9 +37,9 @@ class TranslationFilesCreator
      *
      * @param TranslationFile[]      $files
      * @param TranslationProjectInfo $projectInfo
-     * @param string|null            $baseBranch
+     * @param string                 $baseBranch
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch = null)
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
     {
         $existingFiles = $projectInfo->getExistingFiles($baseBranch);
         $fileSets = array_chunk($this->filterExistingFiles($files, $existingFiles), self::MAX_UPLOAD);
@@ -47,9 +47,7 @@ class TranslationFilesCreator
         foreach ($fileSets as $fileSet) {
             /** @var AddFile $service */
             $service = $this->client->api('add-file');
-            if (null !== $baseBranch) {
-                $service->setBranch($baseBranch);
-            }
+            $service->setBranch($baseBranch);
 
             foreach ($fileSet as $file) {
                 /** @var TranslationFile $file */

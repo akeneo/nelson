@@ -36,17 +36,15 @@ class TranslationDirectoriesCreator
      *
      * @param TranslationFile[]      $files
      * @param TranslationProjectInfo $projectInfo
-     * @param string|null            $baseBranch
+     * @param string                 $baseBranch
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch = null)
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
     {
         /** @var AddDirectory $service */
         $service = $this->client->api('add-directory');
-        if (null !== $baseBranch) {
-            $this->createBranchIfNotExists($baseBranch, $projectInfo);
-            $this->logger->info(sprintf('Use branch "%s"', $baseBranch));
-            $service->setBranch($baseBranch);
-        }
+        $this->createBranchIfNotExists($baseBranch, $projectInfo);
+        $this->logger->info(sprintf('Use branch "%s"', $baseBranch));
+        $service->setBranch($baseBranch);
 
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {

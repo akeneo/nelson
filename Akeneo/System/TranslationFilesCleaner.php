@@ -3,6 +3,7 @@
 namespace Akeneo\System;
 
 use SplFileInfo;
+use Symfony\Component\Finder\Finder;
 
 /**
  * This class adapts the Crowdin format to the Akeneo format:
@@ -19,17 +20,21 @@ class TranslationFilesCleaner
      */
     public function cleanFiles(array $localeMap, $projectDir)
     {
-        $dirIterator = new \RecursiveDirectoryIterator($projectDir);
-        $iterator    = new \RecursiveIteratorIterator($dirIterator, \RecursiveIteratorIterator::SELF_FIRST);
+        $finder = new Finder();
 
-        foreach ($iterator as $file) {
-            if ($this->isTranslation($file)) {
-                if (!$this->existsOriginalTranslation($file)) {
-                    unlink($file);
-                } else {
-                    $this->cleanCrowdinYamlTranslation($file);
-                    $this->renameTranslation($file, $localeMap);
-                }
+        $translationFiles = $finder
+            ->in($projectDir . '/src/')
+            ->notPath('/Oro/')
+            ->path('/Resources\/translations/')
+            ->name('*.yml')
+            ->files();
+
+        foreach ($translationFiles as $file) {
+            if (!$this->existsOriginalTranslation($file)) {
+                unlink($file);
+            } else {
+                $this->cleanCrowdinYamlTranslation($file);
+                $this->renameTranslation($file, $localeMap);
             }
         }
     }
@@ -72,26 +77,6 @@ class TranslationFilesCleaner
         }
 
         return null;
-    }
-
-    /**
-     * Check if the current file is a translation, i.e. is a YML and belongs to a "translations" folder.
-     *
-     * @param SplFileInfo $file
-     *
-     * @return bool
-     */
-    protected function isTranslation($file)
-    {
-        $pathInfo = pathinfo($file);
-        if (!isset($pathInfo['extension']) || $pathInfo['extension'] !== 'yml') {
-            return false;
-        }
-
-        $dirName = $pathInfo['dirname'];
-        $pattern = '/translations$/';
-        $isATranslationFile = preg_match($pattern, $dirName);
-        return ($isATranslationFile === 1);
     }
 
     /**

@@ -2,9 +2,8 @@
 
 namespace Akeneo\Crowdin;
 
-use Crowdin\Api\Download;
-use Crowdin\Api\Export;
-use Crowdin\Client;
+use Akeneo\Crowdin\Api\Download;
+use Akeneo\Crowdin\Api\Export;
 
 /**
  * Class PackagesDownloader

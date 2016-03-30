@@ -2,9 +2,8 @@
 
 namespace Akeneo\Crowdin;
 
+use Akeneo\Crowdin\Api\Info;
 use \SimpleXMLElement;
-use Crowdin\Api\Info;
-use Crowdin\Client;
 use Psr\Log\LoggerInterface;
 
 /**

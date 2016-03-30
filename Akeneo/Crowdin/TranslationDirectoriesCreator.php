@@ -2,9 +2,8 @@
 
 namespace Akeneo\Crowdin;
 
+use Akeneo\Crowdin\Api\AddDirectory;
 use Akeneo\TranslationFile;
-use Crowdin\Api\AddDirectory;
-use Crowdin\Client;
 use Psr\Log\LoggerInterface;
 
 /**

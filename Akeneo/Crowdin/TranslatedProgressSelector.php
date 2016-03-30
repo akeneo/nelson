@@ -2,7 +2,6 @@
 
 namespace Akeneo\Crowdin;
 
-use Crowdin\Client;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

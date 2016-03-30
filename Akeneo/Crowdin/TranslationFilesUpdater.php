@@ -3,7 +3,6 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\TranslationFile;
-use Crowdin\Client;
 use Psr\Log\LoggerInterface;
 
 /**

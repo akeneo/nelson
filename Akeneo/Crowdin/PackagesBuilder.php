@@ -2,8 +2,6 @@
 
 namespace Akeneo\Crowdin;
 
-use Crowdin\Client;
-
 /**
  * Class PackagesBuilder
  *

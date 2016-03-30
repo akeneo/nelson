@@ -1,6 +1,6 @@
 services:
     crowdin.client:
-        class: Crowdin\Client
+        class: Akeneo\Crowdin\Client
         arguments:
             - %crowdin.project%
             - %crowdin.key%

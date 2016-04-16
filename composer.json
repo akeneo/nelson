@@ -1,0 +1,38 @@
+{
+    "name": "akeneo/nelson",
+    "type": "project",
+    "description": "Command based translation workflow between Crowdin and Github",
+    "tags": ["Crowdin", "Github", "Collaborative", "Translation", "Workflow"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Dupont",
+            "email": "nicolas@akeneo.com"
+        },
+        {
+            "name": "Pierre Allard",
+            "email": "pierre.allard@akeneo.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.4",
+        "symfony/console": "2.7.3",
+        "symfony/yaml": "2.7.3",
+        "symfony/finder": "2.7.3",
+        "symfony/config": "^2.7",
+        "monolog/monolog": "~1.0",
+        "akeneo/crowdin-api": "1.0.0-alpha2",
+        "knplabs/github-api": "1.4.14",
+        "symfony/dependency-injection": "^2.7",
+        "fabpot/php-cs-fixer": "^1.11"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "2.2.1"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-0": {"Akeneo\\": "src/"}
+    }
+}

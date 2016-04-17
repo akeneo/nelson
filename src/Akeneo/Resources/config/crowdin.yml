@@ -11,38 +11,42 @@ services:
     crowdin.packages.downloader:
         class: Akeneo\Crowdin\PackagesDownloader
         arguments:
-            - @crowdin.client
+            - '@crowdin.client'
 
     crowdin.packages.builder:
         class: Akeneo\Crowdin\PackagesBuilder
         arguments:
-            - @crowdin.client
+            - '@crowdin.client'
 
     crowdin.translation_files.updater:
         class: Akeneo\Crowdin\TranslationFilesUpdater
         arguments:
-            - @crowdin.client
-            - @logger
+            - '@crowdin.client'
+            - '@logger'
+            - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.directories_creator:
         class: Akeneo\Crowdin\TranslationDirectoriesCreator
         arguments:
-            - @crowdin.client
-            - @logger
+            - '@crowdin.client'
+            - '@logger'
+            - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.files_creator:
         class: Akeneo\Crowdin\TranslationFilesCreator
         arguments:
-            - @crowdin.client
-            - @logger
+            - '@crowdin.client'
+            - '@logger'
+            - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.project_info:
         class: Akeneo\Crowdin\TranslationProjectInfo
         arguments:
-            - @crowdin.client
-            - @logger
+            - '@crowdin.client'
+            - '@logger'
 
     crowdin.translated_progress.selector:
         class: Akeneo\Crowdin\TranslatedProgressSelector
         arguments:
-            - @crowdin.client
+            - '@crowdin.client'
+            - %crowdin.min_translated_progress%

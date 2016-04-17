@@ -3,13 +3,16 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddFile;
-use Akeneo\TranslationFile;
+use Akeneo\System\TargetResolver;
+use Akeneo\System\TranslationFile;
 use Psr\Log\LoggerInterface;
 
 /**
  * This class creates all the missing files of a Crowdin project.
  *
- * @author Pierre Allard <pierre.allard@akeneo.com>
+ * @author    Pierre Allard <pierre.allard@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class TranslationFilesCreator
 {
@@ -21,14 +24,18 @@ class TranslationFilesCreator
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var TargetResolver */
+    protected $targetResolver;
+
     /**
      * @param Client          $client
      * @param LoggerInterface $logger
      */
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client, LoggerInterface $logger, TargetResolver $targetResolver)
     {
-        $this->client = $client;
-        $this->logger = $logger;
+        $this->client         = $client;
+        $this->logger         = $logger;
+        $this->targetResolver = $targetResolver;
     }
 
     /**
@@ -50,8 +57,12 @@ class TranslationFilesCreator
 
             foreach ($fileSet as $file) {
                 /** @var TranslationFile $file */
-                $service->addTranslation($file->getSource(), $file->getTarget(), $file->getPattern());
-                $this->logger->info(sprintf('Create file "%s"', $file->getTarget()));
+                $target = $this->targetResolver->getTarget(
+                    $file->getProjectDir(),
+                    $file->getSource()
+                );
+                $service->addTranslation($file->getSource(), $target, $file->getPattern());
+                $this->logger->info(sprintf('Create file "%s"', $target));
             }
             $service->execute();
         }
@@ -68,7 +79,10 @@ class TranslationFilesCreator
         $result = [];
 
         foreach ($files as $file) {
-            if (!in_array($file->getTarget(), $existingFiles)) {
+            if (!in_array($this->targetResolver->getTarget(
+                $file->getProjectDir(),
+                $file->getSource()
+            ), $existingFiles)) {
                 $result[] = $file;
             }
         }

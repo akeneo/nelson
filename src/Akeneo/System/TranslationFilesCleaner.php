@@ -10,32 +10,24 @@ use Symfony\Component\Finder\Finder;
  * - Remove the '---' of all the translations files provided by Crowdin
  * - Change the full format locale (fr_FR) to 2-letters (fr) if needed.
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class TranslationFilesCleaner
 {
     /**
      * @param array  $localeMap
-     * @param string $projectDir
+     * @param string $cleanerDir
      */
-    public function cleanFiles(array $localeMap, $projectDir)
+    public function cleanFiles(array $localeMap, $cleanerDir)
     {
         $finder = new Finder();
+        $translatedFiles = $finder->in($cleanerDir)->files();
 
-        $translationFiles = $finder
-            ->in($projectDir . '/src/')
-            ->notPath('/Oro/')
-            ->path('/Resources\/translations/')
-            ->name('*.yml')
-            ->files();
-
-        foreach ($translationFiles as $file) {
-            if (!$this->existsOriginalTranslation($file)) {
-                unlink($file);
-            } else {
-                $this->cleanCrowdinYamlTranslation($file);
-                $this->renameTranslation($file, $localeMap);
-            }
+        foreach ($translatedFiles as $file) {
+            $this->cleanCrowdinYamlTranslation($file);
+            $this->renameTranslation($file, $localeMap);
         }
     }
 
@@ -77,28 +69,6 @@ class TranslationFilesCleaner
         }
 
         return null;
-    }
-
-    /**
-     * Check if the original translation is already here. Prevent of removed translation files.
-     *
-     * @param SplFileInfo $file
-     *
-     * @return bool
-     */
-    protected function existsOriginalTranslation($file)
-    {
-        $pathInfo = pathinfo($file);
-
-        $originalFile = sprintf(
-            '%s/%s.%s.%s',
-            $pathInfo['dirname'],
-            pathinfo($pathInfo['filename'], PATHINFO_FILENAME),
-            'en',
-            $pathInfo['extension']
-        );
-
-        return file_exists($originalFile);
     }
 
     /**

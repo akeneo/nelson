@@ -1,3 +1,7 @@
-vendor
+vendor/
+bin/php-cs-fixer
+bin/phpspec
 composer.lock
 bin
+app/console
+app/logs/

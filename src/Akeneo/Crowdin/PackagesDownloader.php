@@ -8,7 +8,9 @@ use Akeneo\Crowdin\Api\Export;
 /**
  * Class PackagesDownloader
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class PackagesDownloader
 {
@@ -44,9 +46,9 @@ class PackagesDownloader
         /** @var Download $serviceDownload */
         $serviceDownload = $this->client->api('download');
         $serviceDownload->setBranch($baseBranch);
-        $download = $serviceDownload->setCopyDestination($baseDir);
+        $serviceDownload = $serviceDownload->setCopyDestination($baseDir);
         foreach ($locales as $locale) {
-            $download->setPackage(sprintf('%s.zip', $locale))->execute();
+            $serviceDownload->setPackage(sprintf('%s.zip', $locale))->execute();
         }
     }
 }

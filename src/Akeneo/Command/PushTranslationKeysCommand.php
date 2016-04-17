@@ -2,7 +2,6 @@
 
 namespace Akeneo\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -11,7 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * Note that this command will not create new files on Crowdin
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class PushTranslationKeysCommand extends ContainerAwareCommand
 {
@@ -21,10 +22,8 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('crowdin:push-translation-keys')
-            ->setDescription('Fetch new translation keys from Github and push the updated files to Crowdin')
-            ->addArgument('username', InputArgument::REQUIRED, 'Github username')
-            ->addArgument('edition', InputArgument::REQUIRED, 'PIM edition, community or enterprise');
+            ->setName('nelson:push-translation-keys')
+            ->setDescription('Fetch new translation keys from Github and push the updated files to Crowdin');
     }
 
     /**
@@ -32,20 +31,17 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $username = $input->getArgument('username');
-        $edition  = $input->getArgument('edition');
-
-        $options     = $this->container->getParameter('crowdin.download');
         $cloner      = $this->container->get('github.cloner');
         $updateDir   = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
         $projectInfo = $this->container->get('crowdin.translation_files.project_info');
+        $branches    = $this->container->getParameter('github.branches');
 
-        foreach ($options[$edition]['branches'] as $baseBranch) {
-            $projectDir = $cloner->cloneProject($username, $updateDir, $edition, $baseBranch);
+        foreach ($branches as $baseBranch) {
+            $projectDir = $cloner->cloneProject($updateDir, $baseBranch);
 
             $files = $this->container
                 ->get('akeneo.system.translation_files.provider')
-                ->provideTranslations($projectDir, $edition);
+                ->provideTranslations($projectDir);
 
             $this->container
                 ->get('crowdin.translation_files.directories_creator')

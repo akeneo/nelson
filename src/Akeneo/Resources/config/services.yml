@@ -7,9 +7,6 @@ services:
     akeneo.system.translation_files.cleaner:
         class: Akeneo\System\TranslationFilesCleaner
 
-    akeneo.system.translation_files.provider:
-        class: Akeneo\System\TranslationFilesProvider
-
     logger.handler:
         class: Monolog\Handler\StreamHandler
         arguments:

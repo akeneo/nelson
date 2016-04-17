@@ -1,10 +1,10 @@
 <?php
-
-$finder = \Symfony\CS\Finder\DefaultFinder::create()->files();
-$fixers = require __DIR__.'/.php_cs-fixers.php';
-
+$fixers = require __DIR__ . '/.php_cs-fixers.php';
+$finder = \Symfony\CS\Finder\DefaultFinder::create();
 $finder->name('*.php')
-    ->in(__DIR__.'/src');
+    ->notName('*Spec.php')
+    ->files()
+    ->in(__DIR__);
 
 return \Symfony\CS\Config\Config::create()
     ->level(Symfony\CS\FixerInterface::PSR2_LEVEL)

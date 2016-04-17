@@ -1,5 +1,8 @@
 Collection of commands to synchronize Github repositories with Crowdin translations
 
+[![Build Status](https://travis-ci.org/akeneo/nelson.svg?branch=master)](https://travis-ci.org/akeneo/nelson)
+
+
 # How it works?
 
 <img align="right" src="nelson.jpg"/>

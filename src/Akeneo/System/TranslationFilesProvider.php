@@ -2,36 +2,50 @@
 
 namespace Akeneo\System;
 
-use Akeneo\TranslationFile;
 use Symfony\Component\Finder\Finder;
 
 /**
  * Class TranslationFilesProvider
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class TranslationFilesProvider
 {
+    /** @var array */
+    protected $finderOptions;
+
+    /** @var string|null */
+    protected $patternSuffix;
+
+    /**
+     * @param array       $finderOptions
+     * @param string|null $patternSuffix
+     */
+    public function __construct(array $finderOptions, $patternSuffix = null)
+    {
+        $this->finderOptions = $finderOptions;
+        $this->patternSuffix = $patternSuffix;
+    }
+
     /**
      * @param string $projectDir
-     * @param string $edition    'community'|'enterprise'
      *
      * @return TranslationFile[]
      */
-    public function provideTranslations($projectDir, $edition)
+    public function provideTranslations($projectDir)
     {
         $finder = new Finder();
-
-        $translationFiles = $finder
-            ->in($projectDir . '/src/')
-            ->notPath('/Oro/')
-            ->path('/Resources\/translations/')
-            ->name('*.en.yml')
-            ->files();
+        $finder->in($projectDir);
+        foreach ($this->finderOptions as $function => $argument) {
+            $finder->$function($argument);
+        }
+        $translationFiles = $finder->files();
 
         $files = [];
         foreach ($translationFiles as $translationFile) {
-            $files[] = new TranslationFile($translationFile->getRealPath(), $projectDir, $edition);
+            $files[] = new TranslationFile($translationFile->getRealPath(), $projectDir, $this->patternSuffix);
         }
 
         return $files;

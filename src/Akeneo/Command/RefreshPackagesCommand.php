@@ -9,7 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Refresh the packages on Crowdin by forcing the build, allows to user to always download a "fresh" package from
  * Crowdin website
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class RefreshPackagesCommand extends ContainerAwareCommand
 {
@@ -19,7 +21,7 @@ class RefreshPackagesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('crowdin:refresh-packages')
+            ->setName('nelson:refresh-packages')
             ->setDescription('Refresh the packages on Crowdin by forcing the build');
     }
 

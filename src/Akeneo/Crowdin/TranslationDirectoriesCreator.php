@@ -3,13 +3,16 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddDirectory;
-use Akeneo\TranslationFile;
+use Akeneo\System\TargetResolver;
+use Akeneo\System\TranslationFile;
 use Psr\Log\LoggerInterface;
 
 /**
  * This class creates all the missing directories of a Crowdin project.
  *
- * @author Pierre Allard <pierre.allard@akeneo.com>
+ * @author    Pierre Allard <pierre.allard@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class TranslationDirectoriesCreator
 {
@@ -19,14 +22,19 @@ class TranslationDirectoriesCreator
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var TargetResolver */
+    protected $targetResolver;
+
     /**
      * @param Client          $client
      * @param LoggerInterface $logger
+     * @param TargetResolver  $targetResolver
      */
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client, LoggerInterface $logger, TargetResolver $targetResolver)
     {
-        $this->client = $client;
-        $this->logger = $logger;
+        $this->client         = $client;
+        $this->logger         = $logger;
+        $this->targetResolver = $targetResolver;
     }
 
     /**
@@ -101,7 +109,12 @@ class TranslationDirectoriesCreator
     {
         $allDirs = [];
         foreach ($files as $file) {
-            $allDirs = array_merge($allDirs, $this->explodeDirectory($file->getTargetDirectory()));
+            $allDirs = array_merge($allDirs, $this->explodeDirectory(
+                $this->targetResolver->getTargetDirectory(
+                    $file->getProjectDir(),
+                    $file->getSource()
+                )
+            ));
         }
         $allDirs = array_unique($allDirs);
         sort($allDirs);

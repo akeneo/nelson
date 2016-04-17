@@ -9,7 +9,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class CrowdinConfiguration
  *
  * @author    Clement Gautier <clement.gautier@akeneo.com>
- * @copyright 2015 Akeneo SAS (http://www.akeneo.com)
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class CrowdinConfiguration implements ConfigurationInterface
@@ -24,35 +24,18 @@ class CrowdinConfiguration implements ConfigurationInterface
         return $builder
             ->root('crowdin')
                 ->children()
+                    ->integerNode('min_translated_progress')
+                        ->isRequired()
+                    ->end()
                     ->arrayNode('download')
                         ->isRequired()
                         ->children()
                             ->scalarNode('base_dir')->isRequired()->end()
-                            ->integerNode('min_translated_progress')
-                                ->isRequired()
-                            ->end()
+
                             ->arrayNode('locale_map')
                                 ->isRequired()
                                 ->useAttributeAsKey('name')
                                 ->prototype('scalar')->end()
-                            ->end()
-                            ->arrayNode('community')
-                                ->isRequired()
-                                ->children()
-                                    ->arrayNode('branches')
-                                        ->isRequired()
-                                        ->prototype('scalar')->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('enterprise')
-                                ->isRequired()
-                                ->children()
-                                    ->arrayNode('branches')
-                                        ->isRequired()
-                                        ->prototype('scalar')->end()
-                                    ->end()
-                                ->end()
                             ->end()
                         ->end()
                     ->end()

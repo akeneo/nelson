@@ -9,7 +9,9 @@ use Github\Client;
 /**
  * Class PullRequestCreator
  *
- * @author Nicolas Dupont <nicolas@akeneo.com>
+ * @author    Nicolas Dupont <nicolas@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class PullRequestCreator
 {
@@ -19,24 +21,37 @@ class PullRequestCreator
     /** @var Client */
     protected $client;
 
+    /** @var string */
+    protected $fork_owner;
+
+    /** @var string */
+    protected $owner;
+
+    /** @var string */
+    protected $repository;
+
     /**
      * @param Executor $executor
      * @param Client   $client
+     * @param string   $fork_owner
+     * @param string   $owner
+     * @param string   $repository
      */
-    public function __construct(Executor $executor, Client $client)
+    public function __construct(Executor $executor, Client $client, $fork_owner, $owner, $repository)
     {
-        $this->executor = $executor;
-        $this->client   = $client;
+        $this->executor   = $executor;
+        $this->client     = $client;
+        $this->fork_owner = $fork_owner;
+        $this->owner      = $owner;
+        $this->repository = $repository;
     }
 
     /**
      * @param string $baseBranch
      * @param string $baseDir
      * @param string $projectDir
-     * @param string $edition
-     * @param string $username
      */
-    public function create($baseBranch, $baseDir, $projectDir, $edition, $username)
+    public function create($baseBranch, $baseDir, $projectDir)
     {
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
         $cmd = sprintf(
@@ -56,10 +71,10 @@ class PullRequestCreator
         $this->executor->execute($cmd);
 
         $this->client->api('pr')->create(
-            'akeneo',
-            'pim-'.$edition.'-dev',
+            $this->owner,
+            $this->repository,
             [
-                'head'  => sprintf('%s:crowdin/%s', $username, $branch),
+                'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
                 'base'  => $baseBranch,
                 'title' => 'Update translations from Crowdin',
                 'body'  => 'Updated on ' . $branch,

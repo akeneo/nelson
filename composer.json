@@ -3,7 +3,7 @@
     "type": "project",
     "description": "Command based translation workflow between Crowdin and Github",
     "tags": ["Crowdin", "Github", "Collaborative", "Translation", "Workflow"],
-    "license": "MIT",
+    "license": "OSL-3.0",
     "authors": [
         {
             "name": "Nicolas Dupont",

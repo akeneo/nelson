@@ -5,7 +5,7 @@ Collection of commands to synchronize Github repositories with Crowdin translati
 
 # How it works?
 
-<img align="right" src="nelson.jpg"/>
+<img align="right" src="nelson.png" width="250"/>
 
 Synchronize its Github repository with Crowdin translations go through several stages.
 

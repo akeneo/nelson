@@ -4,6 +4,9 @@ services:
         calls:
             - ['authenticate', [%github.token%, null, 'http_token']]
 
+    github.console_logger:
+        class: Akeneo\Git\ConsoleLogger
+
     github.cloner:
         class: Akeneo\Git\ProjectCloner
         arguments:

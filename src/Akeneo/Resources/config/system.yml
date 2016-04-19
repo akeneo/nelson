@@ -22,8 +22,8 @@ services:
             - %system.pattern_suffix%
 
     # TODO Move this filename
-    akeneo.system.my_custom_subscriber:
-        class: Akeneo\MyCustomSubscriber
+    nelson.console_logger:
+        class: Akeneo\Nelson\ConsoleLogger
 
     # TODO Move this
     nelson.pull_translations_executor:

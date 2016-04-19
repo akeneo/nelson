@@ -5,6 +5,9 @@ services:
             - %crowdin.project%
             - %crowdin.key%
 
+    crowdin.console_logger:
+        class: Akeneo\Crowdin\ConsoleLogger
+
     crowdin.packages.extractor:
         class: Akeneo\Archive\PackagesExtractor
 

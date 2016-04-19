@@ -119,9 +119,9 @@ class Application extends BaseApplication
     private function registerSubscribers()
     {
         # TODO
-        /** @var \Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher */
         $eventDispatcher = $this->container->get('event_dispatcher');
-        $subscriber = $this->container->get('akeneo.system.my_custom_subscriber');
-        $eventDispatcher->addSubscriber($subscriber);
+        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
     }
 }

@@ -54,4 +54,13 @@ class Events
     const CROWDIN_UPDATE_FILE = 'crowdin_update_file';
 
     const POST_CROWDIN_UPDATE_FILES = 'post_crowdin_update_files';
+
+    // Nelson
+    const PRE_NELSON_PUSH = 'pre_nelson_push';
+
+    const POST_NELSON_PUSH = 'post_nelson_push';
+
+    const PRE_NELSON_PULL = 'pre_nelson_pull';
+
+    const POST_NELSON_PULL = 'post_nelson_pull';
 }

@@ -6,9 +6,11 @@ use Akeneo\Crowdin\TranslationDirectoriesCreator;
 use Akeneo\Crowdin\TranslationFilesCreator;
 use Akeneo\Crowdin\TranslationFilesUpdater;
 use Akeneo\Crowdin\TranslationProjectInfo;
+use Akeneo\Event\Events;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\System\Executor;
 use Akeneo\System\TranslationFilesProvider;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * TODO
@@ -23,6 +25,7 @@ class PushTranslationKeysExecutor
      * @param TranslationFilesUpdater       $filesUpdater
      * @param TranslationFilesProvider      $filesProvider
      * @param Executor                      $systemExecutor
+     * @param EventDispatcherInterface      $eventDispatcher
      */
     public function __construct(
         ProjectCloner $cloner,
@@ -31,7 +34,8 @@ class PushTranslationKeysExecutor
         TranslationFilesCreator $filesCreator,
         TranslationFilesUpdater $filesUpdater,
         TranslationFilesProvider $filesProvider,
-        Executor $systemExecutor
+        Executor $systemExecutor,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->cloner             = $cloner;
         $this->projectInfo        = $projectInfo;
@@ -40,6 +44,7 @@ class PushTranslationKeysExecutor
         $this->filesUpdater       = $filesUpdater;
         $this->filesProvider      = $filesProvider;
         $this->systemExecutor     = $systemExecutor;
+        $this->eventDispatcher    = $eventDispatcher;
     }
 
     /**
@@ -49,11 +54,15 @@ class PushTranslationKeysExecutor
     public function execute($branches, $updateDir)
     {
         foreach ($branches as $baseBranch) {
+            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH);
+
             $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
             $files = $this->filesProvider->provideTranslations($projectDir);
             $this->directoriesCreator->create($files, $this->projectInfo, $baseBranch);
             $this->filesCreator->create($files, $this->projectInfo, $baseBranch);
             $this->filesUpdater->update($files, $baseBranch);
+
+            $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
         }
 
         $this->systemExecutor->execute(sprintf('rm -rf %s', $updateDir));

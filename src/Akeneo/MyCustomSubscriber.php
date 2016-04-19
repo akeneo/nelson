@@ -19,6 +19,9 @@ class MyCustomSubscriber implements EventSubscriberInterface
     /** @var ConsoleOutputInterface */
     protected $output;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct()
     {
         $this->output = new ConsoleOutput();
@@ -32,18 +35,18 @@ class MyCustomSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            Events::PRE_GITHUB_CLONE      => 'preGithubClone',
-            Events::POST_GITHUB_CLONE     => 'postGithubClone',
-            Events::PRE_GITHUB_TRACK      => 'preGithubTrack',
-            Events::POST_GITHUB_TRACK     => 'postGithubTrack',
-            Events::PRE_GITHUB_UPDATE     => 'preGithubUpdate',
-            Events::POST_GITHUB_UPDATE    => 'postGithubUpdate',
-            Events::PRE_GITHUB_CREATE_PR  => 'preGithubCreatePR',
-            Events::POST_GITHUB_CREATE_PR => 'postGithubCreatePR',
-            Events::PRE_CROWDIN_DOWNLOAD  => 'preCrowdinDownload',
-            Events::POST_CROWDIN_DOWNLOAD => 'postCrowdinDownload',
-            Events::PRE_CROWDIN_EXPORT    => 'preCrowdinExport',
-            Events::POST_CROWDIN_EXPORT   => 'postCrowdinExport',
+            Events::PRE_GITHUB_CLONE                => 'preGithubClone',
+            Events::POST_GITHUB_CLONE               => 'postGithubClone',
+            Events::PRE_GITHUB_TRACK                => 'preGithubTrack',
+            Events::POST_GITHUB_TRACK               => 'postGithubTrack',
+            Events::PRE_GITHUB_UPDATE               => 'preGithubUpdate',
+            Events::POST_GITHUB_UPDATE              => 'postGithubUpdate',
+            Events::PRE_GITHUB_CREATE_PR            => 'preGithubCreatePR',
+            Events::POST_GITHUB_CREATE_PR           => 'postGithubCreatePR',
+            Events::PRE_CROWDIN_DOWNLOAD            => 'preCrowdinDownload',
+            Events::POST_CROWDIN_DOWNLOAD           => 'postCrowdinDownload',
+            Events::PRE_CROWDIN_EXPORT              => 'preCrowdinExport',
+            Events::POST_CROWDIN_EXPORT             => 'postCrowdinExport',
             Events::PRE_CROWDIN_CREATE_DIRECTORIES  => 'preCrowdinCreateDirectories',
             Events::CROWDIN_CREATE_DIRECTORY        => 'crowdinCreateDirectory',
             Events::CROWDIN_CREATE_BRANCH           => 'crowdinCreateBranch',
@@ -54,6 +57,10 @@ class MyCustomSubscriber implements EventSubscriberInterface
             Events::PRE_CROWDIN_UPDATE_FILES        => 'preCrowdinUpdateFiles',
             Events::CROWDIN_UPDATE_FILE             => 'crowdinUpdateFile',
             Events::POST_CROWDIN_UPDATE_FILES       => 'postCrowdinUpdateFiles',
+            Events::PRE_NELSON_PULL                 => 'preNelsonPull',
+            Events::POST_NELSON_PULL                => 'postNelsonPush',
+            Events::PRE_NELSON_PUSH                 => 'preNelsonPush',
+            Events::POST_NELSON_PUSH                => 'postNelsonPush',
         ];
     }
 
@@ -177,53 +184,115 @@ class MyCustomSubscriber implements EventSubscriberInterface
         $this->writeSuccess('Packages exported!');
     }
 
+    /**
+     * @param Event $event
+     */
     public function preCrowdinCreateDirectories(Event $event)
     {
         $this->writeComment('Creating Crowdin directories');
     }
 
+    /**
+     * @param Event $event
+     */
     public function crowdinCreateDirectory(Event $event)
     {
         $this->writeComment('Create directory');
     }
 
+    /**
+     * @param Event $event
+     */
     public function crowdinCreateBranch(Event $event)
     {
         $this->writeComment('Create branch');
     }
 
+    /**
+     * @param Event $event
+     */
     public function postCrowdinCreateDirectories(Event $event)
     {
         $this->writeSuccess('Crowdin directories created!');
     }
 
+    /**
+     * @param Event $event
+     */
     public function preCrowdinCreateFiles(Event $event)
     {
         $this->writeComment('Creating files');
     }
 
+    /**
+     * @param Event $event
+     */
     public function crowdinCreateFile(Event $event)
     {
         $this->writeComment('Create file');
     }
 
+    /**
+     * @param Event $event
+     */
     public function postCrowdinCreateFiles(Event $event)
     {
         $this->writeSuccess('Files created!');
     }
 
+    /**
+     * @param Event $event
+     */
     public function preCrowdinUpdateFiles(Event $event)
     {
         $this->writeComment('Updating files');
     }
 
+    /**
+     * @param Event $event
+     */
     public function crowdinUpdateFile(Event $event)
     {
         $this->writeComment('Update file');
     }
 
+    /**
+     * @param Event $event
+     */
     public function postCrowdinUpdateFiles(Event $event)
     {
         $this->writeSuccess('Files updated!');
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function preNelsonPull(Event $event)
+    {
+        $this->writeComment('Pulling translations from Crowdin to Github');
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function postNelsonPull(Event $event)
+    {
+        $this->writeSuccess('Translation pulled!');
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function preNelsonPush(Event $event)
+    {
+        $this->writeComment('Pushing translations from Github to Crowdin');
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function postNelsonPush(Event $event)
+    {
+        $this->writeSuccess('Translation pushed!');
     }
 }

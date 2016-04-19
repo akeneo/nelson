@@ -36,6 +36,7 @@ services:
             - @crowdin.packages.extractor
             - @akeneo.system.translation_files.cleaner
             - @akeneo.system.executor
+            - @event_dispatcher
 
     nelson.push_translation_keys_executor:
         class: Akeneo\Nelson\PushTranslationKeysExecutor
@@ -47,3 +48,4 @@ services:
             - @crowdin.translation_files.updater
             - @akeneo.system.translation_files.provider
             - @akeneo.system.executor
+            - @event_dispatcher

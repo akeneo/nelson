@@ -5,11 +5,13 @@ namespace Akeneo\Nelson;
 use Akeneo\Archive\PackagesExtractor;
 use Akeneo\Crowdin\PackagesDownloader;
 use Akeneo\Crowdin\TranslatedProgressSelector;
+use Akeneo\Event\Events;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
 use Akeneo\System\Executor;
 use Akeneo\System\TranslationFilesCleaner;
 use Github\Exception\ValidationFailedException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * TODO
@@ -24,6 +26,7 @@ class PullTranslationsExecutor
      * @param PackagesExtractor          $extractor
      * @param TranslationFilesCleaner    $translationsCleaner
      * @param Executor                   $systemExecutor
+     * @param EventDispatcherInterface   $eventDispatcher
      */
     public function __construct(
         ProjectCloner $cloner,
@@ -32,7 +35,8 @@ class PullTranslationsExecutor
         TranslatedProgressSelector $status,
         PackagesExtractor $extractor,
         TranslationFilesCleaner $translationsCleaner,
-        Executor $systemExecutor
+        Executor $systemExecutor,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->cloner              = $cloner;
         $this->pullRequestCreator  = $pullRequestCreator;
@@ -41,6 +45,7 @@ class PullTranslationsExecutor
         $this->extractor           = $extractor;
         $this->translationsCleaner = $translationsCleaner;
         $this->systemExecutor      = $systemExecutor;
+        $this->eventDispatcher     = $eventDispatcher;
     }
 
     /**
@@ -59,6 +64,8 @@ class PullTranslationsExecutor
 
         if (count($packages) > 0) {
             foreach ($branches as $baseBranch) {
+                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL);
+
                 $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
                 $this->downloader->download($packages, $options['base_dir'], $baseBranch);
                 $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
@@ -75,6 +82,8 @@ class PullTranslationsExecutor
                         $exception->getMessage()
                     );
                 }
+
+                $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
             }
 
             $this->systemExecutor->execute(sprintf('rm -rf %s', $options['base_dir'] . '/update'));

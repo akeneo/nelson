@@ -7,6 +7,7 @@ use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class PullRequestCreator
@@ -64,9 +65,12 @@ class PullRequestCreator
      */
     public function create($baseBranch, $baseDir, $projectDir)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR);
-
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
+
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent(null, [
+            'name' => $branch,
+            'branch' => $baseBranch
+        ]));
 
         $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
 

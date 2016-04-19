@@ -5,6 +5,7 @@ namespace Akeneo\Nelson;
 use Akeneo\Event\Events;
 use Akeneo\System\AbstractConsoleLogger;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * @author    Pierre Allard <pierre.allard@akeneo.com>
@@ -31,7 +32,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preNelsonPull(Event $event)
     {
-        $this->writeComment('Pulling translations from Crowdin to Github');
+        $this->writeProcessing('Pulling translations from Crowdin to Github');
     }
 
     /**
@@ -45,9 +46,12 @@ class ConsoleLogger extends AbstractConsoleLogger
     /**
      * @param Event $event
      */
-    public function preNelsonPush(Event $event)
+    public function preNelsonPush(GenericEvent $event)
     {
-        $this->writeComment('Pushing translations from Github to Crowdin');
+        $this->writeProcessing(sprintf(
+            'Pushing translations of branch <bold>%s</bold> from Github to Crowdin',
+            $event->getArgument('branch')
+        ));
     }
 
     /**

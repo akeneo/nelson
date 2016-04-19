@@ -20,6 +20,7 @@ class AbstractConsoleLogger implements EventSubscriberInterface
         $this->output = new ConsoleOutput();
         $formatter = $this->output->getFormatter();
         $formatter->setStyle('blink', new OutputFormatterStyle(null, null, array('blink')));
+        $formatter->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
     }
 
     /**
@@ -41,9 +42,17 @@ class AbstractConsoleLogger implements EventSubscriberInterface
     /**
      * @param string $comment
      */
-    protected function writeComment($comment)
+    protected function writeProcessing($comment)
     {
         $this->output->writeln(sprintf('%s <comment>%s<blink>...</blink></comment>', $this->getTime(), $comment));
+    }
+
+    /**
+     * @param $info
+     */
+    protected function writeInfo($info)
+    {
+        $this->output->writeln(sprintf('%s   - <comment>%s</comment>', $this->getTime(), $info));
     }
 
     /**

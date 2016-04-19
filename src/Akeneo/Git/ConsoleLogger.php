@@ -5,6 +5,7 @@ namespace Akeneo\Git;
 use Akeneo\Event\Events;
 use Akeneo\System\AbstractConsoleLogger;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * @author    Pierre Allard <pierre.allard@akeneo.com>
@@ -19,23 +20,28 @@ class ConsoleLogger extends AbstractConsoleLogger
     public static function getSubscribedEvents()
     {
         return [
-            Events::PRE_GITHUB_CLONE                => 'preGithubClone',
-            Events::POST_GITHUB_CLONE               => 'postGithubClone',
-            Events::PRE_GITHUB_TRACK                => 'preGithubTrack',
-            Events::POST_GITHUB_TRACK               => 'postGithubTrack',
-            Events::PRE_GITHUB_UPDATE               => 'preGithubUpdate',
-            Events::POST_GITHUB_UPDATE              => 'postGithubUpdate',
-            Events::PRE_GITHUB_CREATE_PR            => 'preGithubCreatePR',
-            Events::POST_GITHUB_CREATE_PR           => 'postGithubCreatePR',
+            Events::PRE_GITHUB_CLONE       => 'preGithubClone',
+            Events::POST_GITHUB_CLONE      => 'postGithubClone',
+            Events::PRE_GITHUB_SET_BRANCH  => 'preGithubsetBranch',
+            Events::POST_GITHUB_SET_BRANCH => 'postGithubsetBranch',
+            Events::PRE_GITHUB_UPDATE      => 'preGithubUpdate',
+            Events::POST_GITHUB_UPDATE     => 'postGithubUpdate',
+            Events::PRE_GITHUB_CREATE_PR   => 'preGithubCreatePR',
+            Events::POST_GITHUB_CREATE_PR  => 'postGithubCreatePR',
         ];
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function preGithubClone(Event $event)
+    public function preGithubClone(GenericEvent $event)
     {
-        $this->writeComment('Cloning forked repository');
+        $this->writeProcessing(sprintf(
+            'Cloning forked repository <bold>%s/%s</bold> into <bold>%s</bold>',
+            $event->getArgument('fork_owner'),
+            $event->getArgument('repository'),
+            $event->getArgument('project_dir')
+        ));
     }
 
     /**
@@ -47,27 +53,34 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function preGithubTrack(Event $event)
+    public function preGithubSetBranch(GenericEvent $event)
     {
-        $this->writeComment('Tracking forked repository to main repository');
+        $this->writeProcessing(sprintf(
+            'Create the git branch <bold>%s</bold> in the fork repository if it does not exist',
+            $event->getArgument('branch')
+        ));
     }
 
     /**
      * @param Event $event
      */
-    public function postGithubTrack(Event $event)
+    public function postGithubSetBranch(Event $event)
     {
-        $this->writeSuccess('Repository tracked!');
+        $this->writeSuccess('Branch created or existing!');
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function preGithubUpdate(Event $event)
+    public function preGithubUpdate(GenericEvent $event)
     {
-        $this->writeComment('Updating forked repository with latest updates');
+        $this->writeProcessing(sprintf(
+            'Updating forked repository of <bold>%s</bold> with latest updates of <bold>%s</bold>',
+            $event->getArgument('repository'),
+            $event->getArgument('owner')
+        ));
     }
 
     /**
@@ -79,11 +92,15 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function preGithubCreatePR(Event $event)
+    public function preGithubCreatePR(GenericEvent $event)
     {
-        $this->writeComment('Creating Pull Request');
+        $this->writeProcessing(sprintf(
+            'Creating Pull Request <bold>%s</bold> on branch <bold>%s</bold>',
+            $event->getArgument('name'),
+            $event->getArgument('branch')
+        ));
     }
 
     /**

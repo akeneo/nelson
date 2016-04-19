@@ -35,7 +35,7 @@ class PullTranslationsCommand extends ContainerAwareCommand
         $options  = $this->container->getParameter('crowdin.download');
 
         /** @var PullTranslationsExecutor $executor */
-        $executor = $this->container->get('akeneo.nelson.pull_translations_executor');
+        $executor = $this->container->get('nelson.pull_translations_executor');
         $executor->execute($branches, $options);
     }
 }

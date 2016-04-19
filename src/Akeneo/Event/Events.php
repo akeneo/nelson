@@ -14,9 +14,9 @@ class Events
 
     const POST_GITHUB_CLONE = 'post_github_clone';
 
-    const PRE_GITHUB_TRACK = 'pre_github_track';
+    const PRE_GITHUB_SET_BRANCH = 'pre_github_set_branch';
 
-    const POST_GITHUB_TRACK = 'post_github_track';
+    const POST_GITHUB_SET_BRANCH = 'post_github_set_branch';
 
     const PRE_GITHUB_UPDATE = 'pre_github_update';
 

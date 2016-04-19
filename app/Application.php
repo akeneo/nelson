@@ -121,7 +121,7 @@ class Application extends BaseApplication
         # TODO
         $eventDispatcher = $this->container->get('event_dispatcher');
         $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
     }
 }

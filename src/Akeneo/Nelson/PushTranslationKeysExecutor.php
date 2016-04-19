@@ -11,6 +11,7 @@ use Akeneo\Git\ProjectCloner;
 use Akeneo\System\Executor;
 use Akeneo\System\TranslationFilesProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * TODO
@@ -54,7 +55,9 @@ class PushTranslationKeysExecutor
     public function execute($branches, $updateDir)
     {
         foreach ($branches as $baseBranch) {
-            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH);
+            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent(null, [
+                'branch' => $baseBranch
+            ]));
 
             $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
             $files = $this->filesProvider->provideTranslations($projectDir);

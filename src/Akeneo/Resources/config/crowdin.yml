@@ -23,21 +23,21 @@ services:
         class: Akeneo\Crowdin\TranslationFilesUpdater
         arguments:
             - '@crowdin.client'
-            - '@logger'
+            - '@event_dispatcher'
             - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.directories_creator:
         class: Akeneo\Crowdin\TranslationDirectoriesCreator
         arguments:
             - '@crowdin.client'
-            - '@logger'
+            - '@event_dispatcher'
             - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.files_creator:
         class: Akeneo\Crowdin\TranslationFilesCreator
         arguments:
             - '@crowdin.client'
-            - '@logger'
+            - '@event_dispatcher'
             - '@akeneo.system.target_resolver'
 
     crowdin.translation_files.project_info:

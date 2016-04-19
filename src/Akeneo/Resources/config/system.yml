@@ -17,7 +17,33 @@ services:
 
     akeneo.system.translation_files.cleaner:
         class: Akeneo\System\TranslationFilesCleaner
+        arguments:
+            - @akeneo.system.executor
+            - %system.pattern_suffix%
 
     # TODO Move this filename
     akeneo.system.my_custom_subscriber:
         class: Akeneo\MyCustomSubscriber
+
+    # TODO Move this
+    nelson.pull_translations_executor:
+        class: Akeneo\Nelson\PullTranslationsExecutor
+        arguments:
+            - @github.cloner
+            - @github.pull_request_creator
+            - @crowdin.packages.downloader
+            - @crowdin.translated_progress.selector
+            - @crowdin.packages.extractor
+            - @akeneo.system.translation_files.cleaner
+            - @akeneo.system.executor
+
+    nelson.push_translation_keys_executor:
+        class: Akeneo\Nelson\PushTranslationKeysExecutor
+        arguments:
+            - @github.cloner
+            - @crowdin.translation_files.project_info
+            - @crowdin.translation_files.directories_creator
+            - @crowdin.translation_files.files_creator
+            - @crowdin.translation_files.updater
+            - @akeneo.system.translation_files.provider
+            - @akeneo.system.executor

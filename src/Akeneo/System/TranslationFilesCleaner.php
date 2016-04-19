@@ -16,6 +16,22 @@ use Symfony\Component\Finder\Finder;
  */
 class TranslationFilesCleaner
 {
+    /** @var Executor */
+    protected $systemExecutor;
+
+    /** @var string */
+    protected $patternSuffix;
+
+    /**
+     * @param Executor $systemExecutor
+     * @param string   $patternSuffix
+     */
+    public function __construct(Executor $systemExecutor, $patternSuffix)
+    {
+        $this->systemExecutor = $systemExecutor;
+        $this->patternSuffix  = $patternSuffix;
+    }
+
     /**
      * @param array  $localeMap
      * @param string $cleanerDir
@@ -96,5 +112,20 @@ class TranslationFilesCleaner
 
             rename($file, $target);
         }
+    }
+
+    public function moveFiles($cleanerDir, $projectDir)
+    {
+        $this->systemExecutor->execute(sprintf(
+            'cp -r %s%s%s%s* %s%s',
+            $cleanerDir,
+            DIRECTORY_SEPARATOR,
+            $this->patternSuffix,
+            DIRECTORY_SEPARATOR,
+            $projectDir,
+            DIRECTORY_SEPARATOR,
+            $cleanerDir
+        ));
+        $this->systemExecutor->execute(sprintf('rm -rf %s', $cleanerDir));
     }
 }

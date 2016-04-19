@@ -2,6 +2,7 @@
 
 namespace Akeneo\Command;
 
+use Akeneo\Nelson\PushTranslationKeysExecutor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,29 +32,11 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cloner      = $this->container->get('github.cloner');
         $updateDir   = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
-        $projectInfo = $this->container->get('crowdin.translation_files.project_info');
         $branches    = $this->container->getParameter('github.branches');
 
-        foreach ($branches as $baseBranch) {
-            $projectDir = $cloner->cloneProject($updateDir, $baseBranch);
-
-            $files = $this->container
-                ->get('akeneo.system.translation_files.provider')
-                ->provideTranslations($projectDir);
-
-            $this->container
-                ->get('crowdin.translation_files.directories_creator')
-                ->create($files, $projectInfo, $baseBranch);
-
-            $this->container
-                ->get('crowdin.translation_files.files_creator')
-                ->create($files, $projectInfo, $baseBranch);
-
-            $this->container->get('crowdin.translation_files.updater')->update($files, $baseBranch);
-        }
-
-        $this->container->get('akeneo.system.executor')->execute(sprintf('rm -rf %s', $updateDir));
+        /** @var PushTranslationKeysExecutor $executor */
+        $executor = $this->container->get('nelson.push_translation_keys_executor');
+        $executor->execute($branches, $updateDir);
     }
 }

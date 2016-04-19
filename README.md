@@ -15,8 +15,9 @@ Nelson provides a command (`push-translation-keys`) to send new translations to 
 
 Once the keys have been sent, your contributors will have the ability to edit, add and delete new translations in their language.
 
-Next, When the keys have been translated, you must pull them back in your Github repository. You can set an option in this tool to only pull languages that are translated to at least a given percentage (e.g. 90%).
+Next, When the keys have been translated, you must pull them back in your Github repository. 
 This command (`pull-translations`) tells Crowdin to create a package for each language, downloads the packages and checks the differences with your up-to-date repository.
+You can set an option in this tool to only pull languages that are translated to at least a given percentage (e.g. 90%).
 If it detects differences (new translations, deleted translations or modified translations), it automatically creates a new Pull Request on your repository.
 Finally, you have the option to manually accept or refuse the Pull Request, depending on its content. This last command can be automated via a Cron.
 

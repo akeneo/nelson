@@ -3,9 +3,10 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddFile;
+use Akeneo\Event\Events;
 use Akeneo\System\TargetResolver;
 use Akeneo\System\TranslationFile;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This class creates all the missing files of a Crowdin project.
@@ -21,21 +22,25 @@ class TranslationFilesCreator
     /** @var Client */
     protected $client;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
 
     /** @var TargetResolver */
     protected $targetResolver;
 
     /**
-     * @param Client          $client
-     * @param LoggerInterface $logger
+     * @param Client                   $client
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param TargetResolver           $targetResolver
      */
-    public function __construct(Client $client, LoggerInterface $logger, TargetResolver $targetResolver)
-    {
-        $this->client         = $client;
-        $this->logger         = $logger;
-        $this->targetResolver = $targetResolver;
+    public function __construct(
+        Client $client,
+        EventDispatcherInterface $eventDispatcher,
+        TargetResolver $targetResolver
+    ) {
+        $this->client          = $client;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->targetResolver  = $targetResolver;
     }
 
     /**
@@ -47,6 +52,8 @@ class TranslationFilesCreator
      */
     public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
     {
+        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_FILES);
+
         $existingFiles = $projectInfo->getExistingFiles($baseBranch);
         $fileSets = array_chunk($this->filterExistingFiles($files, $existingFiles), self::MAX_UPLOAD);
 
@@ -61,11 +68,16 @@ class TranslationFilesCreator
                     $file->getProjectDir(),
                     $file->getSource()
                 );
+
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE);
+
                 $service->addTranslation($file->getSource(), $target, $file->getPattern());
-                $this->logger->info(sprintf('Create file "%s"', $target));
+                $this->eventDispatcher->info(sprintf('Create file "%s"', $target));
             }
             $service->execute();
         }
+
+        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_FILES);
     }
 
     /**

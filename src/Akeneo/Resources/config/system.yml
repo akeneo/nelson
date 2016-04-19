@@ -9,3 +9,15 @@ services:
         class: Akeneo\System\TargetResolver
         arguments:
             - %system.target_rules%
+
+    akeneo.system.executor:
+        class: Akeneo\System\Executor
+        arguments:
+            - @logger
+
+    akeneo.system.translation_files.cleaner:
+        class: Akeneo\System\TranslationFilesCleaner
+
+    # TODO Move this filename
+    akeneo.system.my_custom_subscriber:
+        class: Akeneo\MyCustomSubscriber

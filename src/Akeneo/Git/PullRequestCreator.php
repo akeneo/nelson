@@ -3,8 +3,10 @@
 
 namespace Akeneo\Git;
 
+use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class PullRequestCreator
@@ -31,19 +33,28 @@ class PullRequestCreator
     protected $repository;
 
     /**
-     * @param Executor $executor
-     * @param Client   $client
-     * @param string   $fork_owner
-     * @param string   $owner
-     * @param string   $repository
+     * @param Executor        $executor
+     * @param Client          $client
+     * @param EventDispatcher $eventDispatcher
+     * @param string          $fork_owner
+     * @param string          $owner
+     * @param string          $repository
      */
-    public function __construct(Executor $executor, Client $client, $fork_owner, $owner, $repository)
-    {
-        $this->executor   = $executor;
-        $this->client     = $client;
-        $this->fork_owner = $fork_owner;
-        $this->owner      = $owner;
-        $this->repository = $repository;
+    public function __construct(
+        Executor $executor,
+        Client $client,
+        EventDispatcher
+        $eventDispatcher,
+        $fork_owner,
+        $owner,
+        $repository
+    ) {
+        $this->executor        = $executor;
+        $this->client          = $client;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->fork_owner      = $fork_owner;
+        $this->owner           = $owner;
+        $this->repository      = $repository;
     }
 
     /**
@@ -53,22 +64,17 @@ class PullRequestCreator
      */
     public function create($baseBranch, $baseDir, $projectDir)
     {
-        $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
-        $cmd = sprintf(
-            'cd %s && ' .
-            'git checkout -b crowdin/%s && ' .
-            'git add .',
-            $projectDir,
-            $branch
-        );
-        $this->executor->execute($cmd);
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR);
 
-        $cmd = sprintf(
-            'cd %s git && git commit -m "[Crowdin] Updated translations" && git push origin crowdin/%s',
-            $projectDir,
-            $branch
-        );
-        $this->executor->execute($cmd);
+        $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
+
+        $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
+
+        $this->executor->execute(sprintf('cd %s && git add .', $projectDir));
+
+        $this->executor->execute(sprintf('cd %s && git commit -m "[Crowdin] Updated translations"', $projectDir));
+
+        $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
         $this->client->api('pr')->create(
             $this->owner,
@@ -81,14 +87,10 @@ class PullRequestCreator
             ]
         );
 
-        $cmd = sprintf('cd %s/ && rm -rf *.zip', $baseDir);
-        $this->executor->execute($cmd);
+        $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
 
-        $cmd = sprintf(
-            'cd %s && ' .
-            'git checkout master',
-            $projectDir
-        );
-        $this->executor->execute($cmd);
+        $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
+
+        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
     }
 }

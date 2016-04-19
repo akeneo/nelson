@@ -3,9 +3,10 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddDirectory;
+use Akeneo\Event\Events;
 use Akeneo\System\TargetResolver;
 use Akeneo\System\TranslationFile;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This class creates all the missing directories of a Crowdin project.
@@ -19,22 +20,25 @@ class TranslationDirectoriesCreator
     /** @var Client */
     protected $client;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
 
     /** @var TargetResolver */
     protected $targetResolver;
 
     /**
-     * @param Client          $client
-     * @param LoggerInterface $logger
-     * @param TargetResolver  $targetResolver
+     * @param Client                   $client
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param TargetResolver           $targetResolver
      */
-    public function __construct(Client $client, LoggerInterface $logger, TargetResolver $targetResolver)
-    {
-        $this->client         = $client;
-        $this->logger         = $logger;
-        $this->targetResolver = $targetResolver;
+    public function __construct(
+        Client $client,
+        EventDispatcherInterface $eventDispatcher,
+        TargetResolver $targetResolver
+    ) {
+        $this->client          = $client;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->targetResolver  = $targetResolver;
     }
 
     /**
@@ -47,22 +51,25 @@ class TranslationDirectoriesCreator
      */
     public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
     {
+        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_DIRECTORIES);
+
         /** @var AddDirectory $service */
         $service = $this->client->api('add-directory');
         $this->createBranchIfNotExists($baseBranch, $projectInfo);
-        $this->logger->info(sprintf('Use branch "%s"', $baseBranch));
         $service->setBranch($baseBranch);
 
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {
-            if (in_array($directory, $existingFolders)) {
-                $this->logger->info(sprintf('Existing directory "%s"', $directory));
-            } else {
+            if (!in_array($directory, $existingFolders)) {
                 $service->setDirectory($directory);
-                $this->logger->info(sprintf('Create directory "%s"', $directory));
+
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY);
+
                 $service->execute();
             }
         }
+
+        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_DIRECTORIES);
     }
 
     /**
@@ -131,7 +138,7 @@ class TranslationDirectoriesCreator
     protected function createBranchIfNotExists($baseBranch, $projectInfo)
     {
         if (!$projectInfo->isBranchCreated($baseBranch)) {
-            $this->logger->info(sprintf('Create branch "%s"', $baseBranch));
+            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH);
 
             /** @var AddDirectory $serviceBranch */
             $serviceBranch = $this->client->api('add-directory');

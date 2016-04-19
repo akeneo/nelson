@@ -1,12 +1,4 @@
 services:
-    akeneo.system.executor:
-        class: Akeneo\System\Executor
-        arguments:
-            - @logger
-
-    akeneo.system.translation_files.cleaner:
-        class: Akeneo\System\TranslationFilesCleaner
-
     logger.handler:
         class: Monolog\Handler\StreamHandler
         arguments:
@@ -16,5 +8,13 @@ services:
     logger:
         class: Monolog\Logger
         arguments:
-            - 'crowdin'
+            - 'nelson'
             - [@logger.handler]
+
+    console_logger:
+        class: Monolog\Logger
+        arguments:
+            - 'nelson'
+
+    event_dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher

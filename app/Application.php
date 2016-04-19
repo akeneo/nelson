@@ -52,6 +52,9 @@ class Application extends BaseApplication
             $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__));
             $loader->load($configFile);
             $this->container->compile();
+
+            # TODO Move this
+            $this->registerSubscribers();
         }
     }
 
@@ -111,5 +114,14 @@ class Application extends BaseApplication
         );
 
         return $input;
+    }
+
+    private function registerSubscribers()
+    {
+        # TODO
+        /** @var \Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher */
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $subscriber = $this->container->get('akeneo.system.my_custom_subscriber');
+        $eventDispatcher->addSubscriber($subscriber);
     }
 }

@@ -12,6 +12,7 @@ services:
         class: Akeneo\Crowdin\PackagesDownloader
         arguments:
             - '@crowdin.client'
+            - '@event_dispatcher'
 
     crowdin.packages.builder:
         class: Akeneo\Crowdin\PackagesBuilder

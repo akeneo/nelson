@@ -9,6 +9,7 @@ services:
         arguments:
             - '@github.client'
             - '@akeneo.system.executor'
+            - '@event_dispatcher'
             - %github.fork_owner%
             - %github.owner%
             - %github.repository%
@@ -18,6 +19,7 @@ services:
         arguments:
             - '@akeneo.system.executor'
             - '@github.client'
+            - '@event_dispatcher'
             - %github.fork_owner%
             - %github.owner%
             - %github.repository%

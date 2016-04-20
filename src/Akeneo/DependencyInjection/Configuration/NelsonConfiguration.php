@@ -12,7 +12,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class SystemConfiguration implements ConfigurationInterface
+class NelsonConfiguration implements ConfigurationInterface
 {
     /**
      * @inheritDoc
@@ -22,7 +22,7 @@ class SystemConfiguration implements ConfigurationInterface
         $builder = new TreeBuilder();
 
         return $builder
-            ->root('system')
+            ->root('nelson')
                 ->children()
                     ->arrayNode('finder_options')
                         ->info('Functions to apply to finder to select original files')

@@ -9,7 +9,6 @@ use Akeneo\Event\Events;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
 use Akeneo\System\Executor;
-use Akeneo\System\TranslationFilesCleaner;
 use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;

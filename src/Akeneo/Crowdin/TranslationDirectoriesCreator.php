@@ -4,8 +4,8 @@ namespace Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddDirectory;
 use Akeneo\Event\Events;
-use Akeneo\System\TargetResolver;
-use Akeneo\System\TranslationFile;
+use Akeneo\Nelson\TargetResolver;
+use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 

@@ -18,3 +18,8 @@ services:
 
     event_dispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
+
+    system.executor:
+        class: Akeneo\System\Executor
+        arguments:
+            - @logger

@@ -11,7 +11,7 @@ services:
         class: Akeneo\Git\ProjectCloner
         arguments:
             - '@github.client'
-            - '@akeneo.system.executor'
+            - '@system.executor'
             - '@event_dispatcher'
             - %github.fork_owner%
             - %github.owner%
@@ -20,7 +20,7 @@ services:
     github.pull_request_creator:
         class: Akeneo\Git\PullRequestCreator
         arguments:
-            - '@akeneo.system.executor'
+            - '@system.executor'
             - '@github.client'
             - '@event_dispatcher'
             - %github.fork_owner%

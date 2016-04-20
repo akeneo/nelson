@@ -26,7 +26,6 @@ class CrowdinExtension extends Extension
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../../Resources/config'));
         $loader->load('crowdin.yml');
-        $loader->load('services.yml');
 
         foreach ($configurations as $key => $configuration) {
             $container->setParameter($this->getAlias() . '.' . $key, $configuration);

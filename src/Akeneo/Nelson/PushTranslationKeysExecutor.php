@@ -9,7 +9,6 @@ use Akeneo\Crowdin\TranslationProjectInfo;
 use Akeneo\Event\Events;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\System\Executor;
-use Akeneo\System\TranslationFilesProvider;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 

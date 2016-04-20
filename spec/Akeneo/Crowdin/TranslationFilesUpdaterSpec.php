@@ -4,8 +4,8 @@ namespace spec\Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\UpdateFile;
 use Akeneo\Crowdin\Client;
-use Akeneo\System\TargetResolver;
-use Akeneo\System\TranslationFile;
+use Akeneo\Nelson\TargetResolver;
+use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;

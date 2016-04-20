@@ -27,7 +27,7 @@ crowdin:
     upload:
         base_dir: /tmp/crowdin-upload
 
-system:
+nelson:
     # These options are passed to a Symfony Finder to find your original translation files.
     # Be careful, only select your origin language files (for example, only *.en.yml files).
     finder_options:

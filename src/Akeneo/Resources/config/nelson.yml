@@ -1,31 +1,24 @@
 services:
-    akeneo.system.translation_files.provider:
-        class: Akeneo\System\TranslationFilesProvider
+    nelson.translation_files.provider:
+        class: Akeneo\Nelson\TranslationFilesProvider
         arguments:
-            - %system.finder_options%
-            - %system.pattern_suffix%
+            - %nelson.finder_options%
+            - %nelson.pattern_suffix%
 
-    akeneo.system.target_resolver:
-        class: Akeneo\System\TargetResolver
+    nelson.target_resolver:
+        class: Akeneo\Nelson\TargetResolver
         arguments:
-            - %system.target_rules%
+            - %nelson.target_rules%
 
-    akeneo.system.executor:
-        class: Akeneo\System\Executor
+    nelson.translation_files.cleaner:
+        class: Akeneo\Nelson\TranslationFilesCleaner
         arguments:
-            - @logger
+            - @system.executor
+            - %nelson.pattern_suffix%
 
-    akeneo.system.translation_files.cleaner:
-        class: Akeneo\System\TranslationFilesCleaner
-        arguments:
-            - @akeneo.system.executor
-            - %system.pattern_suffix%
-
-    # TODO Move this filename
     nelson.console_logger:
         class: Akeneo\Nelson\ConsoleLogger
 
-    # TODO Move this
     nelson.pull_translations_executor:
         class: Akeneo\Nelson\PullTranslationsExecutor
         arguments:
@@ -34,8 +27,8 @@ services:
             - @crowdin.packages.downloader
             - @crowdin.translated_progress.selector
             - @crowdin.packages.extractor
-            - @akeneo.system.translation_files.cleaner
-            - @akeneo.system.executor
+            - @nelson.translation_files.cleaner
+            - @system.executor
             - @event_dispatcher
 
     nelson.push_translation_keys_executor:
@@ -46,6 +39,6 @@ services:
             - @crowdin.translation_files.directories_creator
             - @crowdin.translation_files.files_creator
             - @crowdin.translation_files.updater
-            - @akeneo.system.translation_files.provider
-            - @akeneo.system.executor
+            - @nelson.translation_files.provider
+            - @system.executor
             - @event_dispatcher

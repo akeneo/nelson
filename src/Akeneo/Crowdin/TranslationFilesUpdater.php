@@ -3,9 +3,8 @@
 namespace Akeneo\Crowdin;
 
 use Akeneo\Event\Events;
-use Akeneo\System\TargetResolver;
-use Akeneo\System\TranslationFile;
-use Psr\Log\LoggerInterface;
+use Akeneo\Nelson\TargetResolver;
+use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 

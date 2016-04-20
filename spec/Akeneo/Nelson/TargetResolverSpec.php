@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Akeneo\System;
+namespace spec\Akeneo\Nelson;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -17,7 +17,7 @@ class TargetResolverSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\System\TargetResolver');
+        $this->shouldHaveType('Akeneo\Nelson\TargetResolver');
     }
 
     function it_apply_rules()

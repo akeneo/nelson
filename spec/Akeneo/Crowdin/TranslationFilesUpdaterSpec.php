@@ -8,16 +8,16 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class TranslationFilesUpdaterSpec extends ObjectBehavior
 {
     function let(
         Client $client,
-        LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         TargetResolver $resolver
     ) {
-        $this->beConstructedWith($client, $logger, $resolver);
+        $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
     function it_is_initializable()

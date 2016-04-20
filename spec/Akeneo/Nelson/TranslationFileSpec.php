@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Akeneo\System;
+namespace spec\Akeneo\Nelson;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -18,7 +18,7 @@ class TranslationFileSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\System\TranslationFile');
+        $this->shouldHaveType('Akeneo\Nelson\TranslationFile');
     }
 
     function it_returns_pattern()

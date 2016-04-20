@@ -33,6 +33,8 @@ class Events
 
     const PRE_CROWDIN_DOWNLOAD = 'pre_crowdin_download';
 
+    const CROWDIN_DOWNLOAD = 'crowdin_download';
+
     const POST_CROWDIN_DOWNLOAD = 'post_crowdin_download';
 
     const CROWDIN_CREATE_BRANCH = 'crowdin_create_branch';

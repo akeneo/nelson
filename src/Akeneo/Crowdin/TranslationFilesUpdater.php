@@ -7,6 +7,7 @@ use Akeneo\System\TargetResolver;
 use Akeneo\System\TranslationFile;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class TranslationFilesUpdater
@@ -67,7 +68,9 @@ class TranslationFilesUpdater
                     $file->getSource()
                 );
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE);
+                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent(null, [
+                    'target' => $target
+                ]));
 
                 $service->addTranslation($file->getSource(), $target, $file->getPattern());
             }

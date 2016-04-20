@@ -7,6 +7,7 @@ use Akeneo\Event\Events;
 use Akeneo\System\TargetResolver;
 use Akeneo\System\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * This class creates all the missing directories of a Crowdin project.
@@ -63,7 +64,9 @@ class TranslationDirectoriesCreator
             if (!in_array($directory, $existingFolders)) {
                 $service->setDirectory($directory);
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY);
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent(null, [
+                    'directory' => $directory
+                ]));
 
                 $service->execute();
             }
@@ -138,7 +141,9 @@ class TranslationDirectoriesCreator
     protected function createBranchIfNotExists($baseBranch, $projectInfo)
     {
         if (!$projectInfo->isBranchCreated($baseBranch)) {
-            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH);
+            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent(null, [
+                'branch' => $baseBranch
+            ]));
 
             /** @var AddDirectory $serviceBranch */
             $serviceBranch = $this->client->api('add-directory');

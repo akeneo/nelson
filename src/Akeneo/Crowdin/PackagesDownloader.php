@@ -6,6 +6,7 @@ use Akeneo\Crowdin\Api\Download;
 use Akeneo\Crowdin\Api\Export;
 use Akeneo\Event\Events;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class PackagesDownloader
@@ -80,6 +81,9 @@ class PackagesDownloader
         $serviceDownload = $serviceDownload->setCopyDestination($baseDir);
 
         foreach ($locales as $locale) {
+            $this->eventDispatcher->dispatch(Events::CROWDIN_DOWNLOAD, new GenericEvent(null, [
+                'locale' => $locale
+            ]));
             $serviceDownload->setPackage(sprintf('%s.zip', $locale))->execute();
         }
 

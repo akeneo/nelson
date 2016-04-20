@@ -5,6 +5,7 @@ namespace Akeneo\Crowdin;
 use Akeneo\Event\Events;
 use Akeneo\System\AbstractConsoleLogger;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * @author    Pierre Allard <pierre.allard@akeneo.com>
@@ -29,6 +30,9 @@ class ConsoleLogger extends AbstractConsoleLogger
             Events::PRE_CROWDIN_UPDATE_FILES        => 'preCrowdinUpdateFiles',
             Events::CROWDIN_UPDATE_FILE             => 'crowdinUpdateFile',
             Events::POST_CROWDIN_UPDATE_FILES       => 'postCrowdinUpdateFiles',
+            Events::PRE_CROWDIN_EXPORT              => 'preCrowdinExport',
+            Events::CROWDIN_DOWNLOAD                => 'crowdinDownload',
+            Events::POST_CROWDIN_EXPORT             => 'postCrowdinExport',
         ];
     }
 
@@ -38,6 +42,14 @@ class ConsoleLogger extends AbstractConsoleLogger
     public function preCrowdinDownload(Event $event)
     {
         $this->writeProcessing('Downloading packages from Crowdin');
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function crowdinDownload(GenericEvent $event)
+    {
+        $this->writeInfo(sprintf('Download <bold>%s</bold> package', $event->getArgument('locale')));
     }
 
     /**
@@ -73,19 +85,19 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function crowdinCreateDirectory(Event $event)
+    public function crowdinCreateDirectory(GenericEvent $event)
     {
-        $this->writeInfo('Create directory');
+        $this->writeInfo(sprintf('Create directory <bold>%s</bold>', $event->getArgument('directory')));
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function crowdinCreateBranch(Event $event)
+    public function crowdinCreateBranch(GenericEvent $event)
     {
-        $this->writeInfo('Create branch');
+        $this->writeInfo(sprintf('Create branch <bold>%s</bold>', $event->getArgument('branch')));
     }
 
     /**
@@ -105,11 +117,15 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function crowdinCreateFile(Event $event)
+    public function crowdinCreateFile(GenericEvent $event)
     {
-        $this->writeInfo('Create file');
+        $this->writeInfo(sprintf(
+            'Create file <bold>%s</bold> from <bold>%s</bold>',
+            $event->getArgument('target'),
+            $event->getArgument('source')
+        ));
     }
 
     /**
@@ -129,11 +145,11 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function crowdinUpdateFile(Event $event)
+    public function crowdinUpdateFile(GenericEvent $event)
     {
-        $this->writeInfo('Update file');
+        $this->writeInfo(sprintf('Update file <bold>%s</bold>', $event->getArgument('target')));
     }
 
     /**

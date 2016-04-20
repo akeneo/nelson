@@ -7,6 +7,7 @@ use Akeneo\Event\Events;
 use Akeneo\System\TargetResolver;
 use Akeneo\System\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * This class creates all the missing files of a Crowdin project.
@@ -69,10 +70,12 @@ class TranslationFilesCreator
                     $file->getSource()
                 );
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE);
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent(null, [
+                    'target' => $target,
+                    'source' => $file->getSource()
+                ]));
 
                 $service->addTranslation($file->getSource(), $target, $file->getPattern());
-                $this->eventDispatcher->info(sprintf('Create file "%s"', $target));
             }
             $service->execute();
         }

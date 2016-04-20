@@ -12,6 +12,7 @@ use Akeneo\System\Executor;
 use Akeneo\System\TranslationFilesCleaner;
 use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * TODO
@@ -64,7 +65,9 @@ class PullTranslationsExecutor
 
         if (count($packages) > 0) {
             foreach ($branches as $baseBranch) {
-                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL);
+                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent(null, [
+                    'branch' => $baseBranch
+                ]));
 
                 $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
                 $this->downloader->download($packages, $options['base_dir'], $baseBranch);

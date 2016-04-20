@@ -131,7 +131,7 @@ class ConsoleLogger extends AbstractConsoleLogger
     /**
      * @param Event $event
      */
-    public function postCrowdinCreateFiles(Event $event)
+    public function postCrowdinCreateFile(Event $event)
     {
         $this->writeSuccess('Files created!');
     }

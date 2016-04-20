@@ -28,11 +28,14 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
-    public function preNelsonPull(Event $event)
+    public function preNelsonPull(GenericEvent $event)
     {
-        $this->writeProcessing('Pulling translations from Crowdin to Github');
+        $this->writeProcessing(sprintf(
+            'Pulling translations of branch <bold>%s</bold> from Crowdin to Github',
+            $event->getArgument('branch')
+        ));
     }
 
     /**
@@ -44,12 +47,12 @@ class ConsoleLogger extends AbstractConsoleLogger
     }
 
     /**
-     * @param Event $event
+     * @param GenericEvent $event
      */
     public function preNelsonPush(GenericEvent $event)
     {
         $this->writeProcessing(sprintf(
-            'Pushing translations of branch <bold>%s</bold> from Github to Crowdin',
+            'Pushing translation keys of branch <bold>%s</bold> from Github to Crowdin',
             $event->getArgument('branch')
         ));
     }

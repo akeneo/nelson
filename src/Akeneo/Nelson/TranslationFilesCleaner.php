@@ -34,6 +34,8 @@ class TranslationFilesCleaner
     }
 
     /**
+     * Clean the files before the Pull Request creation
+     *
      * @param array  $localeMap
      * @param string $cleanerDir
      */
@@ -115,6 +117,14 @@ class TranslationFilesCleaner
         }
     }
 
+    /**
+     * Move the cleaned files to the project directories
+     *
+     * @param string $cleanerDir
+     * @param string $projectDir
+     *
+     * @throws \Exception
+     */
     public function moveFiles($cleanerDir, $projectDir)
     {
         $this->systemExecutor->execute(sprintf(
@@ -127,6 +137,7 @@ class TranslationFilesCleaner
             DIRECTORY_SEPARATOR,
             $cleanerDir
         ));
+
         $this->systemExecutor->execute(sprintf('rm -rf %s', $cleanerDir));
     }
 }

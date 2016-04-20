@@ -13,7 +13,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * TODO
+ * This class executes all the steps to push translation keys from Github to Crowdin.
+ *
+ * @author    Pierre Allard <pierre.allard@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class PushTranslationKeysExecutor
 {
@@ -48,6 +52,8 @@ class PushTranslationKeysExecutor
     }
 
     /**
+     * Push translation keys from Github to Crowdin.
+     *
      * @param array $branches
      * @param string $updateDir
      */

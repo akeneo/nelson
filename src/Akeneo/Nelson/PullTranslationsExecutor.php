@@ -14,7 +14,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * TODO
+ * This class executes all the steps to pull translations from Crowdin to Github.
+ *
+ * @author    Pierre Allard <pierre.allard@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class PullTranslationsExecutor
 {
@@ -49,7 +53,7 @@ class PullTranslationsExecutor
     }
 
     /**
-     * TODO Move the $options options into DI
+     * Pull the translations from Crowdin to Github by creating Pull Requests
      *
      * @param $branches
      * @param $options
@@ -74,16 +78,7 @@ class PullTranslationsExecutor
                 $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir);
                 $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
-                try {
-                    $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
-                } catch (ValidationFailedException $exception) {
-                    // TODO Move this
-                    $message = sprintf(
-                        'No PR created for version "%s", message "%s"',
-                        $baseBranch,
-                        $exception->getMessage()
-                    );
-                }
+                $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
 
                 $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
             }

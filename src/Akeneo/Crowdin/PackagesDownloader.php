@@ -52,6 +52,8 @@ class PackagesDownloader
     }
 
     /**
+     * Export a Crowdin package (build it)
+     *
      * @param string $baseBranch
      */
     protected function export($baseBranch)
@@ -67,6 +69,8 @@ class PackagesDownloader
     }
 
     /**
+     * Download a set of packages from a locales list
+     *
      * @param array  $locales
      * @param string $baseDir
      * @param string $baseBranch

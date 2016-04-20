@@ -6,6 +6,7 @@ namespace Akeneo\Git;
 use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
+use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -59,6 +60,8 @@ class PullRequestCreator
     }
 
     /**
+     * Create a new Pull Request
+     *
      * @param string $baseBranch
      * @param string $baseDir
      * @param string $projectDir
@@ -80,16 +83,20 @@ class PullRequestCreator
 
         $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
-        $this->client->api('pr')->create(
-            $this->owner,
-            $this->repository,
-            [
-                'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                'base'  => $baseBranch,
-                'title' => 'Update translations from Crowdin',
-                'body'  => 'Updated on ' . $branch,
-            ]
-        );
+        try {
+            $this->client->api('pr')->create(
+                $this->owner,
+                $this->repository,
+                [
+                    'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                    'base' => $baseBranch,
+                    'title' => 'Update translations from Crowdin',
+                    'body' => 'Updated on ' . $branch,
+                ]
+            );
+        } catch (ValidationFailedException $exception) {
+            // This append when there is no modifications.
+        }
 
         $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
 

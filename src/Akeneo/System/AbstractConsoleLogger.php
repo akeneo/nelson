@@ -7,6 +7,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * This class is an event subscriber and contains methods to display messages on console.
+ *
+ * @author    Pierre Allard <pierre.allard@akeneo.com>
+ * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 class AbstractConsoleLogger implements EventSubscriberInterface
 {
     /** @var ConsoleOutputInterface */
@@ -32,6 +39,8 @@ class AbstractConsoleLogger implements EventSubscriberInterface
     }
 
     /**
+     * Return the time to suffix console messages
+     *
      * @return string
      */
     protected function getTime()
@@ -40,6 +49,8 @@ class AbstractConsoleLogger implements EventSubscriberInterface
     }
 
     /**
+     * Write a processing message
+     *
      * @param string $comment
      */
     protected function writeProcessing($comment)
@@ -48,6 +59,8 @@ class AbstractConsoleLogger implements EventSubscriberInterface
     }
 
     /**
+     * Write an info message
+     *
      * @param $info
      */
     protected function writeInfo($info)
@@ -56,6 +69,8 @@ class AbstractConsoleLogger implements EventSubscriberInterface
     }
 
     /**
+     * Write a success message
+     *
      * @param string $success
      */
     protected function writeSuccess($success)

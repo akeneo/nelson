@@ -31,11 +31,24 @@ class PullTranslationsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->registerSubscribers();
+
         $branches = $this->container->getParameter('github.branches');
         $options  = $this->container->getParameter('crowdin.download');
 
         /** @var PullTranslationsExecutor $executor */
         $executor = $this->container->get('nelson.pull_translations_executor');
         $executor->execute($branches, $options);
+    }
+
+    /**
+     * Manually register subscribers for event dispatcher
+     */
+    protected function registerSubscribers()
+    {
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
     }
 }

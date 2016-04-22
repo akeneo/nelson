@@ -25,6 +25,9 @@ class ProjectCloner
     /** @var Executor */
     protected $executor;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var string */
     protected $fork_owner;
 
@@ -33,9 +36,6 @@ class ProjectCloner
 
     /** @var string */
     protected $repository;
-
-    /** @var EventDispatcherInterface */
-    protected $eventDispatcher;
 
     /**
      * @param Client                   $client
@@ -121,7 +121,7 @@ class ProjectCloner
      */
     protected function cloneUpstream($projectDir)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CLONE, new GenericEvent(null, [
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CLONE, new GenericEvent($this, [
             'fork_owner' => $this->fork_owner,
             'repository' => $this->repository,
             'project_dir' => $projectDir,
@@ -156,7 +156,9 @@ class ProjectCloner
      */
     protected function createBranch($baseBranch, $projectDir)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_SET_BRANCH, new GenericEvent(null, ['branch' => $baseBranch]));
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_SET_BRANCH, new GenericEvent($this, [
+            'branch' => $baseBranch
+        ]));
 
         // Set branch
         $this->executor->execute(sprintf(
@@ -177,7 +179,7 @@ class ProjectCloner
      */
     protected function update($baseBranch, $projectDir)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_UPDATE, new GenericEvent(null, [
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_UPDATE, new GenericEvent($this, [
             'owner'      => $this->owner,
             'repository' => $this->repository
         ]));

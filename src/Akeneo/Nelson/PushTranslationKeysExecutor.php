@@ -60,7 +60,7 @@ class PushTranslationKeysExecutor
     public function execute($branches, $updateDir)
     {
         foreach ($branches as $baseBranch) {
-            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent(null, [
+            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent($this, [
                 'branch' => $baseBranch
             ]));
 

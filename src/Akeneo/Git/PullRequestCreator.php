@@ -7,7 +7,7 @@ use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
 use Github\Exception\ValidationFailedException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -25,6 +25,9 @@ class PullRequestCreator
     /** @var Client */
     protected $client;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var string */
     protected $fork_owner;
 
@@ -35,18 +38,17 @@ class PullRequestCreator
     protected $repository;
 
     /**
-     * @param Executor        $executor
-     * @param Client          $client
-     * @param EventDispatcher $eventDispatcher
-     * @param string          $fork_owner
-     * @param string          $owner
-     * @param string          $repository
+     * @param Executor                 $executor
+     * @param Client                   $client
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param string                   $fork_owner
+     * @param string                   $owner
+     * @param string                   $repository
      */
     public function __construct(
         Executor $executor,
         Client $client,
-        EventDispatcher
-        $eventDispatcher,
+        EventDispatcherInterface $eventDispatcher,
         $fork_owner,
         $owner,
         $repository
@@ -70,7 +72,7 @@ class PullRequestCreator
     {
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
 
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent(null, [
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
             'name' => $branch,
             'branch' => $baseBranch
         ]));

@@ -67,7 +67,7 @@ class TranslationFilesUpdater
                     $file->getSource()
                 );
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent(null, [
+                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent($this, [
                     'target' => $target
                 ]));
 

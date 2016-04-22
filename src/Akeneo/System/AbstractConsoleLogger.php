@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class AbstractConsoleLogger implements EventSubscriberInterface
+abstract class AbstractConsoleLogger implements EventSubscriberInterface
 {
     /** @var ConsoleOutputInterface */
     protected $output;
@@ -28,14 +28,6 @@ class AbstractConsoleLogger implements EventSubscriberInterface
         $formatter = $this->output->getFormatter();
         $formatter->setStyle('blink', new OutputFormatterStyle(null, null, array('blink')));
         $formatter->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents()
-    {
-        return [];
     }
 
     /**

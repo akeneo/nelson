@@ -64,7 +64,7 @@ class TranslationDirectoriesCreator
             if (!in_array($directory, $existingFolders)) {
                 $service->setDirectory($directory);
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent(null, [
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent($this, [
                     'directory' => $directory
                 ]));
 
@@ -141,7 +141,7 @@ class TranslationDirectoriesCreator
     protected function createBranchIfNotExists($baseBranch, $projectInfo)
     {
         if (!$projectInfo->isBranchCreated($baseBranch)) {
-            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent(null, [
+            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent($this, [
                 'branch' => $baseBranch
             ]));
 

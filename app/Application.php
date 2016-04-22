@@ -52,7 +52,6 @@ class Application extends BaseApplication
             $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__));
             $loader->load($configFile);
             $this->container->compile();
-            $this->registerSubscribers();
         }
     }
 
@@ -112,16 +111,5 @@ class Application extends BaseApplication
         );
 
         return $input;
-    }
-
-    /**
-     * Manually register subscribers for event dispatcher
-     */
-    private function registerSubscribers()
-    {
-        $eventDispatcher = $this->container->get('event_dispatcher');
-        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
     }
 }

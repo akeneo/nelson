@@ -68,7 +68,7 @@ class PullTranslationsExecutor
 
         if (count($packages) > 0) {
             foreach ($branches as $baseBranch) {
-                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent(null, [
+                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
                     'branch' => $baseBranch
                 ]));
 

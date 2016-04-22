@@ -9,13 +9,13 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class TranslationFilesCreatorSpec extends ObjectBehavior
 {
     function let(
         Client $client,
-        EventDispatcher $eventDispatcher,
+        EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
         $this->beConstructedWith($client, $eventDispatcher, $resolver);

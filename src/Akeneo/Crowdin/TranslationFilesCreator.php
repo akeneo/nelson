@@ -70,7 +70,7 @@ class TranslationFilesCreator
                     $file->getSource()
                 );
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent(null, [
+                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent($this, [
                     'target' => $target,
                     'source' => $file->getSource()
                 ]));

@@ -34,7 +34,7 @@ You must **never** run the following commands using your main repository, becaus
   $ composer update
 ```
 
-# Create your own configuration
+## Create your own configuration
 
 This package includes an example of configuration located in `app/config.example.yml` that you should adapt according to your settings and save it as `app/config.yml`.
 
@@ -71,3 +71,7 @@ An example of crontab to push new keys every friday and create pull requests eve
 0 4 * * 1 cd /path/to/nelson/ && app/console nelson:pull-translations > /tmp/nelson_pull.log 2>&1
 0 5 * * 1 cd /path/to/nelson/ && app/console nelson:push-translation-keys > /tmp/nelson_push.log 2>&1
 ```
+
+## Copyrights
+
+Thanks to [Bouletmaton](http://www.zanorg.net/bouletmaton/) for the avatar ([bouletcorp.com](http://www.bouletcorp.com/), [zanorg.com](http://www.zanorg.com/))

@@ -27,7 +27,7 @@ crowdin:
     upload:
         base_dir: /tmp/crowdin-upload
 
-system:
+nelson:
     # These options are passed to a Symfony Finder to find your original translation files.
     # Be careful, only select your origin language files (for example, only *.en.yml files).
     finder_options:
@@ -43,3 +43,5 @@ system:
     # Optional: You can put your translations in a folder when you download archive from Crowdin.
     # Can be useful when your Crowdin project is linked to several github repositories.
     pattern_suffix: 'Community'
+    # Optional: log the application executions in this file.
+    log_file: 'app/logs/application.log'

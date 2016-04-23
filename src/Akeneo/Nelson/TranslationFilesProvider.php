@@ -1,6 +1,6 @@
 <?php
 
-namespace Akeneo\System;
+namespace Akeneo\Nelson;
 
 use Symfony\Component\Finder\Finder;
 

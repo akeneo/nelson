@@ -2,9 +2,11 @@
 
 namespace Akeneo\Crowdin;
 
-use Akeneo\System\TargetResolver;
-use Akeneo\System\TranslationFile;
-use Psr\Log\LoggerInterface;
+use Akeneo\Event\Events;
+use Akeneo\Nelson\TargetResolver;
+use Akeneo\Nelson\TranslationFile;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class TranslationFilesUpdater
@@ -23,22 +25,25 @@ class TranslationFilesUpdater
     /** @var Client */
     protected $client;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
 
     /** @var TargetResolver */
     protected $targetResolver;
 
     /**
-     * @param Client          $client
-     * @param LoggerInterface $logger
-     * @param TargetResolver  $targetResolver
+     * @param Client                   $client
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param TargetResolver           $targetResolver
      */
-    public function __construct(Client $client, LoggerInterface $logger, TargetResolver $targetResolver)
-    {
-        $this->client         = $client;
-        $this->logger         = $logger;
-        $this->targetResolver = $targetResolver;
+    public function __construct(
+        Client $client,
+        EventDispatcherInterface $eventDispatcher,
+        TargetResolver $targetResolver
+    ) {
+        $this->client          = $client;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->targetResolver  = $targetResolver;
     }
 
     /**
@@ -47,6 +52,8 @@ class TranslationFilesUpdater
      */
     public function update(array $files, $baseBranch)
     {
+        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_UPDATE_FILES);
+
         $fileSets = array_chunk($files, self::MAX_NB_FILES);
 
         foreach ($fileSets as $fileSet) {
@@ -59,10 +66,16 @@ class TranslationFilesUpdater
                     $file->getProjectDir(),
                     $file->getSource()
                 );
+
+                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent($this, [
+                    'target' => $target
+                ]));
+
                 $service->addTranslation($file->getSource(), $target, $file->getPattern());
-                $this->logger->info(sprintf('Push translation of "%s"', $target));
             }
             $service->execute();
         }
+
+        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_UPDATE_FILES);
     }
 }

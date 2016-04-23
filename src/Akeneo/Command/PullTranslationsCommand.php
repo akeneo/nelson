@@ -2,7 +2,7 @@
 
 namespace Akeneo\Command;
 
-use Github\Exception\ValidationFailedException;
+use Akeneo\Nelson\PullTranslationsExecutor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,60 +31,24 @@ class PullTranslationsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger              = $this->container->get('logger');
-        $cloner              = $this->container->get('github.cloner');
-        $pullRequestCreator  = $this->container->get('github.pull_request_creator');
-        $downloader          = $this->container->get('crowdin.packages.downloader');
-        $status              = $this->container->get('crowdin.translated_progress.selector');
-        $extractor           = $this->container->get('crowdin.packages.extractor');
-        $translationsCleaner = $this->container->get('akeneo.system.translation_files.cleaner');
-        $systemExecutor      = $this->container->get('akeneo.system.executor');
+        $this->registerSubscribers();
 
-        $branches      = $this->container->getParameter('github.branches');
-        $options       = $this->container->getParameter('crowdin.download');
-        $updateDir     = $options['base_dir'] . '/update';
-        $cleanerDir    = $options['base_dir'] . '/clean';
-        $packages      = array_keys($status->packages());
-        $patternSuffix = $this->container->getParameter('system.pattern_suffix');
+        $branches = $this->container->getParameter('github.branches');
+        $options  = $this->container->getParameter('crowdin.download');
 
-        if (count($packages) <= 0) {
-            $output->writeln(sprintf(
-                "There is no packages with minimal translation of %s%%. Nothing to do.",
-                $options['min_translated_progress']
-            ));
-            return 0;
-        }
+        /** @var PullTranslationsExecutor $executor */
+        $executor = $this->container->get('nelson.pull_translations_executor');
+        $executor->execute($branches, $options);
+    }
 
-        foreach ($branches as $baseBranch) {
-            $projectDir = $cloner->cloneProject($updateDir, $baseBranch);
-            $downloader->download($packages, $options['base_dir'], $baseBranch);
-            $extractor->extract($packages, $options['base_dir'], $cleanerDir);
-            $translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir);
-            $systemExecutor->execute(sprintf(
-                'cp -r %s%s%s%s* %s%s',
-                $cleanerDir,
-                DIRECTORY_SEPARATOR,
-                $patternSuffix,
-                DIRECTORY_SEPARATOR,
-                $projectDir,
-                DIRECTORY_SEPARATOR,
-                $cleanerDir
-            ));
-            $systemExecutor->execute(sprintf('rm -rf %s', $cleanerDir));
-
-            try {
-                $pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
-            } catch (ValidationFailedException $exception) {
-                $message = sprintf(
-                    'No PR created for version "%s", message "%s"',
-                    $baseBranch,
-                    $exception->getMessage()
-                );
-                $output->writeln(sprintf('<warning>%s<warning>', $message));
-                $logger->addWarning($message);
-            }
-        }
-
-        $systemExecutor->execute(sprintf('rm -rf %s', $options['base_dir'] . '/update'));
+    /**
+     * Manually register subscribers for event dispatcher
+     */
+    protected function registerSubscribers()
+    {
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
+        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
     }
 }

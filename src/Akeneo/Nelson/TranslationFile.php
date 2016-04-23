@@ -1,6 +1,6 @@
 <?php
 
-namespace Akeneo\System;
+namespace Akeneo\Nelson;
 
 /**
  * Contains information about the file to translate.

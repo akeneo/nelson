@@ -1,7 +1,8 @@
 <?php
 
-namespace Akeneo\System;
+namespace Akeneo\Nelson;
 
+use Akeneo\System\Executor;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
@@ -16,7 +17,25 @@ use Symfony\Component\Finder\Finder;
  */
 class TranslationFilesCleaner
 {
+    /** @var Executor */
+    protected $systemExecutor;
+
+    /** @var string */
+    protected $patternSuffix;
+
     /**
+     * @param Executor $systemExecutor
+     * @param string   $patternSuffix
+     */
+    public function __construct(Executor $systemExecutor, $patternSuffix)
+    {
+        $this->systemExecutor = $systemExecutor;
+        $this->patternSuffix  = $patternSuffix;
+    }
+
+    /**
+     * Clean the files before the Pull Request creation
+     *
      * @param array  $localeMap
      * @param string $cleanerDir
      */
@@ -96,5 +115,29 @@ class TranslationFilesCleaner
 
             rename($file, $target);
         }
+    }
+
+    /**
+     * Move the cleaned files to the project directories
+     *
+     * @param string $cleanerDir
+     * @param string $projectDir
+     *
+     * @throws \Exception
+     */
+    public function moveFiles($cleanerDir, $projectDir)
+    {
+        $this->systemExecutor->execute(sprintf(
+            'cp -r %s%s%s%s* %s%s',
+            $cleanerDir,
+            DIRECTORY_SEPARATOR,
+            $this->patternSuffix,
+            DIRECTORY_SEPARATOR,
+            $projectDir,
+            DIRECTORY_SEPARATOR,
+            $cleanerDir
+        ));
+
+        $this->systemExecutor->execute(sprintf('rm -rf %s', $cleanerDir));
     }
 }

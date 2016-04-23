@@ -5,20 +5,20 @@ namespace spec\Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\AddDirectory;
 use Akeneo\Crowdin\Client;
 use Akeneo\Crowdin\TranslationProjectInfo;
-use Akeneo\System\TargetResolver;
-use Akeneo\System\TranslationFile;
+use Akeneo\Nelson\TargetResolver;
+use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class TranslationDirectoriesCreatorSpec extends ObjectBehavior
 {
     function let(
         Client $client,
-        LoggerInterface $logger,
+        EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
-        $this->beConstructedWith($client, $logger, $resolver);
+        $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
     function it_is_initializable()

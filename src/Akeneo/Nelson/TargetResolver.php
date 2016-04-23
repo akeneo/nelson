@@ -1,6 +1,6 @@
 <?php
 
-namespace Akeneo\System;
+namespace Akeneo\Nelson;
 
 /**
  * Resolves the Crowdin target from the source path

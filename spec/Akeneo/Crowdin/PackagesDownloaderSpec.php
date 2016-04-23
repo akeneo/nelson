@@ -7,12 +7,13 @@ use Akeneo\Crowdin\Api\Export;
 use Akeneo\Crowdin\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PackagesDownloaderSpec extends ObjectBehavior
 {
-    function let(Client $client)
+    function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
-        $this->beConstructedWith($client);
+        $this->beConstructedWith($client, $eventDispatcher);
     }
 
     function it_is_initializable()

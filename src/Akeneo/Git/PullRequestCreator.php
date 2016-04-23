@@ -3,8 +3,12 @@
 
 namespace Akeneo\Git;
 
+use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
+use Github\Exception\ValidationFailedException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class PullRequestCreator
@@ -21,6 +25,9 @@ class PullRequestCreator
     /** @var Client */
     protected $client;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var string */
     protected $fork_owner;
 
@@ -31,22 +38,32 @@ class PullRequestCreator
     protected $repository;
 
     /**
-     * @param Executor $executor
-     * @param Client   $client
-     * @param string   $fork_owner
-     * @param string   $owner
-     * @param string   $repository
+     * @param Executor                 $executor
+     * @param Client                   $client
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param string                   $fork_owner
+     * @param string                   $owner
+     * @param string                   $repository
      */
-    public function __construct(Executor $executor, Client $client, $fork_owner, $owner, $repository)
-    {
-        $this->executor   = $executor;
-        $this->client     = $client;
-        $this->fork_owner = $fork_owner;
-        $this->owner      = $owner;
-        $this->repository = $repository;
+    public function __construct(
+        Executor $executor,
+        Client $client,
+        EventDispatcherInterface $eventDispatcher,
+        $fork_owner,
+        $owner,
+        $repository
+    ) {
+        $this->executor        = $executor;
+        $this->client          = $client;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->fork_owner      = $fork_owner;
+        $this->owner           = $owner;
+        $this->repository      = $repository;
     }
 
     /**
+     * Create a new Pull Request
+     *
      * @param string $baseBranch
      * @param string $baseDir
      * @param string $projectDir
@@ -54,41 +71,58 @@ class PullRequestCreator
     public function create($baseBranch, $baseDir, $projectDir)
     {
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
-        $cmd = sprintf(
-            'cd %s && ' .
-            'git checkout -b crowdin/%s && ' .
-            'git add .',
-            $projectDir,
-            $branch
-        );
-        $this->executor->execute($cmd);
 
-        $cmd = sprintf(
-            'cd %s git && git commit -m "[Crowdin] Updated translations" && git push origin crowdin/%s',
-            $projectDir,
-            $branch
-        );
-        $this->executor->execute($cmd);
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
+            'name' => $branch,
+            'branch' => $baseBranch
+        ]));
+
+        $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
+
+        $this->executor->execute(sprintf('cd %s && git add .', $projectDir));
+
+        $this->executor->execute(sprintf('cd %s && git commit -m "[Crowdin] Updated translations"', $projectDir));
+
+        $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
         $this->client->api('pr')->create(
             $this->owner,
             $this->repository,
             [
-                'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                'base'  => $baseBranch,
+                'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                'base' => $baseBranch,
                 'title' => 'Update translations from Crowdin',
-                'body'  => 'Updated on ' . $branch,
+                'body' => 'Updated on ' . $branch,
             ]
         );
 
-        $cmd = sprintf('cd %s/ && rm -rf *.zip', $baseDir);
-        $this->executor->execute($cmd);
+        $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
 
-        $cmd = sprintf(
-            'cd %s && ' .
-            'git checkout master',
-            $projectDir
-        );
-        $this->executor->execute($cmd);
+        $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
+
+        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
+    }
+
+    /**
+     * Check if current repository have diff, to know if we have to create PR or not.
+     *
+     * @param string $projectDir
+     *
+     * @return bool
+     */
+    public function haveDiff($projectDir)
+    {
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
+
+        $result = $this->executor->execute(sprintf('cd %s && git diff|wc -l', $projectDir), true);
+        $matches = null;
+        preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
+        $diff = intval($matches['diff']);
+
+        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
+            'diff' => $diff
+        ]));
+
+        return intval(0 !== $diff);
     }
 }

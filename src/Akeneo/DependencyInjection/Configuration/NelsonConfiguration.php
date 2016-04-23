@@ -38,6 +38,10 @@ class NelsonConfiguration implements ConfigurationInterface
                         ->info('Add folder to pattern when download archive')
                         ->defaultValue(null)
                     ->end()
+                    ->scalarNode('log_file')
+                        ->info('File where logs are written. Default: app/logs/application.log')
+                        ->defaultValue('app/logs/application.log')
+                    ->end()
                 ->end()
             ->end();
     }

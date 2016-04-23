@@ -78,7 +78,9 @@ class PullTranslationsExecutor
                 $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir);
                 $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
-                $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
+                if ($this->pullRequestCreator->haveDiff($projectDir)) {
+                    $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
+                }
 
                 $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
             }

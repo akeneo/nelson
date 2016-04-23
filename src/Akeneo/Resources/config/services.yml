@@ -2,7 +2,7 @@ services:
     logger.handler:
         class: Monolog\Handler\StreamHandler
         arguments:
-            - app/logs/application.log
+            - %nelson.log_file%
             - 200
 
     logger:
@@ -23,3 +23,4 @@ services:
         class: Akeneo\System\Executor
         arguments:
             - @logger
+            - %nelson.log_file%

@@ -30,6 +30,8 @@ class ConsoleLogger extends AbstractConsoleLogger
             Events::POST_GITHUB_UPDATE     => 'postGithubUpdate',
             Events::PRE_GITHUB_CREATE_PR   => 'preGithubCreatePR',
             Events::POST_GITHUB_CREATE_PR  => 'postGithubCreatePR',
+            Events::PRE_GITHUB_CHECK_DIFF  => 'preGithubCheckDiff',
+            Events::POST_GITHUB_CHECK_DIFF => 'postGithubCheckDiff',
         ];
     }
 
@@ -111,5 +113,21 @@ class ConsoleLogger extends AbstractConsoleLogger
     public function postGithubCreatePR(Event $event)
     {
         $this->writeSuccess('Pull Request created!');
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function preGithubCheckDiff(Event $event)
+    {
+        $this->writeProcessing('Checking git differences with current branch');
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function postGithubCheckDiff(GenericEvent $event)
+    {
+        $this->writeSuccess(sprintf('%s difference(s) found!', $event->getArgument('diff')));
     }
 }

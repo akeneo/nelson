@@ -43,3 +43,5 @@ nelson:
     # Optional: You can put your translations in a folder when you download archive from Crowdin.
     # Can be useful when your Crowdin project is linked to several github repositories.
     pattern_suffix: 'Community'
+    # Optional: log the application executions in this file.
+    log_file: 'app/logs/application.log'

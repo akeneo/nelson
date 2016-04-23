@@ -85,25 +85,44 @@ class PullRequestCreator
 
         $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
-        try {
-            $this->client->api('pr')->create(
-                $this->owner,
-                $this->repository,
-                [
-                    'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                    'base' => $baseBranch,
-                    'title' => 'Update translations from Crowdin',
-                    'body' => 'Updated on ' . $branch,
-                ]
-            );
-        } catch (ValidationFailedException $exception) {
-            // This append when there is no modifications.
-        }
+        $this->client->api('pr')->create(
+            $this->owner,
+            $this->repository,
+            [
+                'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                'base' => $baseBranch,
+                'title' => 'Update translations from Crowdin',
+                'body' => 'Updated on ' . $branch,
+            ]
+        );
 
         $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
 
         $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
+    }
+
+    /**
+     * Check if current repository have diff, to know if we have to create PR or not.
+     *
+     * @param string $projectDir
+     *
+     * @return bool
+     */
+    public function haveDiff($projectDir)
+    {
+        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
+
+        $result = $this->executor->execute(sprintf('cd %s && git diff|wc -l', $projectDir), true);
+        $matches = null;
+        preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
+        $diff = intval($matches['diff']);
+
+        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
+            'diff' => $diff
+        ]));
+
+        return intval(0 !== $diff);
     }
 }

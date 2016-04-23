@@ -28,6 +28,10 @@ class Events
 
     const POST_GITHUB_CREATE_PR = 'post_github_create_pr';
 
+    const PRE_GITHUB_CHECK_DIFF = 'pre_github_check_diff';
+
+    const POST_GITHUB_CHECK_DIFF = 'post_github_check_diff';
+
     // Crowdin
     const PRE_CROWDIN_EXPORT = 'pre_crowdin_export';
 

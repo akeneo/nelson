@@ -103,6 +103,10 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      */
     protected function addBold($message)
     {
-        return str_replace('%s', '<bold>%s</bold>', $message);
+        return str_replace(
+            ['%s', '%d'],
+            ['<bold>%s</bold>', '<bold>%d</bold>'],
+            $message
+        );
     }
 }

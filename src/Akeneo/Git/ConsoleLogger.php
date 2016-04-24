@@ -40,12 +40,11 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubClone(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Cloning forked repository <bold>%s/%s</bold> into <bold>%s</bold>',
+        $this->writeProcessing(Events::PRE_GITHUB_CLONE, [
             $event->getArgument('fork_owner'),
             $event->getArgument('repository'),
             $event->getArgument('project_dir')
-        ));
+        ]);
     }
 
     /**
@@ -53,7 +52,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubClone(Event $event)
     {
-        $this->writeSuccess('Repository cloned!');
+        $this->writeSuccess(Events::POST_GITHUB_CLONE);
     }
 
     /**
@@ -61,10 +60,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubSetBranch(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Create the git branch <bold>%s</bold> in the fork repository if it does not exist',
-            $event->getArgument('branch')
-        ));
+        $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, [$event->getArgument('branch')]);
     }
 
     /**
@@ -72,7 +68,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubSetBranch(Event $event)
     {
-        $this->writeSuccess('Branch created or existing!');
+        $this->writeSuccess(Events::POST_GITHUB_SET_BRANCH);
     }
 
     /**
@@ -80,11 +76,10 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubUpdate(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Updating forked repository of <bold>%s</bold> with latest updates of <bold>%s</bold>',
+        $this->writeProcessing(Events::PRE_GITHUB_UPDATE, [
             $event->getArgument('repository'),
             $event->getArgument('owner')
-        ));
+        ]);
     }
 
     /**
@@ -92,7 +87,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubUpdate(Event $event)
     {
-        $this->writeSuccess('Repository updated!');
+        $this->writeSuccess(Events::POST_GITHUB_UPDATE);
     }
 
     /**
@@ -100,11 +95,10 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubCreatePR(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Creating Pull Request <bold>%s</bold> on branch <bold>%s</bold>',
+        $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, [
             $event->getArgument('name'),
             $event->getArgument('branch')
-        ));
+        ]);
     }
 
     /**
@@ -112,7 +106,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubCreatePR(Event $event)
     {
-        $this->writeSuccess('Pull Request created!');
+        $this->writeSuccess(Events::POST_GITHUB_CREATE_PR);
     }
 
     /**
@@ -120,7 +114,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubCheckDiff(Event $event)
     {
-        $this->writeProcessing('Checking git differences with current branch');
+        $this->writeProcessing(Events::PRE_GITHUB_CHECK_DIFF);
     }
 
     /**
@@ -128,6 +122,6 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubCheckDiff(GenericEvent $event)
     {
-        $this->writeSuccess(sprintf('%s difference(s) found!', $event->getArgument('diff')));
+        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, [$event->getArgument('diff')]);
     }
 }

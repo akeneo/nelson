@@ -5,8 +5,8 @@ namespace Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\Download;
 use Akeneo\Crowdin\Api\Export;
 use Akeneo\Event\Events;
-use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class PackagesDownloader

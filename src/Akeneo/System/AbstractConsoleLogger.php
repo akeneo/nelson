@@ -6,10 +6,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Translation\Loader\YamlFileLoader;
-use Symfony\Component\Translation\MessageSelector;
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * This class is an event subscriber and contains methods to display messages on console.
@@ -23,16 +20,16 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     /** @var ConsoleOutputInterface */
     protected $output;
 
-    /** @var Translator */
+    /** @var TranslatorInterface */
     protected $translator;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct()
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->output = new ConsoleOutput();
-        $this->configureTranslator();
+        $this->translator = $translator;
+        $this->output     = new ConsoleOutput();
 
         $formatter = $this->output->getFormatter();
         $formatter->setStyle('blink', new OutputFormatterStyle(null, null, array('blink')));
@@ -107,21 +104,5 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     protected function addBold($message)
     {
         return str_replace('%s', '<bold>%s</bold>', $message);
-    }
-
-    /**
-     * Configure Translator.
-     *
-     * TODO Put it elsewhere
-     */
-    protected function configureTranslator()
-    {
-        $this->translator = new Translator('fr_FR', new MessageSelector());
-        $this->translator->addLoader('yaml', new YamlFileLoader());
-        $finder = new Finder();
-        $finder->files()->in(dirname(__FILE__) . '/../Resources/translations/')->name('*.yml');
-        foreach ($finder->getIterator() as $file) {
-            $this->translator->addResource('yaml', $file->getPathName(), basename($file->getFileName(), '.yml'));
-        }
     }
 }

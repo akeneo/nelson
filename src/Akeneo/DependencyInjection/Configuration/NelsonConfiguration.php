@@ -42,6 +42,10 @@ class NelsonConfiguration implements ConfigurationInterface
                         ->info('File where logs are written. Default: app/logs/application.log')
                         ->defaultValue('app/logs/application.log')
                     ->end()
+                    ->scalarNode('log_locale')
+                        ->info('Locale for log display.')
+                        ->defaultValue('en_US')
+                    ->end()
                 ->end()
             ->end();
     }

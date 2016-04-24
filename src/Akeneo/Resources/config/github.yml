@@ -6,6 +6,8 @@ services:
 
     github.console_logger:
         class: Akeneo\Git\ConsoleLogger
+        arguments:
+            - '@system.translator'
 
     github.cloner:
         class: Akeneo\Git\ProjectCloner

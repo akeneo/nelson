@@ -40,11 +40,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubClone(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_CLONE, [
-            $event->getArgument('fork_owner'),
-            $event->getArgument('repository'),
-            $event->getArgument('project_dir')
-        ]);
+        $this->writeProcessing(Events::PRE_GITHUB_CLONE, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -60,7 +56,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubSetBranch(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, [$event->getArgument('branch')]);
+        $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -76,10 +72,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubUpdate(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_UPDATE, [
-            $event->getArgument('repository'),
-            $event->getArgument('owner')
-        ]);
+        $this->writeProcessing(Events::PRE_GITHUB_UPDATE, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -95,10 +88,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubCreatePR(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, [
-            $event->getArgument('name'),
-            $event->getArgument('branch')
-        ]);
+        $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -122,6 +112,6 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubCheckDiff(GenericEvent $event)
     {
-        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, [$event->getArgument('diff')]);
+        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, $this->getTranslationParams($event->getArguments()));
     }
 }

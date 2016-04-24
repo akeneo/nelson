@@ -54,11 +54,10 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      */
     protected function writeProcessing($message, $messageParams = [])
     {
-        array_unshift($messageParams, $this->addBold($this->translator->trans($message)));
         $this->output->writeln(sprintf(
             '%s <comment>%s<blink>...</blink></comment>',
             $this->getTime(),
-            call_user_func_array('sprintf', $messageParams)
+            $this->translator->trans($message, $messageParams)
         ));
     }
 
@@ -70,11 +69,10 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      */
     protected function writeInfo($message, $messageParams = [])
     {
-        array_unshift($messageParams, $this->addBold($this->translator->trans($message)));
         $this->output->writeln(sprintf(
             '%s   - <comment>%s</comment>',
             $this->getTime(),
-            call_user_func_array('sprintf', $args)
+            $this->translator->trans($message, $messageParams)
         ));
     }
 
@@ -86,27 +84,27 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      */
     protected function writeSuccess($message, $messageParams = [])
     {
-        array_unshift($messageParams, $this->addBold($this->translator->trans($message)));
         $this->output->writeln(sprintf(
             '%s <info>%s</info>',
             $this->getTime(),
-            call_user_func_array('sprintf', $args)
+            $this->translator->trans($message, $messageParams)
         ));
     }
 
     /**
-     * Add bold format for arguments
+     * Surround translation keys with '%' and bold values
      *
-     * @param string $message
+     * @param $params
      *
-     * @return string
+     * @return array
      */
-    protected function addBold($message)
+    protected function getTranslationParams($params)
     {
-        return str_replace(
-            ['%s', '%d'],
-            ['<bold>%s</bold>', '<bold>%d</bold>'],
-            $message
-        );
+        $result = [];
+        foreach ($params as $key => $value) {
+            $result['%' . $key . '%'] = '<bold>' . $value . '</bold>';
+        }
+
+        return $result;
     }
 }

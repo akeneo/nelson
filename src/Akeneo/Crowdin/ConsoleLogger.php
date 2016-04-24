@@ -51,7 +51,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function crowdinDownload(GenericEvent $event)
     {
-        $this->writeInfo(Events::CROWDIN_DOWNLOAD, [$event->getArgument('locale')]);
+        $this->writeInfo(Events::CROWDIN_DOWNLOAD, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -91,7 +91,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function crowdinCreateDirectory(GenericEvent $event)
     {
-        $this->writeInfo(Events::CROWDIN_CREATE_DIRECTORY, [$event->getArgument('directory')]);
+        $this->writeInfo(Events::CROWDIN_CREATE_DIRECTORY, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -99,7 +99,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function crowdinCreateBranch(GenericEvent $event)
     {
-        $this->writeInfo(Events::CROWDIN_CREATE_BRANCH, [$event->getArgument('branch')]);
+        $this->writeInfo(Events::CROWDIN_CREATE_BRANCH, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -123,10 +123,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function crowdinCreateFile(GenericEvent $event)
     {
-        $this->writeInfo(Events::CROWDIN_CREATE_FILE, [
-            $event->getArgument('target'),
-            $event->getArgument('source')
-        ]);
+        $this->writeInfo(Events::CROWDIN_CREATE_FILE, $this->getTranslationParams($event->getArguments()));
     }
 
     /**
@@ -150,7 +147,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function crowdinUpdateFile(GenericEvent $event)
     {
-        $this->writeInfo(Events::CROWDIN_UPDATE_FILE, [$event->getArgument('target')]);
+        $this->writeInfo(Events::CROWDIN_UPDATE_FILE, $this->getTranslationParams($event->getArguments()));
     }
 
     /**

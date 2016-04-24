@@ -75,5 +75,4 @@ class PushTranslationKeysExecutor
 
         $this->systemExecutor->execute(sprintf('rm -rf %s', $updateDir));
     }
-
 }

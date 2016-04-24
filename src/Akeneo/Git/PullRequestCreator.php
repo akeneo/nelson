@@ -73,7 +73,7 @@ class PullRequestCreator
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
 
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
-            'name' => $branch,
+            'name'   => $branch,
             'branch' => $baseBranch
         ]));
 
@@ -89,10 +89,10 @@ class PullRequestCreator
             $this->owner,
             $this->repository,
             [
-                'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                'base' => $baseBranch,
+                'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                'base'  => $baseBranch,
                 'title' => 'Update translations from Crowdin',
-                'body' => 'Updated on ' . $branch,
+                'body'  => 'Updated on ' . $branch,
             ]
         );
 

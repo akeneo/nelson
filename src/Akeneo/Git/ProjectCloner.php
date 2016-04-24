@@ -122,8 +122,8 @@ class ProjectCloner
     protected function cloneUpstream($projectDir)
     {
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CLONE, new GenericEvent($this, [
-            'fork_owner' => $this->fork_owner,
-            'repository' => $this->repository,
+            'fork_owner'  => $this->fork_owner,
+            'repository'  => $this->repository,
             'project_dir' => $projectDir,
         ]));
 

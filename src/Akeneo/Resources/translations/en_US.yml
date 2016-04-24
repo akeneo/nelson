@@ -1,0 +1,4 @@
+pre_nelson_pull: 'Pulling translations of branch %s from Crowdin to Github'
+post_nelson_pull: 'Translation pulled!'
+pre_nelson_push: 'Pushing translation keys of branch %s from Github to Crowdin'
+post_nelson_push: 'Translation pushed!'

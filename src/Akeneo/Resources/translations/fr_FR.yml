@@ -1,0 +1,4 @@
+pre_nelson_pull: 'Récupération des traductions de la branche %s depuis Crowdin pour Github'
+post_nelson_pull: 'Traductions récupérées!'
+pre_nelson_push: 'Envoi des clés de traduction de la branche %s depuis Github pour Crowdin'
+post_nelson_push: 'Traductions envoyées!'

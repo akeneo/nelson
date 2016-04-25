@@ -34,7 +34,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preNelsonPull(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_NELSON_PULL, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_NELSON_PULL, $event->getArguments());
     }
 
     /**
@@ -50,7 +50,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preNelsonPush(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_NELSON_PUSH, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_NELSON_PUSH, $event->getArguments());
     }
 
     /**

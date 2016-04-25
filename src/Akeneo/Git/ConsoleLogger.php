@@ -40,7 +40,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubClone(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_CLONE, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_GITHUB_CLONE, $event->getArguments());
     }
 
     /**
@@ -56,7 +56,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubSetBranch(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, $event->getArguments());
     }
 
     /**
@@ -72,7 +72,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubUpdate(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_UPDATE, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_GITHUB_UPDATE, $event->getArguments());
     }
 
     /**
@@ -88,7 +88,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preGithubCreatePR(GenericEvent $event)
     {
-        $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, $this->getTranslationParams($event->getArguments()));
+        $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, $event->getArguments());
     }
 
     /**
@@ -112,6 +112,6 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubCheckDiff(GenericEvent $event)
     {
-        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, $this->getTranslationParams($event->getArguments()));
+        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, $event->getArguments());
     }
 }

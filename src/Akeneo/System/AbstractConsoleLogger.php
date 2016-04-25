@@ -57,7 +57,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
         $this->output->writeln(sprintf(
             '%s <comment>%s<blink>...</blink></comment>',
             $this->getTime(),
-            $this->translator->trans($message, $messageParams)
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
 
@@ -72,7 +72,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
         $this->output->writeln(sprintf(
             '%s   - <comment>%s</comment>',
             $this->getTime(),
-            $this->translator->trans($message, $messageParams)
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
 
@@ -87,7 +87,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
         $this->output->writeln(sprintf(
             '%s <info>%s</info>',
             $this->getTime(),
-            $this->translator->trans($message, $messageParams)
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
 
@@ -98,7 +98,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      *
      * @return array
      */
-    protected function getTranslationParams($params)
+    protected function prepareTranslationParams($params)
     {
         $result = [];
         foreach ($params as $key => $value) {

@@ -62,7 +62,7 @@ class TranslationDirectoriesCreator
 
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {
-            if (!in_array($directory, $existingFolders) && '/' !== $directory) {
+            if (!in_array($directory, $existingFolders) && !in_array($directory, ['/', ''])) {
                 $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent($this, [
                     'directory' => $directory,
                     'dry_run'   => $dryRun

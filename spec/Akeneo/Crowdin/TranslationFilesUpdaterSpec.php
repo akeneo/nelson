@@ -39,6 +39,7 @@ class TranslationFilesUpdaterSpec extends ObjectBehavior
         $resolver->getTarget('/tmp/', '/tmp/src/fr.yml')->willReturn('fr.yml');
 
         $updateFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->shouldBeCalled();
+        $updateFileApi->getTranslations()->willReturn(['a_translation']);
         $updateFileApi->execute()->shouldBeCalled();
 
         $this->update([$file], 'master');

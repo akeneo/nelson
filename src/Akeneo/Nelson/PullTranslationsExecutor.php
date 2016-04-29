@@ -62,9 +62,10 @@ class PullTranslationsExecutor
      */
     public function execute($branches, $options)
     {
-        $updateDir     = $options['base_dir'] . '/update';
-        $cleanerDir    = $options['base_dir'] . '/clean';
-        $packages      = array_keys($this->status->packages());
+        $updateDir  = $options['base_dir'] . '/update';
+        $cleanerDir = $options['base_dir'] . '/clean';
+        $packages   = array_keys($this->status->packages());
+        $dryRun     = isset($options['dry_run']) && $options['dry_run'];
 
         if (count($packages) > 0) {
             foreach ($branches as $baseBranch) {
@@ -79,7 +80,7 @@ class PullTranslationsExecutor
                 $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
                 if ($this->pullRequestCreator->haveDiff($projectDir)) {
-                    $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir);
+                    $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir, $dryRun);
                 }
 
                 $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);

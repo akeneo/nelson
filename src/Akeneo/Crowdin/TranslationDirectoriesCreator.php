@@ -49,8 +49,9 @@ class TranslationDirectoriesCreator
      * @param TranslationFile[]      $files
      * @param TranslationProjectInfo $projectInfo
      * @param string                 $baseBranch
+     * @param boolean                $dryRun
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
     {
         $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_DIRECTORIES);
 
@@ -62,13 +63,14 @@ class TranslationDirectoriesCreator
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {
             if (!in_array($directory, $existingFolders) && '/' !== $directory) {
-                $service->setDirectory($directory);
-
                 $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent($this, [
-                    'directory' => $directory
+                    'directory' => $directory,
+                    'dry_run'   => $dryRun
                 ]));
-
-                $service->execute();
+                if (!$dryRun) {
+                    $service->setDirectory($directory);
+                    $service->execute();
+                }
             }
         }
 

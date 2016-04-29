@@ -4,6 +4,7 @@ namespace Akeneo\Command;
 
 use Akeneo\Nelson\PullTranslationsExecutor;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -23,7 +24,8 @@ class PullTranslationsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('nelson:pull-translations')
-            ->setDescription('Fetch new translations from Crowdin and create pull requests to the Github repository');
+            ->setDescription('Fetch new translations from Crowdin and create pull requests to the Github repository')
+            ->addOption('dry-run', 'd', InputOption::VALUE_NONE, "Don't create pull requests in Github");
     }
 
     /**
@@ -35,6 +37,7 @@ class PullTranslationsCommand extends ContainerAwareCommand
 
         $branches = $this->container->getParameter('github.branches');
         $options  = $this->container->getParameter('crowdin.download');
+        $options['dry_run'] = $input->getOption('dry-run');
 
         /** @var PullTranslationsExecutor $executor */
         $executor = $this->container->get('nelson.pull_translations_executor');

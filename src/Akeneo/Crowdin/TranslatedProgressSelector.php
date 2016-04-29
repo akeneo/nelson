@@ -2,7 +2,10 @@
 
 namespace Akeneo\Crowdin;
 
+use Akeneo\Event\Events;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class TranslatedProgressSelector
@@ -16,6 +19,9 @@ class TranslatedProgressSelector
     /** @var Client */
     protected $client;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var int */
     protected $minTranslatedProgress;
 
@@ -23,9 +29,10 @@ class TranslatedProgressSelector
      * @param Client $client
      * @param int    $minTranslatedProgress
      */
-    public function __construct(Client $client, $minTranslatedProgress = 0)
+    public function __construct(Client $client, EventDispatcherInterface $eventDispatcher, $minTranslatedProgress = 0)
     {
         $this->client                = $client;
+        $this->eventDispatcher       = $eventDispatcher;
         $this->minTranslatedProgress = $minTranslatedProgress;
     }
 
@@ -48,6 +55,8 @@ class TranslatedProgressSelector
      */
     public function packages()
     {
+        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_PACKAGES);
+
         $response = $this->client->api('status')->execute();
         $xml = simplexml_load_string($response);
         $codesToImport = [];
@@ -59,6 +68,10 @@ class TranslatedProgressSelector
                 $codesToImport[$code] = $translated_progress;
             }
         }
+
+        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_PACKAGES, new GenericEvent($this, [
+            'count' => count($codesToImport),
+        ]));
 
         return $codesToImport;
     }

@@ -4,6 +4,7 @@ namespace Akeneo\Command;
 
 use Akeneo\Nelson\PushTranslationKeysExecutor;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -24,7 +25,8 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
     {
         $this
             ->setName('nelson:push-translation-keys')
-            ->setDescription('Fetch new translation keys from Github and push the updated files to Crowdin');
+            ->setDescription('Fetch new translation keys from Github and push the updated files to Crowdin')
+            ->addOption('dry-run', 'd', InputOption::VALUE_NONE, "Don't create directories, files nor update it");
     }
 
     /**
@@ -34,12 +36,15 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
     {
         $this->registerSubscribers();
 
-        $updateDir = $this->container->getParameter('crowdin.upload')['base_dir'] . '/update';
+        $options = [
+            'update_dir' => $this->container->getParameter('crowdin.upload')['base_dir'] . '/update',
+            'dry_run'    => $input->getOption('dry-run')
+        ];
         $branches  = $this->container->getParameter('github.branches');
 
         /** @var PushTranslationKeysExecutor $executor */
         $executor = $this->container->get('nelson.push_translation_keys_executor');
-        $executor->execute($branches, $updateDir);
+        $executor->execute($branches, $options);
     }
 
     /**

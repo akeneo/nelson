@@ -53,7 +53,7 @@ class Events
 
     const PRE_CROWDIN_CREATE_FILES = 'pre_crowdin_create_files';
 
-    const CROWDIN_CREATE_FILE =  'crowdin_create_file';
+    const CROWDIN_CREATE_FILE = 'crowdin_create_file';
 
     const POST_CROWDIN_CREATE_FILES = 'post_crowdin_create_files';
 
@@ -62,6 +62,10 @@ class Events
     const CROWDIN_UPDATE_FILE = 'crowdin_update_file';
 
     const POST_CROWDIN_UPDATE_FILES = 'post_crowdin_update_files';
+
+    const PRE_CROWDIN_PACKAGES = 'pre_crowdin_packages';
+
+    const POST_CROWDIN_PACKAGES = 'post_crowdin_packages';
 
     // Nelson
     const PRE_NELSON_PUSH = 'pre_nelson_push';

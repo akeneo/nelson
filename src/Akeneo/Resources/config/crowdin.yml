@@ -55,4 +55,5 @@ services:
         class: Akeneo\Crowdin\TranslatedProgressSelector
         arguments:
             - '@crowdin.client'
+            - '@event_dispatcher'
             - %crowdin.min_translated_progress%

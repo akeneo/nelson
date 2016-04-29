@@ -2,6 +2,7 @@
 
 namespace Akeneo\Crowdin;
 
+use Akeneo\Crowdin\Api\UpdateFile;
 use Akeneo\Event\Events;
 use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
@@ -49,14 +50,16 @@ class TranslationFilesUpdater
     /**
      * @param TranslationFile[] $files
      * @param string            $baseBranch
+     * @param boolean           $dryRun
      */
-    public function update(array $files, $baseBranch)
+    public function update(array $files, $baseBranch, $dryRun = false)
     {
         $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_UPDATE_FILES);
 
         $fileSets = array_chunk($files, self::MAX_NB_FILES);
 
         foreach ($fileSets as $fileSet) {
+            /** @var UpdateFile $service */
             $service = $this->client->api('update-file');
             $service->setBranch($baseBranch);
 
@@ -66,14 +69,18 @@ class TranslationFilesUpdater
                     $file->getProjectDir(),
                     $file->getSource()
                 );
+                if (!$dryRun) {
+                    $service->addTranslation($file->getSource(), $target, $file->getPattern());
+                }
 
                 $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent($this, [
-                    'target' => $target
+                    'target'  => $target,
+                    'dry_run' => $dryRun,
                 ]));
-
-                $service->addTranslation($file->getSource(), $target, $file->getPattern());
             }
-            $service->execute();
+            if (count($service->getTranslations()) > 0) {
+                $service->execute();
+            }
         }
 
         $this->eventDispatcher->dispatch(Events::POST_CROWDIN_UPDATE_FILES);

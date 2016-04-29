@@ -35,6 +35,8 @@ class ConsoleLogger extends AbstractConsoleLogger
             Events::PRE_CROWDIN_EXPORT              => 'preCrowdinExport',
             Events::CROWDIN_DOWNLOAD                => 'crowdinDownload',
             Events::POST_CROWDIN_EXPORT             => 'postCrowdinExport',
+            Events::PRE_CROWDIN_PACKAGES            => 'preCrowdinPackages',
+            Events::POST_CROWDIN_PACKAGES           => 'postCrowdinPackages',
         ];
     }
 
@@ -156,5 +158,19 @@ class ConsoleLogger extends AbstractConsoleLogger
     public function postCrowdinUpdateFiles(Event $event)
     {
         $this->writeSuccess(Events::POST_CROWDIN_UPDATE_FILES);
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function preCrowdinPackages(Event $event) {
+        $this->writeProcessing(Events::PRE_CROWDIN_PACKAGES);
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function postCrowdinPackages(GenericEvent $event) {
+        $this->writeSuccess(Events::POST_CROWDIN_PACKAGES, $event->getArguments());
     }
 }

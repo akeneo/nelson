@@ -54,11 +54,14 @@ class PushTranslationKeysExecutor
     /**
      * Push translation keys from Github to Crowdin.
      *
-     * @param array $branches
-     * @param string $updateDir
+     * @param array  $branches
+     * @param string $options
      */
-    public function execute($branches, $updateDir)
+    public function execute($branches, $options)
     {
+        $updateDir = $options['update_dir'];
+        $dryRun    = $options['dry_run'];
+
         foreach ($branches as $baseBranch) {
             $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent($this, [
                 'branch' => $baseBranch
@@ -66,9 +69,9 @@ class PushTranslationKeysExecutor
 
             $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
             $files = $this->filesProvider->provideTranslations($projectDir);
-            $this->directoriesCreator->create($files, $this->projectInfo, $baseBranch);
-            $this->filesCreator->create($files, $this->projectInfo, $baseBranch);
-            $this->filesUpdater->update($files, $baseBranch);
+            $this->directoriesCreator->create($files, $this->projectInfo, $baseBranch, $dryRun);
+            $this->filesCreator->create($files, $this->projectInfo, $baseBranch, $dryRun);
+            $this->filesUpdater->update($files, $baseBranch, $dryRun);
 
             $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
         }

@@ -56,7 +56,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     {
         $this->output->writeln(sprintf(
             '%s <comment>%s<blink>...</blink></comment>',
-            $this->getTime(),
+            $this->getPrefix($messageParams),
             $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
@@ -71,7 +71,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     {
         $this->output->writeln(sprintf(
             '%s   - <comment>%s</comment>',
-            $this->getTime(),
+            $this->getPrefix($messageParams),
             $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
@@ -86,7 +86,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     {
         $this->output->writeln(sprintf(
             '%s <info>%s</info>',
-            $this->getTime(),
+            $this->getPrefix($messageParams),
             $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
         ));
     }
@@ -106,5 +106,31 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Get formatted string of 'dry-run' info.
+     *
+     * @param boolean $dryRun
+     *
+     * @return string
+     */
+    protected function formatDryRun($dryRun)
+    {
+        return $dryRun ? '<info>[dry-run]</info> ' : '';
+    }
+
+    /**
+     * @param array $messageParams
+     *
+     * @return string
+     */
+    private function getPrefix($messageParams)
+    {
+        return sprintf(
+            '%s%s',
+            $this->getTime(),
+            $this->formatDryRun(isset($messageParams['dry_run']) && $messageParams['dry_run'])
+        );
     }
 }

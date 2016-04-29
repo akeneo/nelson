@@ -112,6 +112,6 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postGithubCheckDiff(GenericEvent $event)
     {
-        $this->writeSuccess(Events::POST_GITHUB_CHECK_DIFF, $event->getArguments());
+        $this->writeSuccess(sprintf('%s difference(s) found!', $event->getArgument('diff')));
     }
 }

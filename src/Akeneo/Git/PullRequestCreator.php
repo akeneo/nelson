@@ -94,7 +94,7 @@ class PullRequestCreator
                 [
                     'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
                     'base'  => $baseBranch,
-                    'title' => 'Update translations from Crowdin',
+                    'title' => 'Update translations from nelson',
                     'body'  => 'Updated on ' . $branch,
                 ]
             );
@@ -118,10 +118,17 @@ class PullRequestCreator
     {
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
 
-        $result = $this->executor->execute(sprintf('cd %s && git diff|wc -l', $projectDir), true);
-        $matches = null;
-        preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
-        $diff = intval($matches['diff']);
+        $commands = [
+            sprintf('cd %s && git diff|wc -l', $projectDir),
+            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l', $projectDir),
+        ];
+        $diff = 0;
+        foreach ($commands as $command) {
+            $result = $this->executor->execute($command, true);
+            $matches = null;
+            preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
+            $diff += intval($matches['diff']);
+        }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
             'diff' => $diff

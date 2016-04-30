@@ -1,0 +1,31 @@
+pre_nelson_pull: 'Récupéaration des traductions de la branche %branch% depuis Crowdin vers Github'
+post_nelson_pull: Traductions récupérées !
+pre_nelson_push: 'Envoi des clés de traductions de la branche %branch% de Github vers Crowdin'
+post_nelson_push: Traductions envoyées !
+pre_crowdin_download: Téléchargement des archives depuis Crowdin
+crowdin_download: "Téléchargement de l'archive %locale%"
+post_crowdin_download: Archives téléchargées !
+pre_crowdin_export: Création des archives depuis Crowdin
+post_crowdin_export: Archives créées !
+pre_crowdin_create_directories: Création des répertoires sur Crowdin
+crowdin_create_directory: 'Crée le répertoire %directory%'
+crowdin_create_branch: 'Crée la branche %branch%'
+post_crowdin_create_directories: Répertoires créés sur Crowdin !
+pre_crowdin_create_files: Création des fichiers
+crowdin_create_file: 'Crée le fichier %target% depuis %source%'
+post_crowdin_create_files: Fichiers créés !
+pre_crowdin_update_files: Mise à jour des fichiers
+crowdin_update_file: 'Met à jour le fichier %target%'
+post_crowdin_update_files: Fichiers mis à jour !
+pre_github_clone: 'Clone le dépôt secondaire %fork_owner%/%repository% dans %project_dir%'
+post_github_clone: Dépôt cloné !
+pre_github_set_branch: "Crée la branche git %branch% dans le dépôt secondaire si elle n'existe pas"
+post_github_set_branch: Branche créée ou déjà existante !
+pre_github_update: 'Mise à jour du dépôt secondaire de %repository% avec les dernières mises à jour de %owner%'
+post_github_update: Dépôt mis à jour !
+pre_github_create_pr: 'Crée une Pull Request %name% sur la branche %branch%'
+post_github_create_pr: Pull Request créée !
+pre_github_check_diff: Vérifie les différences avec la branche courante
+post_github_check_diff: '%diff% différence(s) trouvée(s) !'
+pre_crowdin_packages: Vérifie les archives à mettre à jour
+post_crowdin_packages: '%count% archive(s) trouvée(s) !'

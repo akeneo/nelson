@@ -7,7 +7,7 @@ github:
     fork_owner: crowdin-bot
     # The github token of this user
     token: 123456789abcdef123456789abcdef123456789a
-    # The branches to manage. Default: ['master']
+    # The branches to manage. Use [~] if you don't want branch management. Default: [~]
     branches: ['master', '1.0', '2.0']
 
 crowdin:
@@ -18,14 +18,14 @@ crowdin:
     # You can set a minimum to only pull full-translated languages (from 0 to 100, default: 0)
     min_translated_progress: 0
     download:
-        base_dir: /tmp/crowdin-download
+        base_dir: /tmp/nelson-download
         # By default, specific region languages are removed; mapping is done by the 2 first letters.
         # Insert here special mappings, like this:
         locale_map:
             fr_FR: fr
             fr_BE: fr_BE
     upload:
-        base_dir: /tmp/crowdin-upload
+        base_dir: /tmp/nelson-upload
 
 nelson:
     # These options are passed to a Symfony Finder to find your original translation files.

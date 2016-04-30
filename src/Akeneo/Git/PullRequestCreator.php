@@ -64,14 +64,18 @@ class PullRequestCreator
     /**
      * Create a new Pull Request
      *
-     * @param string  $baseBranch
-     * @param string  $baseDir
-     * @param string  $projectDir
-     * @param boolean $dryRun
+     * @param string|null $baseBranch
+     * @param string      $baseDir
+     * @param string      $projectDir
+     * @param boolean     $dryRun
      */
     public function create($baseBranch, $baseDir, $projectDir, $dryRun = false)
     {
-        $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
+        $branch = $this->getBranchName($baseBranch);
+
+        if (null === $baseBranch) {
+            $baseBranch = 'master';
+        }
 
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
             'name'   => $branch,
@@ -135,5 +139,22 @@ class PullRequestCreator
         ]));
 
         return intval(0 !== $diff);
+    }
+
+    /**
+     * Get the branch name from the pull request creation.
+     *
+     * @param string|null $baseBranch
+     *
+     * @return string
+     */
+    protected function getBranchName($baseBranch)
+    {
+        $branch = (new \DateTime())->format('Y-m-d-H-i');
+        if (null !== $baseBranch) {
+            $branch = sprintf('%s-%s', $baseBranch, $branch);
+        }
+
+        return $branch;
     }
 }

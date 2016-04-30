@@ -137,11 +137,15 @@ class TranslationDirectoriesCreator
     /**
      * Creates the root node for the branch if not exists.
      *
-     * @param string                 $baseBranch
+     * @param string|null            $baseBranch
      * @param TranslationProjectInfo $projectInfo
      */
     protected function createBranchIfNotExists($baseBranch, $projectInfo)
     {
+        if (null === $baseBranch) {
+            return;
+        }
+
         if (!$projectInfo->isBranchCreated($baseBranch)) {
             $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent($this, [
                 'branch' => $baseBranch

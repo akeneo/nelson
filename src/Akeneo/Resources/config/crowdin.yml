@@ -7,6 +7,8 @@ services:
 
     crowdin.console_logger:
         class: Akeneo\Crowdin\ConsoleLogger
+        arguments:
+            - '@system.translator'
 
     crowdin.packages.extractor:
         class: Akeneo\Archive\PackagesExtractor
@@ -53,4 +55,5 @@ services:
         class: Akeneo\Crowdin\TranslatedProgressSelector
         arguments:
             - '@crowdin.client'
+            - '@event_dispatcher'
             - %crowdin.min_translated_progress%

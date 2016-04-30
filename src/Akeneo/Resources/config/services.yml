@@ -24,3 +24,8 @@ services:
         arguments:
             - @logger
             - %nelson.log_file%
+
+    system.translator:
+        class: Akeneo\System\Translator
+        arguments:
+            - %nelson.log_locale%

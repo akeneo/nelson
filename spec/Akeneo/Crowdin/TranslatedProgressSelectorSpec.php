@@ -7,6 +7,7 @@ use Akeneo\Crowdin\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
@@ -38,9 +39,9 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
           </language>
         </status>";
 
-    function let(Client $client)
+    function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
-        $this->beConstructedWith($client, 50);
+        $this->beConstructedWith($client, $eventDispatcher, 50);
     }
 
     function it_is_initializable()

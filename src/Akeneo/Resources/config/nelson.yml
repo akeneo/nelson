@@ -18,6 +18,8 @@ services:
 
     nelson.console_logger:
         class: Akeneo\Nelson\ConsoleLogger
+        arguments:
+            - '@system.translator'
 
     nelson.pull_translations_executor:
         class: Akeneo\Nelson\PullTranslationsExecutor

@@ -34,10 +34,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preNelsonPull(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Pulling translations of branch <bold>%s</bold> from Crowdin to Github',
-            $event->getArgument('branch')
-        ));
+        $this->writeProcessing(Events::PRE_NELSON_PULL, $event->getArguments());
     }
 
     /**
@@ -45,7 +42,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postNelsonPull(Event $event)
     {
-        $this->writeSuccess('Translation pulled!');
+        $this->writeSuccess(Events::POST_NELSON_PULL);
     }
 
     /**
@@ -53,10 +50,7 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function preNelsonPush(GenericEvent $event)
     {
-        $this->writeProcessing(sprintf(
-            'Pushing translation keys of branch <bold>%s</bold> from Github to Crowdin',
-            $event->getArgument('branch')
-        ));
+        $this->writeProcessing(Events::PRE_NELSON_PUSH, $event->getArguments());
     }
 
     /**
@@ -64,6 +58,6 @@ class ConsoleLogger extends AbstractConsoleLogger
      */
     public function postNelsonPush(Event $event)
     {
-        $this->writeSuccess('Translation pushed!');
+        $this->writeSuccess(Events::POST_NELSON_PUSH);
     }
 }

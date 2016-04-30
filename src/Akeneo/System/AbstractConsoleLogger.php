@@ -6,6 +6,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * This class is an event subscriber and contains methods to display messages on console.
@@ -19,12 +20,17 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     /** @var ConsoleOutputInterface */
     protected $output;
 
+    /** @var TranslatorInterface */
+    protected $translator;
+
     /**
      * {@inheritdoc}
      */
-    public function __construct()
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->output = new ConsoleOutput();
+        $this->translator = $translator;
+        $this->output     = new ConsoleOutput();
+
         $formatter = $this->output->getFormatter();
         $formatter->setStyle('blink', new OutputFormatterStyle(null, null, array('blink')));
         $formatter->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
@@ -43,30 +49,88 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     /**
      * Write a processing message
      *
-     * @param string $comment
+     * @param string   $message
+     * @param string[] $messageParams
      */
-    protected function writeProcessing($comment)
+    protected function writeProcessing($message, $messageParams = [])
     {
-        $this->output->writeln(sprintf('%s <comment>%s<blink>...</blink></comment>', $this->getTime(), $comment));
+        $this->output->writeln(sprintf(
+            '%s <comment>%s<blink>...</blink></comment>',
+            $this->getPrefix($messageParams),
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
+        ));
     }
 
     /**
      * Write an info message
      *
-     * @param $info
+     * @param string   $message
+     * @param string[] $messageParams
      */
-    protected function writeInfo($info)
+    protected function writeInfo($message, $messageParams = [])
     {
-        $this->output->writeln(sprintf('%s   - <comment>%s</comment>', $this->getTime(), $info));
+        $this->output->writeln(sprintf(
+            '%s   - <comment>%s</comment>',
+            $this->getPrefix($messageParams),
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
+        ));
     }
 
     /**
      * Write a success message
      *
-     * @param string $success
+     * @param string   $message
+     * @param string[] $messageParams
      */
-    protected function writeSuccess($success)
+    protected function writeSuccess($message, $messageParams = [])
     {
-        $this->output->writeln(sprintf('%s <info>%s</info>', $this->getTime(), $success));
+        $this->output->writeln(sprintf(
+            '%s <info>%s</info>',
+            $this->getPrefix($messageParams),
+            $this->translator->trans($message, $this->prepareTranslationParams($messageParams))
+        ));
+    }
+
+    /**
+     * Surround translation keys with '%' and bold values
+     *
+     * @param $params
+     *
+     * @return array
+     */
+    protected function prepareTranslationParams($params)
+    {
+        $result = [];
+        foreach ($params as $key => $value) {
+            $result['%' . $key . '%'] = '<bold>' . $value . '</bold>';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get formatted string of 'dry-run' info.
+     *
+     * @param boolean $dryRun
+     *
+     * @return string
+     */
+    protected function formatDryRun($dryRun)
+    {
+        return $dryRun ? '<info>[dry-run]</info> ' : '';
+    }
+
+    /**
+     * @param array $messageParams
+     *
+     * @return string
+     */
+    private function getPrefix($messageParams)
+    {
+        return sprintf(
+            '%s%s',
+            $this->getTime(),
+            $this->formatDryRun(isset($messageParams['dry_run']) && $messageParams['dry_run'])
+        );
     }
 }

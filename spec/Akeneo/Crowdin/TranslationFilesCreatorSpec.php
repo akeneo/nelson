@@ -42,6 +42,7 @@ class TranslationFilesCreatorSpec extends ObjectBehavior
 
         $addFileApi->setBranch('master')->shouldBeCalled();
         $addFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->shouldBeCalled();
+        $addFileApi->getTranslations()->willReturn(['a_translation']);
         $addFileApi->execute()->shouldBeCalled();
 
         $this->create([$file], $projectInfo, 'master');

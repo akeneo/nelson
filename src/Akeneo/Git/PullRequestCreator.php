@@ -64,41 +64,45 @@ class PullRequestCreator
     /**
      * Create a new Pull Request
      *
-     * @param string $baseBranch
-     * @param string $baseDir
-     * @param string $projectDir
+     * @param string  $baseBranch
+     * @param string  $baseDir
+     * @param string  $projectDir
+     * @param boolean $dryRun
      */
-    public function create($baseBranch, $baseDir, $projectDir)
+    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false)
     {
         $branch = $baseBranch.'-'.(new \DateTime())->format('Y-m-d-H-i');
 
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
             'name'   => $branch,
-            'branch' => $baseBranch
+            'branch' => $baseBranch,
+            'dryRun' => $dryRun,
         ]));
 
-        $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
+        if (!$dryRun) {
+            $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
 
-        $this->executor->execute(sprintf('cd %s && git add .', $projectDir));
+            $this->executor->execute(sprintf('cd %s && git add .', $projectDir));
 
-        $this->executor->execute(sprintf('cd %s && git commit -m "[Crowdin] Updated translations"', $projectDir));
+            $this->executor->execute(sprintf('cd %s && git commit -m "[Crowdin] Updated translations"', $projectDir));
 
-        $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
+            $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
-        $this->client->api('pr')->create(
-            $this->owner,
-            $this->repository,
-            [
-                'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                'base'  => $baseBranch,
-                'title' => 'Update translations from Crowdin',
-                'body'  => 'Updated on ' . $branch,
-            ]
-        );
+            $this->client->api('pr')->create(
+                $this->owner,
+                $this->repository,
+                [
+                    'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                    'base'  => $baseBranch,
+                    'title' => 'Update translations from nelson',
+                    'body'  => 'Updated on ' . $branch,
+                ]
+            );
 
-        $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
+            $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
 
-        $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
+            $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
+        }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
     }
@@ -114,10 +118,17 @@ class PullRequestCreator
     {
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
 
-        $result = $this->executor->execute(sprintf('cd %s && git diff|wc -l', $projectDir), true);
-        $matches = null;
-        preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
-        $diff = intval($matches['diff']);
+        $commands = [
+            sprintf('cd %s && git diff|wc -l', $projectDir),
+            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l', $projectDir),
+        ];
+        $diff = 0;
+        foreach ($commands as $command) {
+            $result = $this->executor->execute($command, true);
+            $matches = null;
+            preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
+            $diff += intval($matches['diff']);
+        }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
             'diff' => $diff

@@ -97,7 +97,7 @@ class TranslationProjectInfoSpec extends ObjectBehavior
         $client->api('info')->willReturn($infoApi);
         $infoApi->execute()->willReturn(self::XML);
 
-        $this->getExistingFolders('0.0')->shouldReturn([]);
+        $this->getExistingFolders('0.0')->shouldReturn(['']);
     }
 
     function it_returns_existing_folders(
@@ -108,6 +108,7 @@ class TranslationProjectInfoSpec extends ObjectBehavior
         $infoApi->execute()->willReturn(self::XML);
 
         $this->getExistingFolders('master')->shouldReturn([
+            '',
             'Project',
             'Project/YoloBundle'
         ]);

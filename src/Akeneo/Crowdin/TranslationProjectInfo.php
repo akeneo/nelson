@@ -43,13 +43,14 @@ class TranslationProjectInfo
     public function getExistingFolders($baseBranch)
     {
         $rootNode = $this->getInfo();
+        $result   = [''];
 
         $branchNode = $this->getBranchNode($rootNode, $baseBranch);
         if (null !== $branchNode) {
-            return $this->getFolders($branchNode, null);
-        } else {
-            return [];
+            $result = array_merge($result, $this->getFolders($branchNode, null));
         }
+
+        return $result;
     }
 
     /**

@@ -50,8 +50,9 @@ class TranslationFilesCreator
      * @param TranslationFile[]      $files
      * @param TranslationProjectInfo $projectInfo
      * @param string                 $baseBranch
+     * @param boolean                $dryRun
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch)
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
     {
         $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_FILES);
 
@@ -69,15 +70,18 @@ class TranslationFilesCreator
                     $file->getProjectDir(),
                     $file->getSource()
                 );
-
+                if (!$dryRun) {
+                    $service->addTranslation($file->getSource(), $target, $file->getPattern());
+                }
                 $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent($this, [
-                    'target' => $target,
-                    'source' => $file->getSource()
+                    'target'  => $target,
+                    'source'  => $file->getSource(),
+                    'dry_run' => $dryRun,
                 ]));
-
-                $service->addTranslation($file->getSource(), $target, $file->getPattern());
             }
-            $service->execute();
+            if (count($service->getTranslations()) > 0) {
+                $service->execute();
+            }
         }
 
         $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_FILES);

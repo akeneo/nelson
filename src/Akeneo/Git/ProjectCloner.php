@@ -72,10 +72,14 @@ class ProjectCloner
      *
      * @return string The path of the cloned project
      */
-    public function cloneProject($baseDir, $baseBranch = 'master')
+    public function cloneProject($baseDir, $baseBranch = null)
     {
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
+        }
+
+        if (null === $baseBranch) {
+            $baseBranch = 'master';
         }
 
         $projectDir = sprintf('%s%s%s', $baseDir, DIRECTORY_SEPARATOR, $this->repository);
@@ -174,8 +178,8 @@ class ProjectCloner
     /**
      * Update the forked repository with latest updates
      *
-     * @param $baseBranch
-     * @param $projectDir
+     * @param string|null $baseBranch
+     * @param string      $projectDir
      */
     protected function update($baseBranch, $projectDir)
     {

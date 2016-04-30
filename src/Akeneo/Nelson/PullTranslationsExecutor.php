@@ -70,7 +70,7 @@ class PullTranslationsExecutor
         if (count($packages) > 0) {
             foreach ($branches as $baseBranch) {
                 $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
-                    'branch' => $baseBranch
+                    'branch' => (null === $baseBranch) ? 'master' : $baseBranch
                 ]));
 
                 $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);

@@ -39,7 +39,7 @@ class GithubConfiguration implements ConfigurationInterface
                     ->arrayNode('branches')
                         ->info('List of the branches to pull')
                         ->prototype('scalar')->end()
-                        ->defaultValue(['master'])
+                        ->defaultValue([null])
                     ->end()
                 ->end()
             ->end();

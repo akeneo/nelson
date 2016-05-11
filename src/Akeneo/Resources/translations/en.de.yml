@@ -1,0 +1,31 @@
+pre_nelson_pull: 'Übersetzungen des Branches %branch% werden aus Crowdin in Github gezogen'
+post_nelson_pull: Übersetzung gezogen!
+pre_nelson_push: 'Übermittlung der Übersetzungs-Schlüssel des Branches %branch% von Github nach Crowdin'
+post_nelson_push: Übersetzung übermittelt!
+pre_crowdin_download: Download der Pakete von Crowdin
+crowdin_download: '%locale%-Paket herunterladen'
+post_crowdin_download: Pakete heruntergeladen!
+pre_crowdin_export: Exportieren der Pakete aus Crowdin
+post_crowdin_export: Pakete exportiert!
+pre_crowdin_create_directories: Crowdin Verzeichnisse werden erstellt
+crowdin_create_directory: 'Verzeichnis %directory% erstellen'
+crowdin_create_branch: 'Branch %branch% erstellen'
+post_crowdin_create_directories: Crowdin Verzeichnisse erstellt!
+pre_crowdin_create_files: Dateien werden erstellt
+crowdin_create_file: 'Datei %target% aus %source% wird erstellt'
+post_crowdin_create_files: Dateien erstellt!
+pre_crowdin_update_files: Dateien werden aktualisiert
+crowdin_update_file: 'Update der Datei %target%'
+post_crowdin_update_files: Dateien aktualisiert!
+pre_github_clone: 'Forked Repository %fork_owner%/%repository% wird in %project_dir% geklont'
+post_github_clone: Repository geklont!
+pre_github_set_branch: 'Den Git Branch %branch% im Repository Fork erstellen, wenn es noch nicht vorhanden ist'
+post_github_set_branch: Branch erstellt oder bereits vorhanden!
+pre_github_update: 'Fork Repository von %repository% wird mit den neuesten Updates von %owner% aktualisiert'
+post_github_update: Repository aktualisiert!
+pre_github_create_pr: 'Pull-Request %name% wird auf Branch %branch% erstellt'
+post_github_create_pr: Pull-Request erstellt!
+pre_github_check_diff: Überprüfung auf Unterschiede im Git mit aktuellem Branch
+post_github_check_diff: '%diff% Unterschiede gefunden!'
+pre_crowdin_packages: Überprüfung der Pakete zur Aktualisierung
+post_crowdin_packages: '%count% Paket(e) gefunden!'

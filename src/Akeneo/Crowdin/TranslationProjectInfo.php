@@ -69,7 +69,7 @@ class TranslationProjectInfo
         if (null !== $branchNode) {
             return $this->getFiles($branchNode, null);
         } else {
-            return [];
+            return $this->getFiles($rootNode, null);
         }
     }
 

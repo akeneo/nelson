@@ -65,14 +65,17 @@ class TranslationFile
         }
         $dirName = dirname($targetPath);
         $baseName = basename($targetPath);
-        $filename = '%file_name%';
+        $filename = '%file_name%.';
 
         $matches = null;
-        // If filename looks like 'translations.en.yml', it generates a pattern to remove the 'en' part.
-        if (preg_match('/^(?P<filename>\w+)\.[A-Za-z]{2}.\w+$/', $baseName, $matches)) {
+        if (preg_match('/^(?P<filename>\w+\.)[A-Za-z]{2}.\w+$/', $baseName, $matches)) {
+            // If filename looks like 'translations.en.yml', it generates a pattern to remove the 'en' part.
             $filename = $matches['filename'];
+        } elseif (preg_match('/^[A-Za-z]{2}.\w+$/', $baseName, $matches)) {
+            // If filename looks like 'en.yml', generates a pattern to remove all but locale.
+            $filename = '';
         }
 
-        return '/'. $dirName . '/' . $filename . '.%locale_with_underscore%.%file_extension%';
+        return '/'. $dirName . '/' . $filename . '%locale_with_underscore%.%file_extension%';
     }
 }

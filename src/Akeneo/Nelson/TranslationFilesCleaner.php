@@ -2,8 +2,11 @@
 
 namespace Akeneo\Nelson;
 
+use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use SplFileInfo;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -20,17 +23,31 @@ class TranslationFilesCleaner
     /** @var Executor */
     protected $systemExecutor;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var string */
     protected $patternSuffix;
 
+    /** @var array */
+    protected $finderOptions;
+
     /**
-     * @param Executor $systemExecutor
-     * @param string   $patternSuffix
+     * @param Executor                 $systemExecutor
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param string                   $patternSuffix
+     * @param array                    $finderOptions
      */
-    public function __construct(Executor $systemExecutor, $patternSuffix)
-    {
-        $this->systemExecutor = $systemExecutor;
-        $this->patternSuffix  = $patternSuffix;
+    public function __construct(
+        Executor $systemExecutor,
+        EventDispatcherInterface $eventDispatcher,
+        $patternSuffix,
+        $finderOptions
+    ) {
+        $this->systemExecutor  = $systemExecutor;
+        $this->patternSuffix   = $patternSuffix;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->finderOptions   = $finderOptions;
     }
 
     /**
@@ -38,8 +55,9 @@ class TranslationFilesCleaner
      *
      * @param array  $localeMap
      * @param string $cleanerDir
+     * @param string $projectDir
      */
-    public function cleanFiles(array $localeMap, $cleanerDir)
+    public function cleanFiles(array $localeMap, $cleanerDir, $projectDir)
     {
         $finder = new Finder();
         $translatedFiles = $finder->in($cleanerDir)->files();
@@ -113,6 +131,11 @@ class TranslationFilesCleaner
                 $pathInfo['extension']
             );
 
+            $this->eventDispatcher->dispatch(Events::NELSON_RENAME, new GenericEvent($this, [
+                'from' => $file,
+                'to'   => $target
+            ]));
+
             rename($file, $target);
         }
     }
@@ -127,16 +150,39 @@ class TranslationFilesCleaner
      */
     public function moveFiles($cleanerDir, $projectDir)
     {
-        $this->systemExecutor->execute(sprintf(
-            'cp -r %s%s%s%s* %s%s',
+        $fullCleanerDir = sprintf(
+            '%s%s%s',
             $cleanerDir,
             DIRECTORY_SEPARATOR,
-            $this->patternSuffix,
-            DIRECTORY_SEPARATOR,
-            $projectDir,
-            DIRECTORY_SEPARATOR,
-            $cleanerDir
-        ));
+            $this->patternSuffix
+        );
+
+        $cleanerFinder = new Finder();
+        $cleanerFinder->in($fullCleanerDir)->files();
+
+        foreach ($cleanerFinder as $file) {
+            $relativePath = substr($file->getPath(), strlen($fullCleanerDir));
+            $projectFinder = new Finder();
+            $fullProjectDir = $projectDir . DIRECTORY_SEPARATOR . $relativePath;
+            $filename = substr($file->getFilename(), 0, strpos($file->getFilename(), '.'));
+
+            $projectFinder
+                ->in($fullProjectDir)
+                ->name($this->finderOptions['name'])
+                ->name($filename . '.*')
+                ->files();
+            if ($projectFinder->count() > 0) {
+                $this->systemExecutor->execute(sprintf(
+                    'cp %s %s',
+                    $file->getPathname(),
+                    $fullProjectDir
+                ));
+            } else {
+                $this->eventDispatcher->dispatch(Events::NELSON_DROP_USELESS, new GenericEvent($this, [
+                    'file' => $file->getPathname()
+                ]));
+            }
+        }
 
         $this->systemExecutor->execute(sprintf('rm -rf %s', $cleanerDir));
     }

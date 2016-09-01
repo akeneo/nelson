@@ -14,7 +14,9 @@ services:
         class: Akeneo\Nelson\TranslationFilesCleaner
         arguments:
             - @system.executor
+            - @event_dispatcher
             - %nelson.pattern_suffix%
+            - %nelson.finder_options%
 
     nelson.console_logger:
         class: Akeneo\Nelson\ConsoleLogger

@@ -75,4 +75,8 @@ class Events
     const PRE_NELSON_PULL = 'pre_nelson_pull';
 
     const POST_NELSON_PULL = 'post_nelson_pull';
+
+    const NELSON_RENAME = 'nelson_rename';
+
+    const NELSON_DROP_USELESS = 'nelson_drop_useless';
 }

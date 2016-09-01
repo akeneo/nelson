@@ -9,7 +9,6 @@ use Akeneo\Event\Events;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
 use Akeneo\System\Executor;
-use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -76,7 +75,7 @@ class PullTranslationsExecutor
                 $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
                 $this->downloader->download($packages, $options['base_dir'], $baseBranch);
                 $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
-                $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir);
+                $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir, $projectDir);
                 $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
                 if ($this->pullRequestCreator->haveDiff($projectDir)) {

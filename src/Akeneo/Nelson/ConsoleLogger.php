@@ -22,10 +22,12 @@ class ConsoleLogger extends AbstractConsoleLogger
     public static function getSubscribedEvents()
     {
         return [
-            Events::PRE_NELSON_PULL  => 'preNelsonPull',
-            Events::POST_NELSON_PULL => 'postNelsonPush',
-            Events::PRE_NELSON_PUSH  => 'preNelsonPush',
-            Events::POST_NELSON_PUSH => 'postNelsonPush',
+            Events::PRE_NELSON_PULL     => 'preNelsonPull',
+            Events::POST_NELSON_PULL    => 'postNelsonPush',
+            Events::PRE_NELSON_PUSH     => 'preNelsonPush',
+            Events::POST_NELSON_PUSH    => 'postNelsonPush',
+            Events::NELSON_RENAME       => 'nelsonRename',
+            Events::NELSON_DROP_USELESS => 'nelsonDropUseless',
         ];
     }
 
@@ -59,5 +61,21 @@ class ConsoleLogger extends AbstractConsoleLogger
     public function postNelsonPush(Event $event)
     {
         $this->writeSuccess(Events::POST_NELSON_PUSH);
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function nelsonRename(GenericEvent $event)
+    {
+        $this->writeSuccess(Events::NELSON_RENAME, $event->getArguments());
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function nelsonDropUseless(GenericEvent $event)
+    {
+        $this->writeSuccess(Events::NELSON_DROP_USELESS, $event->getArguments());
     }
 }

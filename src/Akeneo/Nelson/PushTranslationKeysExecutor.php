@@ -54,28 +54,56 @@ class PushTranslationKeysExecutor
     /**
      * Push translation keys from Github to Crowdin.
      *
-     * @param array  $branches
-     * @param string $options
+     * @param array|null $branches [githubBranch => crowdinFolder] or [branch]
+     *                        where branch is the same name between Github and Crowdin folder
+     * @param string     $options
      */
     public function execute($branches, $options)
     {
         $updateDir = $options['update_dir'];
-        $dryRun    = $options['dry_run'];
+        $isMapped  = $this->isArrayAssociative($branches);
 
-        foreach ($branches as $baseBranch) {
-            $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent($this, [
-                'branch' => (null === $baseBranch ? 'master' : $baseBranch)
-            ]));
-
-            $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
-            $files = $this->filesProvider->provideTranslations($projectDir);
-            $this->directoriesCreator->create($files, $this->projectInfo, $baseBranch, $dryRun);
-            $this->filesCreator->create($files, $this->projectInfo, $baseBranch, $dryRun);
-            $this->filesUpdater->update($files, $baseBranch, $dryRun);
-
-            $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
+        foreach ($branches as $githubBranch => $crowdinFolder) {
+            if (!$isMapped) {
+                $githubBranch = $crowdinFolder;
+            }
+            $this->pushTranslations($githubBranch, $crowdinFolder, $options);
         }
 
         $this->systemExecutor->execute(sprintf('rm -rf %s', $updateDir));
+    }
+
+    /**
+     * @param string $githubBranch
+     * @param string $crowdinFolder
+     * @param array  $options
+     */
+    protected function pushTranslations($githubBranch, $crowdinFolder, array $options)
+    {
+        $updateDir = $options['update_dir'];
+        $dryRun    = $options['dry_run'];
+
+        $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent($this, [
+            'githubBranch'  => (null === $githubBranch ? 'master' : $githubBranch),
+            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
+        ]));
+
+        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
+        $files = $this->filesProvider->provideTranslations($projectDir);
+        $this->directoriesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
+        $this->filesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
+        $this->filesUpdater->update($files, $crowdinFolder, $dryRun);
+
+        $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
+    }
+
+    /**
+     * @param array $array
+     *
+     * @return bool
+     */
+    protected function isArrayAssociative(array $array)
+    {
+        return count(array_filter(array_keys($array), 'is_string')) > 0;
     }
 }

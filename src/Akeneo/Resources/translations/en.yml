@@ -1,6 +1,6 @@
-pre_nelson_pull: 'Pulling translations of branch %branch% from Crowdin to Github'
+pre_nelson_pull: 'Pulling translations of %crowdinFolder% folder from Crowdin to %githubBranch% Github branch'
 post_nelson_pull: 'Translation pulled!'
-pre_nelson_push: 'Pushing translation keys of branch %branch% from Github to Crowdin'
+pre_nelson_push: 'Pushing translation keys of branch %%githubBranch%% from Github %crowdinFolder% folder to Crowdin'
 post_nelson_push: 'Translation pushed!'
 pre_crowdin_download: 'Downloading packages from Crowdin'
 crowdin_download: 'Download %locale% package'

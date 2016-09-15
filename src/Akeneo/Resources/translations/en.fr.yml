@@ -1,6 +1,6 @@
-pre_nelson_pull: 'Récupération des traductions de la branche %branch% depuis Crowdin vers Github'
+pre_nelson_pull: 'Récupération des traductions du dossier %crowdinFolder% depuis Crowdin vers le branche %githubBranch% de Github'
 post_nelson_pull: Traductions récupérées !
-pre_nelson_push: 'Envoi des clés de traductions de la branche %branch% de Github vers Crowdin'
+pre_nelson_push: 'Envoi des clés de traductions de la branche %githubBranch% de Github vers le dossier %crowdinFolder% Crowdin'
 post_nelson_push: Traductions envoyées !
 pre_crowdin_download: Téléchargement des archives depuis Crowdin
 crowdin_download: "Téléchargement de l'archive %locale%"

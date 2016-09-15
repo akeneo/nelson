@@ -7,7 +7,10 @@ github:
     fork_owner: crowdin-bot
     # The github token of this user
     token: 123456789abcdef123456789abcdef123456789a
-    # The branches to manage. Use [~] if you don't want branch management. Default: [~]
+    # The branches to manage.
+    # {'githubBranch':'crowdinFolder'} or [branch]
+    # Where branch is the same name between Github and Crowdin folder
+    # Use [~] if you don't want branch management. Default: [~]
     branches: ['master', '1.0', '2.0']
 
 crowdin:

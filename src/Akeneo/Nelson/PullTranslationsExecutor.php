@@ -54,38 +54,65 @@ class PullTranslationsExecutor
     /**
      * Pull the translations from Crowdin to Github by creating Pull Requests
      *
-     * @param $branches
-     * @param $options
-     *
-     * @throws \Exception
+     * @param array|null $branches The branches to manage.
+     *                             [githubBranch => crowdinFolder] or [branch] or null
+     *                             Where branch is the same name between Github and Crowdin folder
+     * @param array      $options
      */
-    public function execute($branches, $options)
+    public function execute($branches, array $options)
     {
-        $updateDir  = $options['base_dir'] . '/update';
-        $cleanerDir = $options['base_dir'] . '/clean';
-        $packages   = array_keys($this->status->packages());
-        $dryRun     = isset($options['dry_run']) && $options['dry_run'];
+        $packages = array_keys($this->status->packages());
+        $isMapped = $this->isArrayAssociative($branches);
 
         if (count($packages) > 0) {
-            foreach ($branches as $baseBranch) {
-                $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
-                    'branch' => (null === $baseBranch) ? 'master' : $baseBranch
-                ]));
-
-                $projectDir = $this->cloner->cloneProject($updateDir, $baseBranch);
-                $this->downloader->download($packages, $options['base_dir'], $baseBranch);
-                $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
-                $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir, $projectDir);
-                $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
-
-                if ($this->pullRequestCreator->haveDiff($projectDir)) {
-                    $this->pullRequestCreator->create($baseBranch, $options['base_dir'], $projectDir, $dryRun);
+            foreach ($branches as $githubBranch => $crowdinFolder) {
+                if (!$isMapped) {
+                    $githubBranch = $crowdinFolder;
                 }
-
-                $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
+                $this->pullTranslations($githubBranch, $crowdinFolder, $packages, $options);
             }
 
             $this->systemExecutor->execute(sprintf('rm -rf %s', $options['base_dir'] . '/update'));
         }
+    }
+
+    /**
+     * @param string $githubBranch
+     * @param string $crowdinFolder
+     * @param string $packages
+     * @param array  $options
+     */
+    protected function pullTranslations($githubBranch, $crowdinFolder, array $packages, array $options)
+    {
+        $updateDir  = $options['base_dir'] . '/update';
+        $cleanerDir = $options['base_dir'] . '/clean';
+        $dryRun     = isset($options['dry_run']) && $options['dry_run'];
+
+        $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
+            'githubBranch'  => (null === $githubBranch ? 'master' : $githubBranch),
+            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
+        ]));
+
+        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
+        $this->downloader->download($packages, $options['base_dir'], $crowdinFolder);
+        $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
+        $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir, $projectDir);
+        $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
+
+        if ($this->pullRequestCreator->haveDiff($projectDir)) {
+            $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
+        }
+
+        $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
+    }
+
+    /**
+     * @param array $array
+     *
+     * @return bool
+     */
+    protected function isArrayAssociative(array $array)
+    {
+        return count(array_filter(array_keys($array), 'is_string')) > 0;
     }
 }

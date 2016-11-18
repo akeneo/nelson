@@ -61,14 +61,15 @@ class PullTranslationsExecutor
      */
     public function execute($branches, array $options)
     {
-        $packages = array_keys($this->status->packages());
         $isMapped = $this->isArrayAssociative($branches);
 
-        if (count($packages) > 0) {
-            foreach ($branches as $githubBranch => $crowdinFolder) {
-                if (!$isMapped) {
-                    $githubBranch = $crowdinFolder;
-                }
+        foreach ($branches as $githubBranch => $crowdinFolder) {
+            if (!$isMapped) {
+                $githubBranch = $crowdinFolder;
+            }
+            $packages = array_keys($this->status->packages(true, $crowdinFolder));
+
+            if (count($packages) > 0) {
                 $this->pullTranslations($githubBranch, $crowdinFolder, $packages, $options);
             }
 
@@ -79,7 +80,7 @@ class PullTranslationsExecutor
     /**
      * @param string $githubBranch
      * @param string $crowdinFolder
-     * @param string $packages
+     * @param array  $packages
      * @param array  $options
      */
     protected function pullTranslations($githubBranch, $crowdinFolder, array $packages, array $options)

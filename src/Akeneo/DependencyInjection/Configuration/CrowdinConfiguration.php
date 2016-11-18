@@ -46,6 +46,11 @@ class CrowdinConfiguration implements ConfigurationInterface
                             ->scalarNode('base_dir')->isRequired()->end()
                         ->end()
                     ->end()
+                    ->arrayNode('folders')
+                        ->info('List of the folders used for min translation computation')
+                        ->prototype('scalar')->end()
+                        ->defaultValue([null])
+                    ->end()
                 ->end()
             ->end();
     }

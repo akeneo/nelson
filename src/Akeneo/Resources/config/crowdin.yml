@@ -57,3 +57,5 @@ services:
             - '@crowdin.client'
             - '@event_dispatcher'
             - %crowdin.min_translated_progress%
+            - %crowdin.folders%
+            - %github.branches%

@@ -2,16 +2,18 @@
 
 namespace spec\Akeneo\Crowdin;
 
+use Akeneo\Crowdin\Api\LanguageStatus;
 use Akeneo\Crowdin\Api\Status;
 use Akeneo\Crowdin\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
-    const XML = "
+    const XML_STATUS = "
       <status>
           <language>
             <name>Afrikaans</name>
@@ -39,9 +41,34 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
           </language>
         </status>";
 
+    const XML_LANGUAGE_STATUS = "
+      <status>
+        <files>
+          <item>
+            <node_type>branch</node_type>
+            <id>29812</id>
+            <name>master</name>
+            <files>
+              <item>
+                <node_type>directory</node_type>
+                <id>29827</id>
+                <name>a_folder</name>
+                <phrases>7</phrases>
+                <translated>0</translated>
+                <approved>100</approved>
+                <words>32</words>
+                <words_translated>0</words_translated>
+                <words_approved>0</words_approved>
+              </item>
+            </files>
+          </item>
+        </files>
+      </status>
+    ";
+
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
-        $this->beConstructedWith($client, $eventDispatcher, 50);
+        $this->beConstructedWith($client, $eventDispatcher, 50, ['a_folder'], ['master']);
     }
 
     function it_is_initializable()
@@ -52,12 +79,20 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
     function it_displays_packages(
         $client,
         OutputInterface $output,
-        Status $statusApi
+        Status $statusApi,
+        LanguageStatus $languageStatusApi,
+        OutputFormatterInterface $formatter
     ) {
+        $output->getFormatter()->willReturn($formatter);
+        $output->write("Languages exported for master branch (50%):", true)->shouldBeCalled();
+        $output->writeln(Argument::any())->shouldBeCalled();
+        $output->write(Argument::any())->shouldBeCalled();
         $client->api('status')->willReturn($statusApi);
-        $statusApi->execute()->willReturn(self::XML);
-        $output->write('fr (90%)', true)->shouldBeCalled();
-        $output->write('af (10%)', true)->shouldNotBeCalled();
+        $statusApi->execute()->willReturn(self::XML_STATUS);
+        $client->api('language-status')->willReturn($languageStatusApi);
+        $languageStatusApi->setLanguage('af')->shouldBeCalled();
+        $languageStatusApi->setLanguage('fr')->shouldBeCalled();
+        $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
         $this->display($output);
     }
 }

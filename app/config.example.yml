@@ -20,6 +20,9 @@ crowdin:
     key: 123456789abcdef123456789abcdef12
     # You can set a minimum to only pull full-translated languages (from 0 to 100, default: 0)
     min_translated_progress: 0
+    # Only the folders listed below are used to compute the minimal translations. If you don't want this
+    # feature, use ~ instead, it will compute the minimal translation with all the available folders.
+    folders: ['a_folder', 'b_folder']
     download:
         base_dir: /tmp/nelson-download
         # By default, specific region languages are removed; mapping is done by the 2 first letters.

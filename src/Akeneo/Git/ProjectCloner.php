@@ -157,12 +157,20 @@ class ProjectCloner
      *
      * @param $baseBranch
      * @param $projectDir
+     * @throws \Exception
      */
     protected function createBranch($baseBranch, $projectDir)
     {
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_SET_BRANCH, new GenericEvent($this, [
             'branch' => $baseBranch
         ]));
+
+        // If the branch does not exist on the fork repository
+        try {
+            $this->executor->execute(sprintf('cd %s && git rev-parse --verify remotes/origin/%s', $projectDir, $baseBranch));
+        } catch (\Exception $e) {
+            $this->executor->execute(sprintf('cd %s && git fetch upstream && git checkout %s && git push origin %s', $projectDir, $baseBranch, $baseBranch));
+        }
 
         // Set branch
         $this->executor->execute(sprintf(

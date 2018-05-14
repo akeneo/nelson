@@ -104,8 +104,6 @@ class PullRequestCreator
             );
 
             $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
-
-            $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
         }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);

@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  fpm:
+    image: akeneo/fpm:php-7.1
+    environment:
+      COMPOSER_HOME: '/home/docker/.composer'
+      PHP_IDE_CONFIG: 'serverName=nelson-cli'
+      PHP_XDEBUG_IDE_KEY: 'XDEBUG_IDE_KEY'
+      XDEBUG_CONFIG: 'remote_host=172.17.0.1'
+    user: docker
+    volumes:
+      - ./:/srv/nelson
+      - ~/.composer:/home/docker/.composer
+    working_dir: /srv/nelson
+    networks:
+      - akeneo
+
+networks:
+  akeneo: ~

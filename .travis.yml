@@ -1,8 +1,6 @@
 language: php
 php:
-    - "5.5"
-    - "5.6"
-    - "7.0"
+    - "7.1"
 
 sudo: false
 
@@ -13,12 +11,10 @@ cache:
 before_install:
     - phpenv config-rm xdebug.ini;
     - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - composer self-update --no-interaction
 
 install:
     - composer update --prefer-dist --no-interaction
-    - curl http://get.sensiolabs.org/php-cs-fixer.phar -o php-cs-fixer
 
 script:
     - bin/phpspec run
-    - php php-cs-fixer fix --dry-run -v --diff --config-file=.php_cs.php
+    - bin/php-cs-fixer fix --dry-run -v --diff --config=.php_cs.php

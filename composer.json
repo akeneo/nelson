@@ -15,20 +15,20 @@
         }
     ],
     "require": {
-        "php": ">=5.4.4",
-        "symfony/console": "2.7.3",
-        "symfony/yaml": "2.7.3",
-        "symfony/finder": "2.7.3",
-        "symfony/config": "^2.7",
+        "php": ">=7.1",
+        "symfony/console": "^2.8",
+        "symfony/yaml": "^2.8",
+        "symfony/finder": "^2.8",
+        "symfony/config": "^2.8",
         "monolog/monolog": "~1.0",
         "akeneo/crowdin-api": "1.0.0-alpha7",
         "knplabs/github-api": "1.4.14",
-        "symfony/dependency-injection": "^2.7",
-        "symfony/translation": "^2.7"
+        "symfony/dependency-injection": "^2.8",
+        "symfony/translation": "^2.8"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.5.*",
-        "fabpot/php-cs-fixer": "^1.11"
+        "phpspec/phpspec": "^3.4",
+        "friendsofphp/php-cs-fixer": "^2.2"
     },
     "autoload": {
         "psr-0": {"Akeneo\\": "src/"}

@@ -5,6 +5,7 @@ namespace spec\Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\LanguageStatus;
 use Akeneo\Crowdin\Api\Status;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\TranslatedProgressSelector;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
@@ -73,7 +74,7 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\TranslatedProgressSelector');
+        $this->shouldHaveType(TranslatedProgressSelector::class);
     }
 
     function it_displays_packages(
@@ -86,13 +87,15 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
         $output->getFormatter()->willReturn($formatter);
         $output->write("Languages exported for master branch (50%):", true)->shouldBeCalled();
         $output->writeln(Argument::any())->shouldBeCalled();
-        $output->write(Argument::any())->shouldBeCalled();
+
         $client->api('status')->willReturn($statusApi);
         $statusApi->execute()->willReturn(self::XML_STATUS);
+
         $client->api('language-status')->willReturn($languageStatusApi);
         $languageStatusApi->setLanguage('af')->shouldBeCalled();
         $languageStatusApi->setLanguage('fr')->shouldBeCalled();
         $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
+
         $this->display($output);
     }
 }

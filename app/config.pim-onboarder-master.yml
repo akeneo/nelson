@@ -1,0 +1,28 @@
+github:
+    token: 9cb81cdeb476d72d1df01b1ffcbcadef68d25969
+    fork_owner: nelson-akeneo
+    owner: akeneo
+    repository: pim-onboarder
+    branches: 
+        'master': 'onboarder master'
+
+crowdin:
+    project: akeneo
+    key: 0c068ffc72bbdc6f22d7c893f26ded11
+    min_translated_progress: 1
+    download:
+        base_dir: /tmp/crowdin-download
+        locale_map:
+          en-NZ: ~ 
+    folders: ['Bundle']
+    upload:
+        base_dir: /tmp/crowdin-upload
+
+nelson:
+    finder_options:
+        in: 'src/'
+        path: '/Bundle\/Resources\/translations/'
+        name: '*.en.yml'
+    target_rules:
+        'src/Bundle/Resources/translations': 'Bundle'
+    pattern_suffix: 'Bundle'

@@ -148,7 +148,6 @@ class ProjectCloner
             $this->owner,
             $this->repository
         ));
-
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CLONE);
     }
 
@@ -165,12 +164,12 @@ class ProjectCloner
             'branch' => $baseBranch
         ]));
 
-        // If the branch does not exist on the fork repository
-        try {
-            $this->executor->execute(sprintf('cd %s && git rev-parse --verify remotes/origin/%s', $projectDir, $baseBranch));
-        } catch (\Exception $e) {
-            $this->executor->execute(sprintf('cd %s && git fetch upstream && git checkout %s && git push origin %s', $projectDir, $baseBranch, $baseBranch));
-        }
+	// If the branch does not exist on the fork repository
+	try {
+		$this->executor->execute(sprintf('cd %s && git rev-parse --verify remotes/origin/%s', $projectDir, $baseBranch));
+	} catch (\Exception $e) {
+		$this->executor->execute(sprintf('cd %s && git fetch upstream && git checkout %s && git push origin %s', $projectDir, $baseBranch, $baseBranch));
+	}
 
         // Set branch
         $this->executor->execute(sprintf(

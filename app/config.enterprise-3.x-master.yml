@@ -1,0 +1,55 @@
+github:
+    token: 9cb81cdeb476d72d1df01b1ffcbcadef68d25969
+    fork_owner: nelson-akeneo
+    owner: akeneo
+    repository: pim-enterprise-dev
+    branches: ['master', '4.0', '3.2', '3.0']
+
+crowdin:
+    project: akeneo
+    key: 0c068ffc72bbdc6f22d7c893f26ded11
+    min_translated_progress: 80
+    download:
+        base_dir: /tmp/crowdin-download
+        locale_map:
+          pt-PT: pt_PT
+          pt-BR: pt_BR
+          ca-ES: ca_ES
+          da-DK: da_DK
+          de-DE: de_DE
+          en-US: en_US
+          en-NZ: en_NZ
+          en-GB: en_GB
+          es-ES: es_ES
+          fi-FI: fi_FI
+          fr-FR: fr_FR
+          hr-HR: hr_HR
+          it-IT: it_IT
+          ja-JP: ja_JP
+          ru-RU: ru_RU
+          zh-CN: zh_CN
+          nl-NL: nl_NL
+          sv-SE: sv_SE
+          es-VE: es_VE
+          id-ID: id_ID
+          pl-PL: pl_PL
+          ro-RO: ro_RO
+          tl-TL: tl_TL
+          tr-TR: tr_TR
+          uk_UK: uk_UK
+    folders: ['PimCommunity', 'AkeneoCommunity', 'PimEnterprise', 'AkeneoEnterprise']
+    upload:
+        base_dir: /tmp/crowdin-upload
+
+nelson:
+    finder_options:
+        in: 'src/'
+        notPath: '/Oro/'
+        path: '/Resources\/translations/'
+        name: '*.en_US.yml'
+    target_rules:
+        '/Resources/translations': ''
+        'src/PimEnterprise': 'PimEnterprise'
+        'src/Akeneo': 'AkeneoEnterprise'
+    pattern_suffix: 'Enterprise'
+

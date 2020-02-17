@@ -1,0 +1,2 @@
+SLACK_URL="https://hooks.slack.com/services/XXX/YYY/ZZZ"
+SLACK_CHANNEL="#product-dev"

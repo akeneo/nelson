@@ -165,16 +165,17 @@ class TranslationFilesCleaner
             $projectFinder = new Finder();
             $fullProjectDir = $projectDir . DIRECTORY_SEPARATOR . $relativePath;
             $filename = substr($file->getFilename(), 0, strpos($file->getFilename(), '.'));
-            $isDir = is_dir($fullProjectDir);
 
-            if ($isDir) {
+            $dirExists = is_dir($fullProjectDir);
+
+            if ($dirExists) {
                 $projectFinder
-                    ->in($fullProjectDir)
-                    ->name($this->finderOptions['name'])
-                    ->name($filename . '.*')
-                    ->files();
+            ->in($fullProjectDir)
+            ->name($this->finderOptions['name'])
+            ->name($filename . '.*')
+            ->files();
             }
-            if ($isDir && ($projectFinder->count() > 0)) {
+            if ($dirExists && ($projectFinder->count() > 0)) {
                 $this->systemExecutor->execute(sprintf(
                     'cp %s %s',
                     $file->getPathname(),

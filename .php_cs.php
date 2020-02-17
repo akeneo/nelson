@@ -1,12 +1,14 @@
 <?php
-$fixers = require __DIR__ . '/.php_cs-fixers.php';
-$finder = \Symfony\CS\Finder\DefaultFinder::create();
+$finder = PhpCsFixer\Finder::create();
 $finder->name('*.php')
     ->notName('*Spec.php')
     ->files()
     ->in(__DIR__);
 
-return \Symfony\CS\Config\Config::create()
-    ->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
-    ->fixers($fixers)
-    ->finder($finder);
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        'linebreak_after_opening_tag' => true,
+        'ordered_imports' => true,
+    ])
+    ->setFinder($finder);

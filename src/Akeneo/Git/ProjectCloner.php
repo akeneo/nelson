@@ -148,7 +148,6 @@ class ProjectCloner
             $this->owner,
             $this->repository
         ));
-
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CLONE);
     }
 

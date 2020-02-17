@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+    php:
+        image: 'akeneo/php:7.1'
+        user: 'docker'
+        volumes:
+            - './:/srv/nelson'
+        working_dir: '/srv/nelson'

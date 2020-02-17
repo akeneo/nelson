@@ -169,11 +169,11 @@ class TranslationFilesCleaner
             $dirExists = is_dir($fullProjectDir);
 
             if ($dirExists) {
-		    $projectFinder
-			->in($fullProjectDir)
-			->name($this->finderOptions['name'])
-			->name($filename . '.*')
-			->files();
+                $projectFinder
+            ->in($fullProjectDir)
+            ->name($this->finderOptions['name'])
+            ->name($filename . '.*')
+            ->files();
             }
             if ($dirExists && ($projectFinder->count() > 0)) {
                 $this->systemExecutor->execute(sprintf(

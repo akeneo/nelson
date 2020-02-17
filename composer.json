@@ -12,10 +12,14 @@
         {
             "name": "Pierre Allard",
             "email": "pierre.allard@akeneo.com"
+        },
+        {
+            "name": "JM Leroux",
+            "email": "jean-marie.leroux@akeneo.com"
         }
     ],
     "require": {
-        "php": ">=5.4.4",
+        "php": ">=7.1",
         "symfony/console": "2.7.3",
         "symfony/yaml": "2.7.3",
         "symfony/finder": "2.7.3",
@@ -28,7 +32,7 @@
     },
     "require-dev": {
         "phpspec/phpspec": "2.5.*",
-        "fabpot/php-cs-fixer": "^1.11"
+        "friendsofphp/php-cs-fixer": "^2.2"
     },
     "autoload": {
         "psr-0": {"Akeneo\\": "src/"}

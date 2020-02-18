@@ -4,12 +4,14 @@ namespace spec\Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddFile;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\TranslationFilesCreator;
 use Akeneo\Crowdin\TranslationProjectInfo;
 use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslationFilesCreatorSpec extends ObjectBehavior
 {
@@ -18,12 +20,15 @@ class TranslationFilesCreatorSpec extends ObjectBehavior
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
+        $eventDispatcher->dispatch(Argument::type(Event::class), Argument::type('string'))
+            ->willReturn(new \stdClass());
+
         $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\TranslationFilesCreator');
+        $this->shouldHaveType(TranslationFilesCreator::class);
     }
 
     function it_should_create_file_when_it_does_not_exist(

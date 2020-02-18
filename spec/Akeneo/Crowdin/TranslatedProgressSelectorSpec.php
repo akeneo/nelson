@@ -5,11 +5,13 @@ namespace spec\Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\LanguageStatus;
 use Akeneo\Crowdin\Api\Status;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\TranslatedProgressSelector;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
@@ -68,16 +70,19 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
 
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
+        $eventDispatcher->dispatch(Argument::type(Event::class), Argument::type('string'))
+            ->willReturn(Argument::type(Event::class));
+
         $this->beConstructedWith($client, $eventDispatcher, 50, ['a_folder'], ['master']);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\TranslatedProgressSelector');
+        $this->shouldHaveType(TranslatedProgressSelector::class);
     }
 
     function it_displays_packages(
-        $client,
+        Client $client,
         OutputInterface $output,
         Status $statusApi,
         LanguageStatus $languageStatusApi,

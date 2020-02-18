@@ -1,5 +1,0 @@
-formatter.name: pretty
-suites:
-    UniqueIndicator:
-        namespace: Akeneo
-        src_path: src

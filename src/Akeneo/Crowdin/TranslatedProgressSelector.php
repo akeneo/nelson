@@ -7,10 +7,9 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TranslatedProgressSelector
- *
  * @author    Pierre Allard <pierre.allard@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
@@ -32,31 +31,22 @@ class TranslatedProgressSelector
     /** @var array */
     protected $branches;
 
-    /**
-     * @param Client                   $client
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param int                      $minTranslatedProgress
-     * @param null|array               $folders
-     * @param array                    $branches
-     */
     public function __construct(
         Client $client,
         EventDispatcherInterface $eventDispatcher,
-        $minTranslatedProgress = 0,
-        $folders = null,
-        $branches = ['master']
+        int $minTranslatedProgress = 0,
+        ?array $folders = null,
+        ?array $branches = ['master']
     ) {
-        $this->client                = $client;
-        $this->eventDispatcher       = $eventDispatcher;
+        $this->client = $client;
+        $this->eventDispatcher = $eventDispatcher;
         $this->minTranslatedProgress = $minTranslatedProgress;
-        $this->folders               = $folders;
-        $this->branches              = $branches;
+        $this->folders = $folders;
+        $this->branches = $branches;
     }
 
     /**
      * Display the packages to import
-     *
-     * @param OutputInterface $output
      */
     public function display(OutputInterface $output)
     {
@@ -84,7 +74,7 @@ class TranslatedProgressSelector
      */
     public function packages($exclude = true, $branch = null)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_PACKAGES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_PACKAGES);
 
         $maxApproved = -1;
         $approvedCounts = [];
@@ -105,9 +95,12 @@ class TranslatedProgressSelector
         asort($result);
         $result = array_reverse($result);
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_PACKAGES, new GenericEvent($this, [
-            'count' => count($result)
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'count' => count($result),
+            ]),
+            Events::POST_CROWDIN_PACKAGES
+        );
 
         return $result;
     }

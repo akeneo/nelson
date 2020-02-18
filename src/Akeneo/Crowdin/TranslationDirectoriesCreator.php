@@ -8,6 +8,7 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class creates all the missing directories of a Crowdin project.
@@ -37,9 +38,9 @@ class TranslationDirectoriesCreator
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $targetResolver
     ) {
-        $this->client          = $client;
+        $this->client = $client;
         $this->eventDispatcher = $eventDispatcher;
-        $this->targetResolver  = $targetResolver;
+        $this->targetResolver = $targetResolver;
     }
 
     /**
@@ -53,7 +54,7 @@ class TranslationDirectoriesCreator
      */
     public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_DIRECTORIES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_CREATE_DIRECTORIES);
 
         /** @var AddDirectory $service */
         $service = $this->client->api('add-directory');
@@ -63,10 +64,13 @@ class TranslationDirectoriesCreator
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {
             if (!in_array($directory, $existingFolders) && !in_array($directory, ['/', ''])) {
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent($this, [
-                    'directory' => $directory,
-                    'dry_run'   => $dryRun
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'directory' => $directory,
+                        'dry_run' => $dryRun,
+                    ]),
+                    Events::CROWDIN_CREATE_DIRECTORY
+                );
                 if (!$dryRun) {
                     $service->setDirectory($directory);
                     $service->execute();
@@ -74,7 +78,7 @@ class TranslationDirectoriesCreator
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_DIRECTORIES);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_CREATE_DIRECTORIES);
     }
 
     /**
@@ -147,9 +151,12 @@ class TranslationDirectoriesCreator
         }
 
         if (!$projectInfo->isBranchCreated($baseBranch)) {
-            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent($this, [
-                'branch' => $baseBranch
-            ]));
+            $this->eventDispatcher->dispatch(
+                new GenericEvent($this, [
+                    'branch' => $baseBranch,
+                ]),
+                Events::CROWDIN_CREATE_BRANCH
+            );
 
             /** @var AddDirectory $serviceBranch */
             $serviceBranch = $this->client->api('add-directory');

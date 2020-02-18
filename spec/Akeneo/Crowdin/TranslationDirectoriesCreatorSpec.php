@@ -4,12 +4,14 @@ namespace spec\Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\AddDirectory;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\TranslationDirectoriesCreator;
 use Akeneo\Crowdin\TranslationProjectInfo;
 use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslationDirectoriesCreatorSpec extends ObjectBehavior
 {
@@ -18,16 +20,19 @@ class TranslationDirectoriesCreatorSpec extends ObjectBehavior
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
+        $eventDispatcher->dispatch(Argument::type(Event::class), Argument::type('string'))
+            ->willReturn(Argument::type(Event::class));
+
         $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\TranslationDirectoriesCreator');
+        $this->shouldHaveType(TranslationDirectoriesCreator::class);
     }
 
     function it_should_create_a_branch_when_it_does_not_exist(
-        $client,
+        Client $client,
         AddDirectory $addDirectoryApi,
         TranslationProjectInfo $projectInfo
     ) {
@@ -44,8 +49,8 @@ class TranslationDirectoriesCreatorSpec extends ObjectBehavior
     }
 
     function it_should_not_create_directory_when_it_exists(
-        $client,
-        $resolver,
+        CLient $client,
+        TargetResolver $resolver,
         AddDirectory $addDirectoryApi,
         TranslationFile $file,
         TranslationProjectInfo $projectInfo
@@ -64,8 +69,8 @@ class TranslationDirectoriesCreatorSpec extends ObjectBehavior
     }
 
     function it_should_create_directory_when_it_exists(
-        $client,
-        $resolver,
+        Client $client,
+        TargetResolver $resolver,
         AddDirectory $addDirectoryApi,
         TranslationFile $file,
         TranslationProjectInfo $projectInfo

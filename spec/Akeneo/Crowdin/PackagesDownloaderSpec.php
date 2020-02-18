@@ -5,24 +5,29 @@ namespace spec\Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\Download;
 use Akeneo\Crowdin\Api\Export;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\PackagesDownloader;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PackagesDownloaderSpec extends ObjectBehavior
 {
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
+        $eventDispatcher->dispatch(Argument::type(Event::class), Argument::type('string'))
+            ->willReturn(new \stdClass());
+
         $this->beConstructedWith($client, $eventDispatcher);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\PackagesDownloader');
+        $this->shouldHaveType(PackagesDownloader::class);
     }
 
     function it_download_every_locale(
-        $client,
+        Client $client,
         Export $exportApi,
         Download $downloadApi
     ) {

@@ -8,11 +8,12 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class TranslationFilesUpdater
  *
- * @see https://crowdin.com/page/api/update-file limited to 20 files maximum per call
+ * @see       https://crowdin.com/page/api/update-file limited to 20 files maximum per call
  *
  * @author    Nicolas Dupont <nicolas@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
@@ -42,9 +43,9 @@ class TranslationFilesUpdater
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $targetResolver
     ) {
-        $this->client          = $client;
+        $this->client = $client;
         $this->eventDispatcher = $eventDispatcher;
-        $this->targetResolver  = $targetResolver;
+        $this->targetResolver = $targetResolver;
     }
 
     /**
@@ -54,7 +55,7 @@ class TranslationFilesUpdater
      */
     public function update(array $files, $baseBranch, $dryRun = false)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_UPDATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_UPDATE_FILES);
 
         $fileSets = array_chunk($files, self::MAX_NB_FILES);
 
@@ -73,16 +74,19 @@ class TranslationFilesUpdater
                     $service->addTranslation($file->getSource(), $target, $file->getPattern());
                 }
 
-                $this->eventDispatcher->dispatch(Events::CROWDIN_UPDATE_FILE, new GenericEvent($this, [
-                    'target'  => $target,
-                    'dry_run' => $dryRun,
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'target' => $target,
+                        'dry_run' => $dryRun,
+                    ]),
+                    Events::CROWDIN_UPDATE_FILE
+                );
             }
             if (count($service->getTranslations()) > 0) {
                 $service->execute();
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_UPDATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_UPDATE_FILES);
     }
 }

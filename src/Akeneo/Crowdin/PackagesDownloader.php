@@ -7,6 +7,7 @@ use Akeneo\Crowdin\Api\Export;
 use Akeneo\Event\Events;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class PackagesDownloader
@@ -29,7 +30,7 @@ class PackagesDownloader
      */
     public function __construct(Client $client, EventDispatcherInterface $eventDispatcher)
     {
-        $this->client          = $client;
+        $this->client = $client;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -58,14 +59,14 @@ class PackagesDownloader
      */
     protected function export($baseBranch)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_EXPORT);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_EXPORT);
 
         /** @var Export $serviceExport */
         $serviceExport = $this->client->api('export');
         $serviceExport->setBranch($baseBranch);
         $serviceExport->execute();
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_EXPORT);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_EXPORT);
     }
 
     /**
@@ -77,7 +78,7 @@ class PackagesDownloader
      */
     protected function downloadPackages(array $locales, $baseDir, $baseBranch)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_DOWNLOAD);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_DOWNLOAD);
 
         /** @var Download $serviceDownload */
         $serviceDownload = $this->client->api('download');
@@ -85,12 +86,13 @@ class PackagesDownloader
         $serviceDownload = $serviceDownload->setCopyDestination($baseDir);
 
         foreach ($locales as $locale) {
-            $this->eventDispatcher->dispatch(Events::CROWDIN_DOWNLOAD, new GenericEvent($this, [
-                'locale' => $locale
-            ]));
+            $this->eventDispatcher->dispatch(
+                new GenericEvent($this, ['locale' => $locale,]),
+                Events::CROWDIN_DOWNLOAD
+            );
             $serviceDownload->setPackage(sprintf('%s.zip', $locale))->execute();
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_DOWNLOAD);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_DOWNLOAD);
     }
 }

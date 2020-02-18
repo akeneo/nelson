@@ -1,3 +1,10 @@
+parameters:
+    github:
+        token: 'default_token'
+        fork_owner: 'fork_owner'
+        owner: 'owner'
+        repository: 'github_repository'
+
 services:
     github.client:
         class: Github\Client

@@ -19,25 +19,39 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "symfony/console": "2.7.3",
-        "symfony/yaml": "2.7.3",
-        "symfony/finder": "2.7.3",
-        "symfony/config": "^2.7",
-        "monolog/monolog": "~1.0",
+        "php": ">=7.3",
+        "ext-simplexml": "*",
         "akeneo/crowdin-api": "1.0.0-alpha7",
-        "knplabs/github-api": "1.4.14",
-        "symfony/dependency-injection": "^2.7",
-        "symfony/translation": "^2.7"
+        "knplabs/github-api": "^1.4",
+        "monolog/monolog": "~1.0",
+        "symfony/config": "*",
+        "symfony/console": "*",
+        "symfony/dependency-injection": "*",
+        "symfony/finder": "*",
+        "symfony/translation": "*",
+        "symfony/yaml": "*"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.5.*",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "phpspec/phpspec": "^6.1",
+        "friendsofphp/php-cs-fixer": "^2.16"
     },
     "autoload": {
-        "psr-0": {"Akeneo\\": "src/"}
+        "psr-4": {
+            "Akeneo\\": "src/Akeneo/"
+        }
     },
-    "config": {
-        "bin-dir": "bin"
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\": "spec/"
+        }
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "5.0.*"
+        }
     }
 }

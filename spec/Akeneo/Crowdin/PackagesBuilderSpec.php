@@ -4,8 +4,8 @@ namespace spec\Akeneo\Crowdin;
 
 use Akeneo\Crowdin\Api\Export;
 use Akeneo\Crowdin\Client;
+use Akeneo\Crowdin\PackagesBuilder;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class PackagesBuilderSpec extends ObjectBehavior
 {
@@ -16,7 +16,7 @@ class PackagesBuilderSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Akeneo\Crowdin\PackagesBuilder');
+        $this->shouldHaveType(PackagesBuilder::class);
     }
 
     function it_builds_package(

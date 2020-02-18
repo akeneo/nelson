@@ -5,8 +5,6 @@ namespace Akeneo\System;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Executor
- *
  * @author    Nicolas Dupont <nicolas@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
@@ -19,24 +17,18 @@ class Executor
     /** @var string */
     protected $logFile;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param string          $logFile
-     */
-    public function __construct(LoggerInterface $logger, $logFile)
+    public function __construct(LoggerInterface $logger, string $logFile)
     {
         $this->logger  = $logger;
         $this->logFile = $this->getAbsolutePath($logFile);
     }
 
     /**
-     * @param string $command
-     *
      * @throws \Exception
      *
      * @return array
      */
-    public function execute($command, $returnResult = false)
+    public function execute(string $command, bool $returnResult = false)
     {
         $returnVar = null;
         $output = [];
@@ -74,12 +66,8 @@ class Executor
 
     /**
      * Allow user to put relative path, set it absolute from main directory.
-     *
-     * @param string $logFile
-     *
-     * @return string
      */
-    protected function getAbsolutePath($logFile)
+    protected function getAbsolutePath(string $logFile): string
     {
         if (!preg_match('/^\//', $logFile)) {
             $logFile = sprintf('%s%s..%s..%s..%s%s',

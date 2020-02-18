@@ -19,8 +19,12 @@ class Translator extends BaseTranslator
     /**
      * {@inheritdoc}
      */
-    public function __construct($locale, MessageSelector $selector = null, $cacheDir = null, $debug = false)
-    {
+    public function __construct(
+        string $locale,
+        ?MessageSelector $selector = null,
+        ?string $cacheDir = null,
+        ?bool $debug = false
+    ) {
         parent::__construct($locale, $selector, $cacheDir, $debug);
 
         $this->addLoader('yaml', new YamlFileLoader());

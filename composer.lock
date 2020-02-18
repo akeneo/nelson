@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74d99053644ae32984a5a3a88ee0a4dc",
+    "content-hash": "721b37f2d10289f4b66cfc025dea47e0",
     "packages": [
         {
             "name": "akeneo/crowdin-api",

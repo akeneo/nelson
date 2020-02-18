@@ -72,6 +72,26 @@ An example of crontab to push new keys every friday and create pull requests eve
 0 5 * * 1 cd /path/to/nelson/ && app/console nelson:push-translation-keys > /tmp/nelson_push.log 2>&1
 ```
 
+## Testing
+
+You can use the shipped docker container to develop and test.
+
+Launch specs in the docker container:
+```
+docker-compose run --rm php bin/console phpspec run
+```
+
+Launch a command with XDebug:
+```
+PHP_XDEBUG_ENABLED=1 docker-compose run --rm php app/console nelson:refresh-packages --config_file=community-1.x-2.x.yml
+```
+
+Automatically fix your code style:
+```
+docker-compose run --rm php bin/php-cs-fixer fix --config=.php_cs.php
+```
+
 ## Copyrights
 
-Thanks to [Bouletmaton](http://www.zanorg.net/bouletmaton/) for the avatar ([bouletcorp.com](http://www.bouletcorp.com/), [zanorg.com](http://www.zanorg.com/))
+Thanks to [Bouletmaton](http://www.zanorg.net/bouletmaton/) for the avatar ([bouletcorp.com](http://www.bouletcorp.com/), 
+[zanorg.com](http://www.zanorg.com/))

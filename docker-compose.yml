@@ -7,3 +7,7 @@ services:
         volumes:
             - './:/srv/nelson'
         working_dir: '/srv/nelson'
+        environment:
+            PHP_IDE_CONFIG: 'serverName=nelson-cli'
+            PHP_XDEBUG_ENABLED: "${PHP_XDEBUG_ENABLED:-0}"
+            XDEBUG_CONFIG: 'remote_host=172.17.0.1'

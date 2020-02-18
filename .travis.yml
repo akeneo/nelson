@@ -16,7 +16,6 @@ before_install:
 
 install:
     - composer install --prefer-dist --no-interaction
-    - curl http://get.sensiolabs.org/php-cs-fixer.phar -o php-cs-fixer
 
 script:
     - bin/phpspec run

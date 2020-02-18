@@ -6,6 +6,7 @@ $finder->name('*.php')
     ->in(__DIR__);
 
 return PhpCsFixer\Config::create()
+    ->setUsingCache(false)
     ->setRules([
         '@PSR2' => true,
         'linebreak_after_opening_tag' => true,

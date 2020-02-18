@@ -36,9 +36,10 @@ class Application extends BaseApplication
         $this->registerCommands();
 
         $input = new ArgvInput();
-        $configFile = $input->getParameterOption(['--config_file', '-c'], getenv('CROWDIN_CONFIG') ?: 'config.yml');
+        $configFilename = $input->getParameterOption(['--config_file', '-c'], getenv('CROWDIN_CONFIG') ?: 'config.yml');
+        $configFilePath = sprintf(__DIR__ . '/../config/%s', $configFilename);
 
-        if (!file_exists(sprintf('%s%s%s', __DIR__, DIRECTORY_SEPARATOR, $configFile))) {
+        if (!file_exists(sprintf($configFilePath))) {
             $output = new ConsoleOutput();
             $output->writeln(sprintf(
                 "\n  The file %s%s%s was not found!".
@@ -46,11 +47,11 @@ class Application extends BaseApplication
                 "\n  You can use --config_file[=CONFIG_FILE] to change default configuration file.\n",
                 __DIR__,
                 DIRECTORY_SEPARATOR,
-                $configFile
+                $configFilePath
             ));
         } else {
             $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__));
-            $loader->load($configFile);
+            $loader->load($configFilePath);
             $this->container->compile();
         }
     }

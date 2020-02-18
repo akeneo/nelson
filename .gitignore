@@ -4,3 +4,5 @@ bin/phpspec
 bin
 app/console
 app/logs/
+!config/example.yml
+config/*

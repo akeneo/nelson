@@ -8,6 +8,7 @@ use Akeneo\Crowdin\Client;
 use Akeneo\Crowdin\TranslatedProgressSelector;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -85,19 +86,22 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
         Client $client,
         OutputInterface $output,
         Status $statusApi,
-        LanguageStatus $languageStatusApi,
-        OutputFormatterInterface $formatter
+        LanguageStatus $languageStatusApi
     ) {
+        $formatter = new OutputFormatter(false);
+
         $output->getFormatter()->willReturn($formatter);
         $output->write("Languages exported for master branch (50%):", true)->shouldBeCalled();
         $output->writeln(Argument::any())->shouldBeCalled();
-        $output->write(Argument::any())->shouldBeCalled();
+
         $client->api('status')->willReturn($statusApi);
         $statusApi->execute()->willReturn(self::XML_STATUS);
         $client->api('language-status')->willReturn($languageStatusApi);
+
         $languageStatusApi->setLanguage('af')->shouldBeCalled();
         $languageStatusApi->setLanguage('fr')->shouldBeCalled();
         $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
+
         $this->display($output);
     }
 }

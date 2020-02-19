@@ -66,13 +66,8 @@ class TranslatedProgressSelector
 
     /**
      * Return the list of packages to import
-     *
-     * @param bool        $exclude If set to true, exclude the packages with a translation level too low
-     * @param string|null $branch  If set, list the package for a specific branch
-     *
-     * @return array
      */
-    public function packages($exclude = true, $branch = null)
+    public function packages(?bool $exclude = true, ?string $branch = null): array
     {
         $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_PACKAGES);
 
@@ -107,13 +102,8 @@ class TranslatedProgressSelector
 
     /**
      * Returns the count of approved strings for a specific language code.
-     *
-     * @param string      $crowdinCode
-     * @param null|string $branch
-     *
-     * @return int
      */
-    protected function getApprovedCount($crowdinCode, $branch = null)
+    protected function getApprovedCount(string $crowdinCode, ?string $branch = null): int
     {
         $query = $this->client->api('language-status');
         $query->setLanguage($crowdinCode);
@@ -140,7 +130,7 @@ class TranslatedProgressSelector
      *
      * @return string[]
      */
-    protected function getAllCrowdinCodes()
+    protected function getAllCrowdinCodes(): array
     {
         $response = $this->client->api('status')->execute();
         $xml = simplexml_load_string($response);

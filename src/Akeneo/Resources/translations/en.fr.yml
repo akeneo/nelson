@@ -29,3 +29,5 @@ pre_github_check_diff: Vérifie les différences avec la branche courante
 post_github_check_diff: '%diff% différence(s) trouvée(s) !'
 pre_crowdin_packages: Vérifie les archives à mettre à jour
 post_crowdin_packages: '%count% archive(s) trouvée(s) !'
+pre_github_merge_pr: 'Merge Pull Request %number%'
+post_github_merge_pr: 'Pull Request mergée!'

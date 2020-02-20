@@ -35,6 +35,7 @@ services:
             - @system.executor
             - @event_dispatcher
             - @github.diff_checker
+            - @github.pull_request_merger
 
     nelson.push_translation_keys_executor:
         class: Akeneo\Nelson\PushTranslationKeysExecutor

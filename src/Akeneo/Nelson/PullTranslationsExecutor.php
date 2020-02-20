@@ -9,6 +9,7 @@ use Akeneo\Event\Events;
 use Akeneo\Git\DiffChecker;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
+use Akeneo\Git\PullRequestMerger;
 use Akeneo\System\Executor;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -49,17 +50,9 @@ class PullTranslationsExecutor
     /** @var DiffChecker */
     private $diffChecker;
 
-    /**
-     * @param ProjectCloner              $cloner
-     * @param PullRequestCreator         $pullRequestCreator
-     * @param PackagesDownloader         $downloader
-     * @param TranslatedProgressSelector $status
-     * @param PackagesExtractor          $extractor
-     * @param TranslationFilesCleaner    $translationsCleaner
-     * @param Executor                   $systemExecutor
-     * @param EventDispatcherInterface   $eventDispatcher
-     * @param DiffChecker                $diffChecker
-     */
+    /** @var PullRequestMerger */
+    private $pullRequestMerger;
+
     public function __construct(
         ProjectCloner $cloner,
         PullRequestCreator $pullRequestCreator,
@@ -69,7 +62,8 @@ class PullTranslationsExecutor
         TranslationFilesCleaner $translationsCleaner,
         Executor $systemExecutor,
         EventDispatcherInterface $eventDispatcher,
-        DiffChecker $diffChecker
+        DiffChecker $diffChecker,
+        PullRequestMerger $pullRequestMerger
     ) {
         $this->cloner              = $cloner;
         $this->pullRequestCreator  = $pullRequestCreator;
@@ -80,6 +74,7 @@ class PullTranslationsExecutor
         $this->systemExecutor      = $systemExecutor;
         $this->eventDispatcher     = $eventDispatcher;
         $this->diffChecker = $diffChecker;
+        $this->pullRequestMerger = $pullRequestMerger;
     }
 
     /**
@@ -134,7 +129,7 @@ class PullTranslationsExecutor
         if ($this->diffChecker->haveDiff($projectDir)) {
             $pullRequest = $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
             if (null !== $pullRequest) {
-                //TODO: merge PR
+                $this->pullRequestMerger->mergePullRequest($pullRequest);
             }
         }
 

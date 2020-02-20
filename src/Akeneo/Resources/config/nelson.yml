@@ -34,6 +34,7 @@ services:
             - @nelson.translation_files.cleaner
             - @system.executor
             - @event_dispatcher
+            - @github.diff_checker
 
     nelson.push_translation_keys_executor:
         class: Akeneo\Nelson\PushTranslationKeysExecutor

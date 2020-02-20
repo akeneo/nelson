@@ -6,6 +6,7 @@ use Akeneo\Archive\PackagesExtractor;
 use Akeneo\Crowdin\PackagesDownloader;
 use Akeneo\Crowdin\TranslatedProgressSelector;
 use Akeneo\Event\Events;
+use Akeneo\Git\DiffChecker;
 use Akeneo\Git\ProjectCloner;
 use Akeneo\Git\PullRequestCreator;
 use Akeneo\System\Executor;
@@ -21,6 +22,33 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class PullTranslationsExecutor
 {
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
+    /** @var Executor */
+    private $systemExecutor;
+
+    /** @var TranslationFilesCleaner */
+    private $translationsCleaner;
+
+    /** @var PackagesExtractor */
+    private $extractor;
+
+    /** @var TranslatedProgressSelector */
+    private $status;
+
+    /** @var PackagesDownloader */
+    private $downloader;
+
+    /** @var PullRequestCreator */
+    private $pullRequestCreator;
+
+    /** @var ProjectCloner */
+    private $cloner;
+
+    /** @var DiffChecker */
+    private $diffChecker;
+
     /**
      * @param ProjectCloner              $cloner
      * @param PullRequestCreator         $pullRequestCreator
@@ -30,6 +58,7 @@ class PullTranslationsExecutor
      * @param TranslationFilesCleaner    $translationsCleaner
      * @param Executor                   $systemExecutor
      * @param EventDispatcherInterface   $eventDispatcher
+     * @param DiffChecker                $diffChecker
      */
     public function __construct(
         ProjectCloner $cloner,
@@ -39,7 +68,8 @@ class PullTranslationsExecutor
         PackagesExtractor $extractor,
         TranslationFilesCleaner $translationsCleaner,
         Executor $systemExecutor,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        DiffChecker $diffChecker
     ) {
         $this->cloner              = $cloner;
         $this->pullRequestCreator  = $pullRequestCreator;
@@ -49,6 +79,7 @@ class PullTranslationsExecutor
         $this->translationsCleaner = $translationsCleaner;
         $this->systemExecutor      = $systemExecutor;
         $this->eventDispatcher     = $eventDispatcher;
+        $this->diffChecker = $diffChecker;
     }
 
     /**
@@ -100,7 +131,7 @@ class PullTranslationsExecutor
         $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir, $projectDir);
         $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
-        if ($this->pullRequestCreator->haveDiff($projectDir)) {
+        if ($this->diffChecker->haveDiff($projectDir)) {
             $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
         }
 

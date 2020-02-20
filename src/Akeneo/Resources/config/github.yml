@@ -28,3 +28,9 @@ services:
             - %github.fork_owner%
             - %github.owner%
             - %github.repository%
+
+    github.diff_checker:
+        class: Akeneo\Git\DiffChecker
+        arguments:
+            - '@system.executor'
+            - '@event_dispatcher'

@@ -6,7 +6,6 @@ namespace Akeneo\Git;
 use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
-use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -68,6 +67,8 @@ class PullRequestCreator
      * @param string      $baseDir
      * @param string      $projectDir
      * @param boolean     $dryRun
+     *
+     * @throws \Exception
      */
     public function create($baseBranch, $baseDir, $projectDir, $dryRun = false)
     {
@@ -112,41 +113,12 @@ class PullRequestCreator
     }
 
     /**
-     * Check if current repository have diff, to know if we have to create PR or not.
-     *
-     * @param string $projectDir
-     *
-     * @return bool
-     */
-    public function haveDiff($projectDir)
-    {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
-
-        $commands = [
-            sprintf('cd %s && git diff|wc -l', $projectDir),
-            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l', $projectDir),
-        ];
-        $diff = 0;
-        foreach ($commands as $command) {
-            $result = $this->executor->execute($command, true);
-            $matches = null;
-            preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
-            $diff += intval($matches['diff']);
-        }
-
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
-            'diff' => $diff
-        ]));
-
-        return intval(0 !== $diff);
-    }
-
-    /**
      * Get the branch name from the pull request creation.
      *
      * @param string|null $baseBranch
      *
      * @return string
+     * @throws \Exception
      */
     protected function getBranchName($baseBranch)
     {

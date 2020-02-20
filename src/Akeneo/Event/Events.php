@@ -32,6 +32,10 @@ class Events
 
     const POST_GITHUB_CHECK_DIFF = 'post_github_check_diff';
 
+    const PRE_GITHUB_MERGE_PR = 'pre_github_merge_pr';
+
+    const POST_GITHUB_MERGE_PR = 'post_github_merge_pr';
+
     // Crowdin
     const PRE_CROWDIN_EXPORT = 'pre_crowdin_export';
 

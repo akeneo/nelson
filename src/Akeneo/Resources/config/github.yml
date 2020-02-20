@@ -34,3 +34,9 @@ services:
         arguments:
             - '@system.executor'
             - '@event_dispatcher'
+
+    github.pull_request_merger:
+        class: Akeneo\Git\PullRequestMerger
+        arguments:
+            - '@github.client'
+            - '@event_dispatcher'

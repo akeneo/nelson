@@ -68,9 +68,10 @@ class PullRequestCreator
      * @param string      $projectDir
      * @param boolean     $dryRun
      *
+     * @return array|null
      * @throws \Exception
      */
-    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false)
+    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false): ?array
     {
         $branch = $this->getBranchName($baseBranch);
 
@@ -84,6 +85,8 @@ class PullRequestCreator
             'dryRun' => $dryRun,
         ]));
 
+        $pullRequest = null;
+
         if (!$dryRun) {
             $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
 
@@ -93,7 +96,7 @@ class PullRequestCreator
 
             $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
-            $this->client->api('pr')->create(
+            $pullRequest = $this->client->api('pr')->create(
                 $this->owner,
                 $this->repository,
                 [
@@ -110,6 +113,8 @@ class PullRequestCreator
         }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
+
+        return $pullRequest;
     }
 
     /**

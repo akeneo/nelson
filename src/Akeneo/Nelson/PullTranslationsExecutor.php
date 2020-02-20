@@ -132,7 +132,10 @@ class PullTranslationsExecutor
         $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
         if ($this->diffChecker->haveDiff($projectDir)) {
-            $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
+            $pullRequest = $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
+            if (null !== $pullRequest) {
+                //TODO: merge PR
+            }
         }
 
         $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);

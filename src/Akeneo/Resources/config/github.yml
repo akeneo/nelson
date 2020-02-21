@@ -28,3 +28,15 @@ services:
             - %github.fork_owner%
             - %github.owner%
             - %github.repository%
+
+    github.diff_checker:
+        class: Akeneo\Git\DiffChecker
+        arguments:
+            - '@system.executor'
+            - '@event_dispatcher'
+
+    github.pull_request_merger:
+        class: Akeneo\Git\PullRequestMerger
+        arguments:
+            - '@github.client'
+            - '@event_dispatcher'

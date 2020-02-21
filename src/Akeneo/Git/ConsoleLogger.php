@@ -32,6 +32,8 @@ class ConsoleLogger extends AbstractConsoleLogger
             Events::POST_GITHUB_CREATE_PR  => 'postGithubCreatePR',
             Events::PRE_GITHUB_CHECK_DIFF  => 'preGithubCheckDiff',
             Events::POST_GITHUB_CHECK_DIFF => 'postGithubCheckDiff',
+            Events::PRE_GITHUB_MERGE_PR    => 'preGithubMergePR',
+            Events::POST_GITHUB_MERGE_PR   => 'postGithubMergePR',
         ];
     }
 
@@ -113,5 +115,21 @@ class ConsoleLogger extends AbstractConsoleLogger
     public function postGithubCheckDiff(GenericEvent $event)
     {
         $this->writeSuccess(sprintf('%s difference(s) found!', $event->getArgument('diff')));
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function preGithubMergePR(GenericEvent $event)
+    {
+        $this->writeProcessing(Events::PRE_GITHUB_MERGE_PR, $event->getArguments());
+    }
+
+    /**
+     * @param GenericEvent $event
+     */
+    public function postGithubMergePR(GenericEvent $event)
+    {
+        $this->writeProcessing(Events::POST_GITHUB_MERGE_PR, $event->getArguments());
     }
 }

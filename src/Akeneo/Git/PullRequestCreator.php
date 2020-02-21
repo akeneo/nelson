@@ -6,7 +6,6 @@ namespace Akeneo\Git;
 use Akeneo\Event\Events;
 use Akeneo\System\Executor;
 use Github\Client;
-use Github\Exception\ValidationFailedException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
@@ -68,8 +67,11 @@ class PullRequestCreator
      * @param string      $baseDir
      * @param string      $projectDir
      * @param boolean     $dryRun
+     *
+     * @return array|null
+     * @throws \Exception
      */
-    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false)
+    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false): ?array
     {
         $branch = $this->getBranchName($baseBranch);
 
@@ -83,6 +85,8 @@ class PullRequestCreator
             'dryRun' => $dryRun,
         ]));
 
+        $pullRequest = null;
+
         if (!$dryRun) {
             $this->executor->execute(sprintf('cd %s && git checkout -B crowdin/%s', $projectDir, $branch));
 
@@ -92,7 +96,7 @@ class PullRequestCreator
 
             $this->executor->execute(sprintf('cd %s && git push origin crowdin/%s', $projectDir, $branch));
 
-            $this->client->api('pr')->create(
+            $pullRequest = $this->client->api('pr')->create(
                 $this->owner,
                 $this->repository,
                 [
@@ -109,36 +113,8 @@ class PullRequestCreator
         }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
-    }
 
-    /**
-     * Check if current repository have diff, to know if we have to create PR or not.
-     *
-     * @param string $projectDir
-     *
-     * @return bool
-     */
-    public function haveDiff($projectDir)
-    {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
-
-        $commands = [
-            sprintf('cd %s && git diff|wc -l', $projectDir),
-            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l', $projectDir),
-        ];
-        $diff = 0;
-        foreach ($commands as $command) {
-            $result = $this->executor->execute($command, true);
-            $matches = null;
-            preg_match('/^(?P<diff>\d+)\\n$/', $result[0], $matches);
-            $diff += intval($matches['diff']);
-        }
-
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
-            'diff' => $diff
-        ]));
-
-        return intval(0 !== $diff);
+        return $pullRequest;
     }
 
     /**
@@ -147,6 +123,7 @@ class PullRequestCreator
      * @param string|null $baseBranch
      *
      * @return string
+     * @throws \Exception
      */
     protected function getBranchName($baseBranch)
     {

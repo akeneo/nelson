@@ -25,7 +25,7 @@ class DiffChecker
     }
 
     /**
-     * Check if current repository have diff, to know if we have to create PR or not.
+     * Check if current repository has diff, so we know if we have to create PR or not.
      *
      * @param string $projectDir
      *

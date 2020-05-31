@@ -70,7 +70,8 @@ class Executor
     protected function getAbsolutePath(string $logFile): string
     {
         if (!preg_match('/^\//', $logFile)) {
-            $logFile = sprintf('%s%s..%s..%s..%s%s',
+            $logFile = sprintf(
+                '%s%s..%s..%s..%s%s',
                 dirname(__FILE__),
                 DIRECTORY_SEPARATOR,
                 DIRECTORY_SEPARATOR,

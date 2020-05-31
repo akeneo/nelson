@@ -29,9 +29,9 @@ class PullRequestMerger
 
         $mergeTitle = sprintf('Merge pull request #%s', $pullRequest['number']);
 
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_MERGE_PR, new GenericEvent($this, [
+        $this->eventDispatcher->dispatch(new GenericEvent($this, [
             'number' => $pullRequest['number'],
-        ]));
+        ]), Events::PRE_GITHUB_MERGE_PR);
 
         $this->client->api('pull_request')->merge(
             $pullRequest['base']['user']['login'],
@@ -40,13 +40,14 @@ class PullRequestMerger
             $mergeTitle
         );
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_MERGE_PR, new GenericEvent($this, [
+        $this->eventDispatcher->dispatch(new GenericEvent($this, [
             'number' => $pullRequest['number'],
-        ]));
+        ]), Events::POST_GITHUB_MERGE_PR);
     }
 
     /**
-     * cf. https://github.community/t5/GitHub-API-Development-and/Merging-via-REST-API-returns-405-Base-branch-was-modified-Review/td-p/19281
+     * cf.
+     * https://github.community/t5/GitHub-API-Development-and/Merging-via-REST-API-returns-405-Base-branch-was-modified-Review/td-p/19281
      */
     private function waitForGithubCheckMergeableBranch(): void
     {

@@ -5,11 +5,14 @@ namespace spec\Akeneo\Crowdin;
 use Akeneo\Crowdin\Api\LanguageStatus;
 use Akeneo\Crowdin\Api\Status;
 use Akeneo\Crowdin\Client;
+use Akeneo\Event\Events;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
@@ -77,22 +80,27 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
     }
 
     function it_displays_packages(
-        $client,
+        Client $client,
+        EventDispatcherInterface $eventDispatcher,
         OutputInterface $output,
         Status $statusApi,
-        LanguageStatus $languageStatusApi,
-        OutputFormatterInterface $formatter
+        LanguageStatus $languageStatusApi
     ) {
-        $output->getFormatter()->willReturn($formatter);
+        $output->getFormatter()->willReturn(new OutputFormatter());
         $output->write("Languages exported for master branch (50%):", true)->shouldBeCalled();
         $output->writeln(Argument::any())->shouldBeCalled();
-        $output->write(Argument::any())->shouldBeCalled();
         $client->api('status')->willReturn($statusApi);
         $statusApi->execute()->willReturn(self::XML_STATUS);
         $client->api('language-status')->willReturn($languageStatusApi);
         $languageStatusApi->setLanguage('af')->shouldBeCalled();
         $languageStatusApi->setLanguage('fr')->shouldBeCalled();
         $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
+
+        $eventDispatcher->dispatch(Argument::type(Event::class), Events::PRE_CROWDIN_PACKAGES)
+            ->shouldBeCalled();
+        $eventDispatcher->dispatch(Argument::type(Event::class), Events::POST_CROWDIN_PACKAGES)
+            ->shouldBeCalled();
+
         $this->display($output);
     }
 }

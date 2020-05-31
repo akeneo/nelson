@@ -61,13 +61,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
         ));
     }
 
-    /**
-     * Write an info message
-     *
-     * @param string   $message
-     * @param string[] $messageParams
-     */
-    protected function writeInfo($message, $messageParams = [])
+    protected function writeInfo($message, $messageParams = []): void
     {
         $this->output->writeln(sprintf(
             '%s   - <comment>%s</comment>',

@@ -7,6 +7,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class TranslatedProgressSelector
@@ -46,11 +47,11 @@ class TranslatedProgressSelector
         $folders = null,
         $branches = ['master']
     ) {
-        $this->client                = $client;
-        $this->eventDispatcher       = $eventDispatcher;
+        $this->client = $client;
+        $this->eventDispatcher = $eventDispatcher;
         $this->minTranslatedProgress = $minTranslatedProgress;
-        $this->folders               = $folders;
-        $this->branches              = $branches;
+        $this->folders = $folders;
+        $this->branches = $branches;
     }
 
     /**
@@ -84,7 +85,7 @@ class TranslatedProgressSelector
      */
     public function packages($exclude = true, $branch = null)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_PACKAGES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_PACKAGES);
 
         $maxApproved = -1;
         $approvedCounts = [];
@@ -105,9 +106,9 @@ class TranslatedProgressSelector
         asort($result);
         $result = array_reverse($result);
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_PACKAGES, new GenericEvent($this, [
-            'count' => count($result)
-        ]));
+        $this->eventDispatcher->dispatch(new GenericEvent($this, [
+            'count' => count($result),
+        ]), Events::POST_CROWDIN_PACKAGES);
 
         return $result;
     }
@@ -132,7 +133,10 @@ class TranslatedProgressSelector
         foreach ($xml->files->item as $mainNode) {
             if ((null !== $branch) && ('branch' === (string) $mainNode->node_type) && ($branch === (string) $mainNode->name)) {
                 foreach ($mainNode->files->item as $mainDir) {
-                    if (null === $this->folders || [null] === $this->folders || in_array((string) $mainDir->name, $this->folders)) {
+                    if (null === $this->folders || [null] === $this->folders || in_array(
+                        (string) $mainDir->name,
+                        $this->folders
+                    )) {
                         $approved += (int) $mainDir->approved;
                     }
                 }

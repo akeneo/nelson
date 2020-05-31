@@ -8,6 +8,7 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class creates all the missing files of a Crowdin project.
@@ -39,9 +40,9 @@ class TranslationFilesCreator
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $targetResolver
     ) {
-        $this->client          = $client;
+        $this->client = $client;
         $this->eventDispatcher = $eventDispatcher;
-        $this->targetResolver  = $targetResolver;
+        $this->targetResolver = $targetResolver;
     }
 
     /**
@@ -54,7 +55,7 @@ class TranslationFilesCreator
      */
     public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_CREATE_FILES);
 
         $existingFiles = $projectInfo->getExistingFiles($baseBranch);
         $fileSets = array_chunk($this->filterExistingFiles($files, $existingFiles), self::MAX_UPLOAD);
@@ -73,18 +74,18 @@ class TranslationFilesCreator
                 if (!$dryRun) {
                     $service->addTranslation($file->getSource(), $target, $file->getPattern());
                 }
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent($this, [
-                    'target'  => $target,
-                    'source'  => $file->getSource(),
+                $this->eventDispatcher->dispatch(new GenericEvent($this, [
+                    'target' => $target,
+                    'source' => $file->getSource(),
                     'dry_run' => $dryRun,
-                ]));
+                ]), Events::CROWDIN_CREATE_FILE);
             }
             if (count($service->getTranslations()) > 0) {
                 $service->execute();
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_CREATE_FILES);
     }
 
     /**

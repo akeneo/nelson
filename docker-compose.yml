@@ -2,7 +2,7 @@ version: '3'
 
 services:
     php:
-        image: 'akeneo/php:7.1'
+        image: 'akeneo/php:7.3'
         user: 'docker'
         volumes:
             - './:/srv/nelson'

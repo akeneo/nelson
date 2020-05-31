@@ -2,7 +2,6 @@
     "name": "akeneo/nelson",
     "type": "project",
     "description": "Command based translation workflow between Crowdin and Github",
-    "tags": ["Crowdin", "Github", "Collaborative", "Translation", "Workflow"],
     "license": "OSL-3.0",
     "authors": [
         {
@@ -19,25 +18,30 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "symfony/console": "2.7.3",
-        "symfony/yaml": "2.7.3",
-        "symfony/finder": "2.7.3",
-        "symfony/config": "^2.7",
-        "monolog/monolog": "~1.0",
+        "php": ">=7.3",
+        "ext-simplexml": "*",
+        "symfony/console": "^5.0",
+        "symfony/yaml": "^5.0",
+        "symfony/finder": "^5.0",
+        "symfony/config": "^5.0",
+        "monolog/monolog": "@stable",
         "akeneo/crowdin-api": "1.0.0-alpha7",
         "knplabs/github-api": "1.4.14",
-        "symfony/dependency-injection": "^2.7",
-        "symfony/translation": "^2.7"
+        "symfony/dependency-injection": "^5.0",
+        "symfony/translation": "^5.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.5.*",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "phpspec/phpspec": "@stable",
+        "friendsofphp/php-cs-fixer": "@stable"
     },
     "autoload": {
-        "psr-0": {"Akeneo\\": "src/"}
+        "psr-4": {
+            "Akeneo\\": "src/Akeneo/"
+        }
     },
-    "config": {
-        "bin-dir": "bin"
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\Akeneo\\": "spec/Akeneo/"
+        }
     }
 }

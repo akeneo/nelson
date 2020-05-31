@@ -31,7 +31,7 @@ You must **never** run the following commands using your main repository, becaus
 ```
   $ git clone git@github.com:akeneo/nelson.git
   $ cd nelson
-  $ composer update
+  $ make vendor
 ```
 
 ## Create your own configuration
@@ -78,7 +78,7 @@ You can use the shipped docker container to develop and test.
 
 Launch specs in the docker container:
 ```
-docker-compose run --rm php bin/console phpspec run
+make tests
 ```
 
 Launch a command with XDebug:
@@ -88,7 +88,7 @@ PHP_XDEBUG_ENABLED=1 docker-compose run --rm php app/console nelson:refresh-pack
 
 Automatically fix your code style:
 ```
-docker-compose run --rm php bin/php-cs-fixer fix --config=.php_cs.php
+make fix-cs
 ```
 
 ## Copyrights

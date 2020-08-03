@@ -32,5 +32,7 @@ class InfoTranslatedProgressCommand extends ContainerAwareCommand
         $this->container
             ->get('crowdin.translated_progress.selector')
             ->display($output);
+
+        return 0;
     }
 }

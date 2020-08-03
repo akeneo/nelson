@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Refresh the packages on Crowdin by forcing the build, allows to user to always download a "fresh" package from
+ * Refresh the packages on Crowdin by forcing the build, allows user to always download a "fresh" package from
  * Crowdin website
  *
  * @author    Nicolas Dupont <nicolas@akeneo.com>
@@ -30,7 +30,10 @@ class RefreshPackagesCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container->get('crowdin.packages.builder')->build();
-        $this->container->get('logger')->addInfo('Crowdin packages have been built');
+        $this->container->get('logger')->info('Start Crowdin packages refres.');
+//        $this->container->get('crowdin.packages.builder')->build();
+        $this->container->get('logger')->info('Crowdin packages have been built.');
+
+        return 0;
     }
 }

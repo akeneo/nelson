@@ -20,10 +20,10 @@
     "require": {
         "php": ">=7.3",
         "ext-simplexml": "*",
+        "symfony/config": "^5.0",
         "symfony/console": "^5.0",
         "symfony/yaml": "^5.0",
         "symfony/finder": "^5.0",
-        "symfony/config": "^5.0",
         "monolog/monolog": "@stable",
         "akeneo/crowdin-api": "1.0.0-alpha7",
         "knplabs/github-api": "1.4.14",

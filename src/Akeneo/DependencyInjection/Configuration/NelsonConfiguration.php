@@ -19,10 +19,10 @@ class NelsonConfiguration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $builder = new TreeBuilder();
+        $builder = new TreeBuilder('nelson');
 
         return $builder
-            ->root('nelson')
+            ->getRootNode()
                 ->children()
                     ->arrayNode('finder_options')
                         ->info('Functions to apply to finder to select original files')

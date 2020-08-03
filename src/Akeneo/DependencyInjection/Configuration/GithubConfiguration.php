@@ -19,10 +19,10 @@ class GithubConfiguration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $builder = new TreeBuilder();
+        $builder = new TreeBuilder('github');
 
         return $builder
-            ->root('github')
+            ->getRootNode()
                 ->children()
                     ->scalarNode('token')->isRequired()
                         ->info('Token of the user will generate the Pull Requests')

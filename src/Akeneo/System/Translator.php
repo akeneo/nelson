@@ -3,8 +3,8 @@
 namespace Akeneo\System;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Translation\Formatter\MessageFormatterInterface;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
-use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Translator as BaseTranslator;
 
 /**
@@ -21,7 +21,7 @@ class Translator extends BaseTranslator
      */
     public function __construct(
         string $locale,
-        ?MessageSelector $selector = null,
+        ?MessageFormatterInterface $selector = null,
         ?string $cacheDir = null,
         ?bool $debug = false
     ) {

@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     nelson.translation_files.provider:
         class: Akeneo\Nelson\TranslationFilesProvider
         arguments:

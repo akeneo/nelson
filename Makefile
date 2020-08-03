@@ -6,6 +6,7 @@ fix-cs:
 
 .PHONY: vendor
 vendor:
+	rm composer.lock
 	$(DOCKER_RUN) composer validate --no-check-all
 	$(DOCKER_RUN) php -d memory_limit=4G /usr/local/bin/composer install
 

@@ -11,6 +11,7 @@ use Akeneo\Git\ProjectCloner;
 use Akeneo\System\Executor;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class executes all the steps to push translation keys from Github to Crowdin.
@@ -41,27 +42,27 @@ class PushTranslationKeysExecutor
         Executor $systemExecutor,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->cloner             = $cloner;
-        $this->projectInfo        = $projectInfo;
+        $this->cloner = $cloner;
+        $this->projectInfo = $projectInfo;
         $this->directoriesCreator = $directoriesCreator;
-        $this->filesCreator       = $filesCreator;
-        $this->filesUpdater       = $filesUpdater;
-        $this->filesProvider      = $filesProvider;
-        $this->systemExecutor     = $systemExecutor;
-        $this->eventDispatcher    = $eventDispatcher;
+        $this->filesCreator = $filesCreator;
+        $this->filesUpdater = $filesUpdater;
+        $this->filesProvider = $filesProvider;
+        $this->systemExecutor = $systemExecutor;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Push translation keys from Github to Crowdin.
      *
      * @param array|null $branches [githubBranch => crowdinFolder] or [branch]
-     *                        where branch is the same name between Github and Crowdin folder
+     *                             where branch is the same name between Github and Crowdin folder
      * @param string     $options
      */
     public function execute($branches, $options)
     {
         $updateDir = $options['update_dir'];
-        $isMapped  = $this->isArrayAssociative($branches);
+        $isMapped = $this->isArrayAssociative($branches);
 
         foreach ($branches as $githubBranch => $crowdinFolder) {
             if (!$isMapped) {
@@ -81,12 +82,12 @@ class PushTranslationKeysExecutor
     protected function pushTranslations($githubBranch, $crowdinFolder, array $options)
     {
         $updateDir = $options['update_dir'];
-        $dryRun    = $options['dry_run'];
+        $dryRun = $options['dry_run'];
 
-        $this->eventDispatcher->dispatch(Events::PRE_NELSON_PUSH, new GenericEvent($this, [
-            'githubBranch'  => (null === $githubBranch ? 'master' : $githubBranch),
-            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
-        ]));
+        $this->eventDispatcher->dispatch(new GenericEvent($this, [
+            'githubBranch' => (null === $githubBranch ? 'master' : $githubBranch),
+            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder),
+        ]), Events::PRE_NELSON_PUSH);
 
         $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
         $files = $this->filesProvider->provideTranslations($projectDir);
@@ -94,7 +95,7 @@ class PushTranslationKeysExecutor
         $this->filesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
         $this->filesUpdater->update($files, $crowdinFolder, $dryRun);
 
-        $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_NELSON_PUSH);
     }
 
     /**

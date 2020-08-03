@@ -19,6 +19,7 @@ services:
             - 'nelson'
 
     event_dispatcher:
+        public: true
         class: Symfony\Component\EventDispatcher\EventDispatcher
 
     system.executor:

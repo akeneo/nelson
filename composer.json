@@ -26,9 +26,10 @@
         "symfony/finder": "^5.0",
         "monolog/monolog": "@stable",
         "akeneo/crowdin-api": "1.0.0-alpha7",
-        "knplabs/github-api": "1.4.14",
+        "knplabs/github-api": "^2.15",
         "symfony/dependency-injection": "^5.0",
-        "symfony/translation": "^5.0"
+        "symfony/translation": "^5.0",
+        "php-http/guzzle6-adapter": "^1.1"
     },
     "require-dev": {
         "phpspec/phpspec": "@stable",

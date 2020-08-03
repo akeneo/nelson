@@ -44,10 +44,10 @@ class TranslationFilesCleaner
         $patternSuffix,
         $finderOptions
     ) {
-        $this->systemExecutor  = $systemExecutor;
-        $this->patternSuffix   = $patternSuffix;
+        $this->systemExecutor = $systemExecutor;
+        $this->patternSuffix = $patternSuffix;
         $this->eventDispatcher = $eventDispatcher;
-        $this->finderOptions   = $finderOptions;
+        $this->finderOptions = $finderOptions;
     }
 
     /**
@@ -131,10 +131,13 @@ class TranslationFilesCleaner
                 $pathInfo['extension']
             );
 
-            $this->eventDispatcher->dispatch(Events::NELSON_RENAME, new GenericEvent($this, [
-                'from' => $file,
-                'to'   => $target
-            ]));
+            $this->eventDispatcher->dispatch(
+                new GenericEvent($this, [
+                    'from' => $file,
+                    'to' => $target,
+                ]),
+                Events::NELSON_RENAME
+            );
 
             rename($file, $target);
         }
@@ -170,10 +173,10 @@ class TranslationFilesCleaner
 
             if ($dirExists) {
                 $projectFinder
-            ->in($fullProjectDir)
-            ->name($this->finderOptions['name'])
-            ->name($filename . '.*')
-            ->files();
+                    ->in($fullProjectDir)
+                    ->name($this->finderOptions['name'])
+                    ->name($filename . '.*')
+                    ->files();
             }
             if ($dirExists && ($projectFinder->count() > 0)) {
                 $this->systemExecutor->execute(sprintf(
@@ -182,9 +185,12 @@ class TranslationFilesCleaner
                     $fullProjectDir
                 ));
             } else {
-                $this->eventDispatcher->dispatch(Events::NELSON_DROP_USELESS, new GenericEvent($this, [
-                    'file' => $file->getPathname()
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'file' => $file->getPathname(),
+                    ]),
+                    Events::NELSON_DROP_USELESS
+                );
             }
         }
 

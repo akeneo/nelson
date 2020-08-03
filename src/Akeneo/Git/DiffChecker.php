@@ -34,7 +34,7 @@ class DiffChecker
      */
     public function haveDiff($projectDir)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::PRE_GITHUB_CHECK_DIFF);
 
         $commands = [
             sprintf('cd %s && git diff|wc -l', $projectDir),
@@ -48,9 +48,12 @@ class DiffChecker
             $diff += intval($matches['diff']);
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
-            'diff' => $diff
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'diff' => $diff,
+            ]),
+            Events::POST_GITHUB_CHECK_DIFF
+        );
 
         return intval(0 !== $diff);
     }

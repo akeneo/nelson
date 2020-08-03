@@ -13,6 +13,7 @@ use Akeneo\Git\PullRequestMerger;
 use Akeneo\System\Executor;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class executes all the steps to pull translations from Crowdin to Github.
@@ -65,14 +66,14 @@ class PullTranslationsExecutor
         DiffChecker $diffChecker,
         PullRequestMerger $pullRequestMerger
     ) {
-        $this->cloner              = $cloner;
-        $this->pullRequestCreator  = $pullRequestCreator;
-        $this->downloader          = $downloader;
-        $this->status              = $status;
-        $this->extractor           = $extractor;
+        $this->cloner = $cloner;
+        $this->pullRequestCreator = $pullRequestCreator;
+        $this->downloader = $downloader;
+        $this->status = $status;
+        $this->extractor = $extractor;
         $this->translationsCleaner = $translationsCleaner;
-        $this->systemExecutor      = $systemExecutor;
-        $this->eventDispatcher     = $eventDispatcher;
+        $this->systemExecutor = $systemExecutor;
+        $this->eventDispatcher = $eventDispatcher;
         $this->diffChecker = $diffChecker;
         $this->pullRequestMerger = $pullRequestMerger;
     }
@@ -111,14 +112,17 @@ class PullTranslationsExecutor
      */
     protected function pullTranslations($githubBranch, $crowdinFolder, array $packages, array $options)
     {
-        $updateDir  = $options['base_dir'] . '/update';
+        $updateDir = $options['base_dir'] . '/update';
         $cleanerDir = $options['base_dir'] . '/clean';
-        $dryRun     = isset($options['dry_run']) && $options['dry_run'];
+        $dryRun = isset($options['dry_run']) && $options['dry_run'];
 
-        $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
-            'githubBranch'  => (null === $githubBranch ? 'master' : $githubBranch),
-            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'githubBranch' => (null === $githubBranch ? 'master' : $githubBranch),
+                'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder),
+            ]),
+            Events::PRE_NELSON_PULL
+        );
 
         $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
         $this->downloader->download($packages, $options['base_dir'], $crowdinFolder);
@@ -133,7 +137,7 @@ class PullTranslationsExecutor
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_NELSON_PULL);
     }
 
     /**

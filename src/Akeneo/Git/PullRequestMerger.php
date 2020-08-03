@@ -37,7 +37,8 @@ class PullRequestMerger
             $pullRequest['base']['user']['login'],
             $pullRequest['base']['repo']['name'],
             $pullRequest['number'],
-            $mergeTitle
+            $mergeTitle,
+            $pullRequest['merge_commit_sha']
         );
 
         $this->eventDispatcher->dispatch(new GenericEvent($this, [

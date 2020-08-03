@@ -31,7 +31,7 @@ class RefreshPackagesCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container->get('logger')->info('Start Crowdin packages refres.');
-//        $this->container->get('crowdin.packages.builder')->build();
+        $this->container->get('crowdin.packages.builder')->build();
         $this->container->get('logger')->info('Crowdin packages have been built.');
 
         return 0;

@@ -31,7 +31,7 @@ class PullTranslationsCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->registerSubscribers();
 
@@ -42,6 +42,8 @@ class PullTranslationsCommand extends ContainerAwareCommand
         /** @var PullTranslationsExecutor $executor */
         $executor = $this->container->get('nelson.pull_translations_executor');
         $executor->execute($branches, $options);
+
+        return 0;
     }
 
     /**

@@ -1,4 +1,5 @@
 vendor/
-app/logs/
 !config/example.yml
 config/*
+
+var/

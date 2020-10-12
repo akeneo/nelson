@@ -30,6 +30,8 @@ crowdin:
         locale_map:
             fr_FR: fr
             fr_BE: fr_BE
+        # You can specify a valid locale pattern to check after before renaming the files
+        valid_locale_pattern: /^[a-z]{2}_[A-Z]{2}$/
     upload:
         base_dir: /tmp/nelson-upload
 

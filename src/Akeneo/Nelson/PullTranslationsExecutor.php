@@ -123,7 +123,12 @@ class PullTranslationsExecutor
         $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
         $this->downloader->download($packages, $options['base_dir'], $crowdinFolder);
         $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
-        $this->translationsCleaner->cleanFiles($options['locale_map'], $cleanerDir, $projectDir);
+        $this->translationsCleaner->cleanFiles(
+            $options['locale_map'],
+            $cleanerDir,
+            $projectDir,
+            $options['valid_locale_pattern'] ?? '/^.+$/'
+        );
         $this->translationsCleaner->moveFiles($cleanerDir, $projectDir);
 
         if ($this->diffChecker->haveDiff($projectDir)) {

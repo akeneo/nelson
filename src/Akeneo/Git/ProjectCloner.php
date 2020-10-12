@@ -223,11 +223,11 @@ class ProjectCloner
         ));
 
         // Push latest updates
-        $this->executor->execute(sprintf(
-            'cd %s && git push origin %s',
-            $projectDir,
-            $baseBranch
-        ));
+//        $this->executor->execute(sprintf(
+//            'cd %s && git push origin %s',
+//            $projectDir,
+//            $baseBranch
+//        ));
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_UPDATE);
     }

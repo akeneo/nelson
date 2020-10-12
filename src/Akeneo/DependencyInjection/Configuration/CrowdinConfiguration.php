@@ -31,6 +31,7 @@ class CrowdinConfiguration implements ConfigurationInterface
                         ->isRequired()
                         ->children()
                             ->scalarNode('base_dir')->isRequired()->end()
+                            ->scalarNode('valid_locale_pattern')->end()
                             ->arrayNode('locale_map')
                                 ->defaultValue([])
                                 ->useAttributeAsKey('name')

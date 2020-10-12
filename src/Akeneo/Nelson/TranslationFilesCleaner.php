@@ -32,39 +32,33 @@ class TranslationFilesCleaner
     /** @var array */
     protected $finderOptions;
 
-    /**
-     * @param Executor                 $systemExecutor
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string                   $patternSuffix
-     * @param array                    $finderOptions
-     */
     public function __construct(
         Executor $systemExecutor,
         EventDispatcherInterface $eventDispatcher,
-        $patternSuffix,
-        $finderOptions
+        string $patternSuffix,
+        array $finderOptions
     ) {
-        $this->systemExecutor  = $systemExecutor;
-        $this->patternSuffix   = $patternSuffix;
+        $this->systemExecutor = $systemExecutor;
+        $this->patternSuffix = $patternSuffix;
         $this->eventDispatcher = $eventDispatcher;
-        $this->finderOptions   = $finderOptions;
+        $this->finderOptions = $finderOptions;
     }
 
     /**
      * Clean the files before the Pull Request creation
-     *
-     * @param array  $localeMap
-     * @param string $cleanerDir
-     * @param string $projectDir
      */
-    public function cleanFiles(array $localeMap, $cleanerDir, $projectDir)
-    {
+    public function cleanFiles(
+        array $localeMap,
+        string $cleanerDir,
+        string $projectDir,
+        string $validLocalePattern
+    ): void {
         $finder = new Finder();
         $translatedFiles = $finder->in($cleanerDir)->files();
 
         foreach ($translatedFiles as $file) {
             $this->cleanCrowdinYamlTranslation($file);
-            $this->renameTranslation($file, $localeMap);
+            $this->renameTranslation($file, $localeMap, $validLocalePattern);
         }
     }
 
@@ -115,7 +109,7 @@ class TranslationFilesCleaner
      * @param SplFileInfo $file
      * @param array       $localeMap
      */
-    protected function renameTranslation($file, $localeMap)
+    protected function renameTranslation(SplFileInfo $file, array $localeMap, string $validLocalePattern)
     {
         $pathInfo = pathinfo($file);
 
@@ -131,12 +125,14 @@ class TranslationFilesCleaner
                 $pathInfo['extension']
             );
 
-            $this->eventDispatcher->dispatch(Events::NELSON_RENAME, new GenericEvent($this, [
-                'from' => $file,
-                'to'   => $target
-            ]));
+            if (preg_match($validLocalePattern, $simpleLocale)) {
+                $this->eventDispatcher->dispatch(Events::NELSON_RENAME, new GenericEvent($this, [
+                    'from' => $file,
+                    'to' => $target,
+                ]));
 
-            rename($file, $target);
+                rename($file, $target);
+            }
         }
     }
 
@@ -170,10 +166,10 @@ class TranslationFilesCleaner
 
             if ($dirExists) {
                 $projectFinder
-            ->in($fullProjectDir)
-            ->name($this->finderOptions['name'])
-            ->name($filename . '.*')
-            ->files();
+                    ->in($fullProjectDir)
+                    ->name($this->finderOptions['name'])
+                    ->name($filename . '.*')
+                    ->files();
             }
             if ($dirExists && ($projectFinder->count() > 0)) {
                 $this->systemExecutor->execute(sprintf(
@@ -183,7 +179,7 @@ class TranslationFilesCleaner
                 ));
             } else {
                 $this->eventDispatcher->dispatch(Events::NELSON_DROP_USELESS, new GenericEvent($this, [
-                    'file' => $file->getPathname()
+                    'file' => $file->getPathname(),
                 ]));
             }
         }

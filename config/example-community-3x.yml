@@ -1,0 +1,54 @@
+github:
+    token: the_github_token
+    fork_owner: nelson-akeneo
+    owner: akeneo
+    repository: pim-community-dev
+    branches: ['3.2']
+crowdin:
+    project: akeneo
+    key: the_crowdin_key
+    min_translated_progress: 80
+    download:
+        base_dir: /tmp/crowdin-download
+        valid_locale_pattern: /^[a-z]{2}_[A-Z]{2}$/
+        locale_map:
+            pt-PT: pt_PT
+            pt-BR: pt_BR
+            ca-ES: ca_ES
+            da-DK: da_DK
+            de-DE: de_DE
+            en-US: en_US
+            en-NZ: en_NZ
+            en-GB: en_GB
+            es-ES: es_ES
+            fi-FI: fi_FI
+            fr-FR: fr_FR
+            hr-HR: hr_HR
+            nl-NL: nl_NL
+            it-IT: it_IT
+            ja-JP: ja_JP
+            ko-KR: ko_KR
+            ru-RU: ru_RU
+            zh-CN: zh_CN
+            sv-SE: sv_SE
+            es-VE: es_VE
+            id-ID: id_ID
+            pl-PL: pl_PL
+            ro-RO: ro_RO
+            tl-TL: tl_TL
+            tr-TR: tr_TR
+            uk_UK: uk_UK
+    folders: ['PimCommunity', 'AkeneoCommunity', 'AkeneoToolCommunity']
+    upload:
+        base_dir: /tmp/crowdin-upload
+nelson:
+    finder_options:
+        in: 'src/'
+        notPath: '/Oro/'
+        path: '/Resources\/translations/'
+        name: '*.en_US.yml'
+    target_rules:
+        '/Resources/translations': ''
+        'src/Pim': 'PimCommunity'
+        'src/Akeneo': 'AkeneoCommunity'
+    pattern_suffix: 'Community'

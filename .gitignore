@@ -5,4 +5,5 @@ bin
 app/console
 app/logs/
 !config/example.yml
+!config/example-*.yml
 config/*

@@ -39,7 +39,7 @@ nelson:
     # These options are passed to a Symfony Finder to find your original translation files.
     # Be careful, only select your origin language files (for example, only *.en.yml files).
     finder_options:
-        in: 'src/'
+        in: 'src/' # This can be an array of folders
         notPath: '/not_translated_folder/'
         path: '/Resources\/translations/'
         name: '*.en.yml'

@@ -37,11 +37,20 @@ class TranslationFilesProvider
     public function provideTranslations($projectDir)
     {
         $finder = new Finder();
-        $in = $projectDir;
         if (isset($this->finderOptions['in'])) {
-            $in = sprintf('%s%s%s', $in, DIRECTORY_SEPARATOR, $this->finderOptions['in']);
+            if (is_array(isset($this->finderOptions['in']))) {
+                $inFolders = isset($this->finderOptions['in']);
+            } else {
+                $inFolders = [isset($this->finderOptions['in'])];
+            }
+            foreach ($inFolders as $inFolder) {
+                $inFolder = sprintf('%s%s%s', $projectDir, DIRECTORY_SEPARATOR, $inFolder);
+                $finder->in($inFolder);
+            }
+        } else {
+            $finder->in($projectDir);
         }
-        $finder->in($in);
+
         foreach ($this->finderOptions as $function => $argument) {
             if ('in' !== $function) {
                 $finder = $finder->$function($argument);

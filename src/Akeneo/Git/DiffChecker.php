@@ -37,8 +37,8 @@ class DiffChecker
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
 
         $commands = [
-            sprintf('cd %s && git diff|wc -l', $projectDir),
-            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l', $projectDir),
+            sprintf('cd %s && git diff|wc -l|awk \'{$1=$1};1\'', $projectDir),
+            sprintf('cd %s && git ls-files --others --exclude-standard|wc -l|awk \'{$1=$1};1\'', $projectDir),
         ];
         $diff = 0;
         foreach ($commands as $command) {

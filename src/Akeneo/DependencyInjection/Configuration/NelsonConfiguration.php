@@ -26,8 +26,18 @@ class NelsonConfiguration implements ConfigurationInterface
                 ->children()
                     ->arrayNode('finder_options')
                         ->info('Functions to apply to finder to select original files')
-                        ->prototype('scalar')->end()
-                        ->defaultValue([])
+                        ->ignoreExtraKeys(false)
+                        ->children()
+                            ->arrayNode('in')
+                                ->beforeNormalization()->ifString()->then(
+                                    function ($value) {
+                                        return [$value];
+                                    }
+                                )->end()
+                                ->defaultValue([])
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
                     ->end()
                     ->arrayNode('target_rules')
                         ->info('Regular expression to generate target from path')

@@ -39,8 +39,11 @@ class TranslationFilesProvider
         $finder = new Finder();
         $in = $projectDir;
         if (isset($this->finderOptions['in'])) {
-            $in = sprintf('%s%s%s', $in, DIRECTORY_SEPARATOR, $this->finderOptions['in']);
+            $in = array_map(function (string $directory) use ($in) {
+                return sprintf('%s%s%s', $in, DIRECTORY_SEPARATOR, $directory);
+            }, $this->finderOptions['in']);
         }
+
         $finder->in($in);
         foreach ($this->finderOptions as $function => $argument) {
             if ('in' !== $function) {

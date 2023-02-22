@@ -78,7 +78,7 @@ You can use the shipped docker container to develop and test.
 
 Launch specs in the docker container:
 ```
-docker-compose run --rm php bin/console phpspec run
+docker-compose run --rm php vendor/bin/phpspec run
 ```
 
 Launch a command with XDebug:
@@ -88,7 +88,7 @@ PHP_XDEBUG_ENABLED=1 docker-compose run --rm php app/console nelson:refresh-pack
 
 Automatically fix your code style:
 ```
-docker-compose run --rm php bin/php-cs-fixer fix --config=.php_cs.php
+docker-compose run --rm php vendor/bin/php-cs-fixer fix --config=.php_cs.php
 ```
 
 ## Copyrights

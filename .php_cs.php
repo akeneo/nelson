@@ -2,8 +2,7 @@
 $finder = PhpCsFixer\Finder::create();
 $finder->name('*.php')
     ->notName('*Spec.php')
-    ->files()
-    ->in(__DIR__);
+    ->files();
 
 return PhpCsFixer\Config::create()
     ->setUsingCache(false)

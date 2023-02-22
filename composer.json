@@ -20,6 +20,8 @@
     ],
     "require": {
         "php": ">=7.1",
+        "ext-simplexml": "*",
+        "ext-zip": "*",
         "symfony/console": "2.7.3",
         "symfony/yaml": "2.7.3",
         "symfony/finder": "2.7.3",
@@ -36,8 +38,5 @@
     },
     "autoload": {
         "psr-0": {"Akeneo\\": "src/"}
-    },
-    "config": {
-        "bin-dir": "bin"
     }
 }

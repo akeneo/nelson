@@ -7,3 +7,5 @@ app/logs/
 !config/example.yml
 !config/example-*.yml
 config/*
+var/
+.php_cs.cache

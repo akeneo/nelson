@@ -52,6 +52,6 @@ nelson:
     # Can be useful when your Crowdin project is linked to several github repositories.
     pattern_suffix: 'Community'
     # Optional: log the application executions in this file.
-    log_file: 'app/logs/application.log'
+    log_file: 'var/logs/application.log'
     # Optional: translate logs. Default: 'en_US'
     log_locale: 'fr_FR'

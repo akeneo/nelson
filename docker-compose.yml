@@ -1,15 +1,18 @@
-version: '3'
+version: '3.7'
 
 services:
     php:
-        image: 'akeneo/php:7.1'
+        image: 'akeneo/nelson:7.2'
+        build:
+            context: .
         user: 'docker'
-        volumes:
-            - './:/srv/nelson'
-            - '${SSH_AUTH_SOCK}:/ssh-agent:ro'
         working_dir: '/srv/nelson'
         environment:
-            PHP_IDE_CONFIG: 'serverName=nelson-cli'
-            PHP_XDEBUG_ENABLED: "${PHP_XDEBUG_ENABLED:-0}"
+            PHP_IDE_CONFIG: 'serverName=nelson'
+            XDEBUG_MODE: '${XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: 'remote_host=172.17.0.1'
             SSH_AUTH_SOCK: '/ssh-agent'
+            GIT_SSH_COMMAND: 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+        volumes:
+            - '${SSH_AUTH_SOCK}:/ssh-agent:ro'
+            - './:/srv/nelson'

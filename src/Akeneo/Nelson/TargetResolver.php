@@ -37,6 +37,7 @@ class TargetResolver
             $searches[] = $search;
             $replaces[] = $replace;
         }
+
         $targetPath = str_replace($searches, $replaces, $source);
 
         return $targetPath;

@@ -41,6 +41,7 @@ class NelsonConfiguration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('target_rules')
                         ->info('Regular expression to generate target from path')
+                        ->normalizeKeys(false)
                         ->prototype('scalar')->end()
                         ->defaultValue([])
                     ->end()

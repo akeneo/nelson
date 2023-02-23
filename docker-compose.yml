@@ -11,8 +11,6 @@ services:
             PHP_IDE_CONFIG: 'serverName=nelson'
             XDEBUG_MODE: '${XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: 'remote_host=172.17.0.1'
-            SSH_AUTH_SOCK: '/ssh-agent'
             GIT_SSH_COMMAND: 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
         volumes:
-            - '${SSH_AUTH_SOCK}:/ssh-agent:ro'
             - './:/srv/nelson'

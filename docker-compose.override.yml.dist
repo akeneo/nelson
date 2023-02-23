@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+    php:
+        environment:
+            SSH_AUTH_SOCK: '/ssh-agent'
+        volumes:
+            - '${SSH_AUTH_SOCK}:/ssh-agent:ro'

@@ -49,10 +49,8 @@ class TranslationFilesUpdater
 
     /**
      * @param TranslationFile[] $files
-     * @param string            $baseBranch
-     * @param boolean           $dryRun
      */
-    public function update(array $files, $baseBranch, $dryRun = false)
+    public function update(array $files, string $baseBranch, bool $dryRun = false): void
     {
         $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_UPDATE_FILES);
 
@@ -78,7 +76,7 @@ class TranslationFilesUpdater
                     'dry_run' => $dryRun,
                 ]));
             }
-            if (count($service->getTranslations()) > 0) {
+            if (null !== $service->getTranslations() && count($service->getTranslations()) > 0) {
                 $service->execute();
             }
         }

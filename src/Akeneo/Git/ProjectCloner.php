@@ -72,7 +72,7 @@ class ProjectCloner
      *
      * @return string The path of the cloned project
      */
-    public function cloneProject($baseDir, $baseBranch = null)
+    public function cloneProject(string $baseDir, string $baseBranch = null, bool $dryRun = false): string
     {
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
@@ -90,7 +90,7 @@ class ProjectCloner
 
         $this->createBranch($baseBranch, $projectDir);
 
-        $this->update($baseBranch, $projectDir);
+        $this->update($baseBranch, $projectDir, $dryRun);
 
         return $projectDir;
     }
@@ -184,11 +184,8 @@ class ProjectCloner
 
     /**
      * Update the forked repository with latest updates
-     *
-     * @param string|null $baseBranch
-     * @param string      $projectDir
      */
-    protected function update($baseBranch, $projectDir)
+    protected function update(string $baseBranch, string $projectDir, bool $dryRun = false): void
     {
         $this->eventDispatcher->dispatch(Events::PRE_GITHUB_UPDATE, new GenericEvent($this, [
             'owner'      => $this->owner,
@@ -223,11 +220,13 @@ class ProjectCloner
         ));
 
         // Push latest updates
-        $this->executor->execute(sprintf(
-            'cd %s && git push origin %s',
-            $projectDir,
-            $baseBranch
-        ));
+        if (!$dryRun) {
+            $this->executor->execute(sprintf(
+                'cd %s && git push origin %s',
+                $projectDir,
+                $baseBranch
+            ));
+        }
 
         $this->eventDispatcher->dispatch(Events::POST_GITHUB_UPDATE);
     }

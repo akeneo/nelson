@@ -120,7 +120,7 @@ class PullTranslationsExecutor
             'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
         ]));
 
-        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
+        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch, $dryRun);
         $this->downloader->download($packages, $options['base_dir'], $crowdinFolder);
         $this->extractor->extract($packages, $options['base_dir'], $cleanerDir);
         $this->translationsCleaner->cleanFiles(

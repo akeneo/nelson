@@ -43,7 +43,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      */
     protected function getTime()
     {
-        return date('[H:i:s]');
+        return date('[Y-m-d H:i:s]');
     }
 
     /**

@@ -88,7 +88,7 @@ class PushTranslationKeysExecutor
             'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
         ]));
 
-        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch);
+        $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch, $dryRun);
         $files = $this->filesProvider->provideTranslations($projectDir);
         $this->directoriesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
         $this->filesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);

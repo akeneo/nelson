@@ -83,7 +83,7 @@ docker-compose run --rm php vendor/bin/phpspec run
 
 Launch a command with XDebug:
 ```
-PHP_XDEBUG_ENABLED=1 docker-compose run --rm php app/console nelson:refresh-packages --config_file=community-1.x-2.x.yml
+XDEBUG_MODE=debug docker-compose run --rm php app/console nelson:refresh-packages --config_file=community-1.x-2.x.yml
 ```
 
 Automatically fix your code style:

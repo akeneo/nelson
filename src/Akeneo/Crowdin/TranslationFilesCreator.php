@@ -29,11 +29,6 @@ class TranslationFilesCreator
     /** @var TargetResolver */
     protected $targetResolver;
 
-    /**
-     * @param Client                   $client
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param TargetResolver           $targetResolver
-     */
     public function __construct(
         Client $client,
         EventDispatcherInterface $eventDispatcher,
@@ -49,11 +44,13 @@ class TranslationFilesCreator
      *
      * @param TranslationFile[]      $files
      * @param TranslationProjectInfo $projectInfo
-     * @param string                 $baseBranch
-     * @param boolean                $dryRun
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
-    {
+    public function create(
+        array $files,
+        TranslationProjectInfo $projectInfo,
+        string $baseBranch,
+        bool $dryRun = false
+    ): void {
         $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_FILES);
 
         $existingFiles = $projectInfo->getExistingFiles($baseBranch);
@@ -79,7 +76,7 @@ class TranslationFilesCreator
                     'dry_run' => $dryRun,
                 ]));
             }
-            if (count($service->getTranslations()) > 0) {
+            if (null !== $service->getTranslations() && count($service->getTranslations()) > 0) {
                 $service->execute();
             }
         }
@@ -93,7 +90,7 @@ class TranslationFilesCreator
      *
      * @return TranslationFile[]
      */
-    protected function filterExistingFiles($files, $existingFiles)
+    protected function filterExistingFiles(array $files, array $existingFiles): array
     {
         $result = [];
 

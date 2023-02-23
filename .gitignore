@@ -9,3 +9,4 @@ app/logs/
 config/*
 var/
 .php_cs.cache
+docker-compose.override.yml

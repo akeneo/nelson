@@ -1,0 +1,30 @@
+name: Nelson tests
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    docker:
+        timeout-minutes: 10
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Build image
+              run: docker-compose build php
+
+            - name: test directories
+              run: mkdir vendor && chmod -R 0777 vendor
+
+            - name: Install dependencies
+              run: docker-compose run --rm php composer install
+
+            - name: Run tests
+              run: make tests

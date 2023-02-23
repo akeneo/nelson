@@ -21,16 +21,15 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class PushTranslationKeysExecutor
 {
-    /**
-     * @param ProjectCloner                 $cloner
-     * @param TranslationProjectInfo        $projectInfo
-     * @param TranslationDirectoriesCreator $directoriesCreator
-     * @param TranslationFilesCreator       $filesCreator
-     * @param TranslationFilesUpdater       $filesUpdater
-     * @param TranslationFilesProvider      $filesProvider
-     * @param Executor                      $systemExecutor
-     * @param EventDispatcherInterface      $eventDispatcher
-     */
+    private $cloner;
+    private $projectInfo;
+    private $directoriesCreator;
+    private $filesCreator;
+    private $filesUpdater;
+    private $filesProvider;
+    private $systemExecutor;
+    private $eventDispatcher;
+
     public function __construct(
         ProjectCloner $cloner,
         TranslationProjectInfo $projectInfo,

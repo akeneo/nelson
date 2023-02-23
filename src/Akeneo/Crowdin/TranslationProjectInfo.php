@@ -29,7 +29,6 @@ class TranslationProjectInfo
     {
         $this->client = $client;
         $this->logger = $logger;
-        $this->infos  = null;
     }
 
     /**

@@ -33,8 +33,10 @@
         "symfony/translation": "^2.7"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.2",
         "phpspec/phpspec": "2.5.*",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-deprecation-rules": "^1.1"
     },
     "autoload": {
         "psr-0": {"Akeneo\\": "src/"}

@@ -29,3 +29,36 @@ services:
         class: Akeneo\System\Translator
         arguments:
             - %nelson.log_locale%
+
+    Akeneo\Command\InfoTranslatedProgressCommand:
+        class: Akeneo\Command\InfoTranslatedProgressCommand
+        arguments:
+            - '@crowdin.translated_progress.selector'
+
+    Akeneo\Command\PullTranslationsCommand:
+        class: Akeneo\Command\PullTranslationsCommand
+        arguments:
+            - '@nelson.pull_translations_executor'
+            - '@event_dispatcher'
+            - '@nelson.console_logger'
+            - '@github.console_logger'
+            - '@crowdin.console_logger'
+            - '%crowdin.download%'
+            - '%github.branches%'
+
+    Akeneo\Command\PushTranslationKeysCommand:
+        class: Akeneo\Command\PushTranslationKeysCommand
+        arguments:
+            - '@nelson.push_translation_keys_executor'
+            - '@event_dispatcher'
+            - '@nelson.console_logger'
+            - '@github.console_logger'
+            - '@crowdin.console_logger'
+            - '%crowdin.upload%'
+            - '%github.branches%'
+
+    Akeneo\Command\RefreshPackagesCommand:
+        class: Akeneo\Command\RefreshPackagesCommand
+        arguments:
+            - '@crowdin.packages.builder'
+            - '@logger'

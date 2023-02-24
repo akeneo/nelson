@@ -3,9 +3,12 @@
 namespace Akeneo\Command;
 
 use Akeneo\Nelson\PushTranslationKeysExecutor;
+use Akeneo\System\AbstractConsoleLogger;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Clone the project in a temporary directory, push any translation file (only english) to Crowdin
@@ -16,8 +19,42 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class PushTranslationKeysCommand extends ContainerAwareCommand
+class PushTranslationKeysCommand extends Command
 {
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+    /** @var AbstractConsoleLogger */
+    private $nelsonLogger;
+    /** @var AbstractConsoleLogger */
+    private $githubLogger;
+    /** @var AbstractConsoleLogger */
+    private $crowdinLogger;
+    /** @var PushTranslationKeysExecutor */
+    private $pushTranslationKeysExecutor;
+    /** @var array */
+    private $crowdinUploadConfig;
+    /** @var array */
+    private $githubBranches;
+
+    public function __construct(
+        PushTranslationKeysExecutor $pushTranslationKeysExecutor,
+        EventDispatcherInterface $eventDispatcher,
+        AbstractConsoleLogger $nelsonLogger,
+        AbstractConsoleLogger $githubLogger,
+        AbstractConsoleLogger $crowdinLogger,
+        array $crowdinUploadConfig,
+        array $githubBranches
+    ) {
+        parent::__construct();
+        $this->eventDispatcher = $eventDispatcher;
+        $this->nelsonLogger = $nelsonLogger;
+        $this->githubLogger = $githubLogger;
+        $this->crowdinLogger = $crowdinLogger;
+        $this->pushTranslationKeysExecutor = $pushTranslationKeysExecutor;
+        $this->crowdinUploadConfig = $crowdinUploadConfig;
+        $this->githubBranches = $githubBranches;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -37,14 +74,11 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
         $this->registerSubscribers();
 
         $options = [
-            'update_dir' => $this->container->getParameter('crowdin.upload')['base_dir'] . '/update',
-            'dry_run'    => $input->getOption('dry-run')
+            'update_dir' => $this->crowdinUploadConfig['base_dir'] . '/update',
+            'dry_run' => $input->getOption('dry-run'),
         ];
-        $branches  = $this->container->getParameter('github.branches');
 
-        /** @var PushTranslationKeysExecutor $executor */
-        $executor = $this->container->get('nelson.push_translation_keys_executor');
-        $executor->execute($branches, $options);
+        $this->pushTranslationKeysExecutor->execute($this->githubBranches, $options);
     }
 
     /**
@@ -52,9 +86,8 @@ class PushTranslationKeysCommand extends ContainerAwareCommand
      */
     protected function registerSubscribers()
     {
-        $eventDispatcher = $this->container->get('event_dispatcher');
-        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
+        $this->eventDispatcher->addSubscriber($this->nelsonLogger);
+        $this->eventDispatcher->addSubscriber($this->githubLogger);
+        $this->eventDispatcher->addSubscriber($this->crowdinLogger);
     }
 }

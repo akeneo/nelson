@@ -3,9 +3,13 @@
 namespace Akeneo\Command;
 
 use Akeneo\Nelson\PullTranslationsExecutor;
+use Akeneo\System\AbstractConsoleLogger;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Clone the project in a temporary directory, download translations from Crowdin, clean the translation files, open
@@ -15,8 +19,42 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class PullTranslationsCommand extends ContainerAwareCommand
+class PullTranslationsCommand extends Command
 {
+    /** @var PullTranslationsExecutor */
+    private $pullTranslationsExecutor;
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+    /** @var AbstractConsoleLogger */
+    private $nelsonLogger;
+    /** @var AbstractConsoleLogger */
+    private $githubLogger;
+    /** @var AbstractConsoleLogger */
+    private $crowdinLogger;
+    /** @var array */
+    private $crowdinDownloadConfig;
+    /** @var array */
+    private $githubBranches;
+
+    public function __construct(
+        PullTranslationsExecutor $pullTranslationsExecutor,
+        EventDispatcherInterface $eventDispatcher,
+        AbstractConsoleLogger $nelsonLogger,
+        AbstractConsoleLogger $githubLogger,
+        AbstractConsoleLogger $crowdinLogger,
+        array $crowdinDownloadConfig,
+        array $githubBranches
+    ) {
+        parent::__construct();
+        $this->pullTranslationsExecutor = $pullTranslationsExecutor;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->nelsonLogger = $nelsonLogger;
+        $this->githubLogger = $githubLogger;
+        $this->crowdinLogger = $crowdinLogger;
+        $this->crowdinDownloadConfig = $crowdinDownloadConfig;
+        $this->githubBranches = $githubBranches;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -35,13 +73,10 @@ class PullTranslationsCommand extends ContainerAwareCommand
     {
         $this->registerSubscribers();
 
-        $branches = $this->container->getParameter('github.branches');
-        $options  = $this->container->getParameter('crowdin.download');
+        $options = $this->crowdinDownloadConfig;
         $options['dry_run'] = $input->getOption('dry-run');
 
-        /** @var PullTranslationsExecutor $executor */
-        $executor = $this->container->get('nelson.pull_translations_executor');
-        $executor->execute($branches, $options);
+        $this->pullTranslationsExecutor->execute($this->githubBranches, $options);
     }
 
     /**
@@ -49,9 +84,8 @@ class PullTranslationsCommand extends ContainerAwareCommand
      */
     protected function registerSubscribers()
     {
-        $eventDispatcher = $this->container->get('event_dispatcher');
-        $eventDispatcher->addSubscriber($this->container->get('nelson.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('github.console_logger'));
-        $eventDispatcher->addSubscriber($this->container->get('crowdin.console_logger'));
+        $this->eventDispatcher->addSubscriber($this->nelsonLogger);
+        $this->eventDispatcher->addSubscriber($this->githubLogger);
+        $this->eventDispatcher->addSubscriber($this->crowdinLogger);
     }
 }

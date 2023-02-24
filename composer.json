@@ -22,30 +22,29 @@
         "php": "8.*",
         "ext-simplexml": "*",
         "ext-zip": "*",
-        "symfony/console": "2.7.3",
-        "symfony/yaml": "2.7.3",
-        "symfony/finder": "2.7.3",
-        "symfony/config": "^2.7",
-        "monolog/monolog": "~1.0",
         "akeneo/crowdin-api": "1.0.0-alpha7",
         "knplabs/github-api": "1.4.14",
-        "symfony/dependency-injection": "^2.7",
-        "symfony/translation": "^2.7"
+        "monolog/monolog": "~1.0",
+        "symfony/config": "^6.2.0",
+        "symfony/console": "^6.2.0",
+        "symfony/dependency-injection": "^6.2.0",
+        "symfony/finder": "^6.2.0",
+        "symfony/translation": "^6.2.0",
+        "symfony/yaml": "^6.2.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "@stable",
-        "phpspec/phpspec": "@stable",
-        "phpstan/phpstan": "@stable",
-        "phpstan/phpstan-deprecation-rules": "@stable",
-        "symfony/phpunit-bridge": "^6.2"
+        "friendsofphp/php-cs-fixer": "^v3.14.0",
+        "phpspec/phpspec": "^7.3.0",
+        "phpstan/phpstan": "^1.10.0",
+        "phpstan/phpstan-deprecation-rules": "^1.1.0"
     },
     "autoload": {
         "psr-4": {
-            "Akeneo\\": "src/",
+            "Akeneo\\": "src/Akeneo",
             "spec\\Akeneo\\": "spec/Akeneo"
         }
     },
-    "autoload-dev": {
-        "psr-4": {"Tests\\Akeneo\\": "tests/Akeneo/"}
+    "config": {
+        "sort-packages": true
     }
 }

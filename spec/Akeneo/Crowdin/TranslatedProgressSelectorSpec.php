@@ -10,6 +10,7 @@ use Prophecy\Argument;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
@@ -68,6 +69,7 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
 
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher, 50, ['a_folder'], ['master']);
     }
 

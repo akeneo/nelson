@@ -7,6 +7,7 @@ use Github\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PullRequestMergerSpec extends ObjectBehavior
 {
@@ -14,6 +15,7 @@ class PullRequestMergerSpec extends ObjectBehavior
         Client $client,
         EventDispatcherInterface $eventDispatcher
     ) {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher);
     }
 
@@ -26,8 +28,8 @@ class PullRequestMergerSpec extends ObjectBehavior
             'number' => 78556,
             'base' => [
                 'user' => ['login' => 'nelson'],
-                'repo' => ['name' => 'akeneo/repo']
-            ]
+                'repo' => ['name' => 'akeneo/repo'],
+            ],
         ]);
     }
 }

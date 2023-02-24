@@ -8,6 +8,7 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class creates all the missing files of a Crowdin project.
@@ -20,23 +21,11 @@ class TranslationFilesCreator
 {
     const MAX_UPLOAD = 10;
 
-    /** @var Client */
-    protected $client;
-
-    /** @var EventDispatcherInterface */
-    protected $eventDispatcher;
-
-    /** @var TargetResolver */
-    protected $targetResolver;
-
     public function __construct(
-        Client $client,
-        EventDispatcherInterface $eventDispatcher,
-        TargetResolver $targetResolver
+        protected Client $client,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected TargetResolver $targetResolver
     ) {
-        $this->client          = $client;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->targetResolver  = $targetResolver;
     }
 
     /**
@@ -51,7 +40,7 @@ class TranslationFilesCreator
         string $baseBranch,
         bool $dryRun = false
     ): void {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_CREATE_FILES);
 
         $existingFiles = $projectInfo->getExistingFiles($baseBranch);
         $fileSets = array_chunk($this->filterExistingFiles($files, $existingFiles), self::MAX_UPLOAD);
@@ -70,18 +59,21 @@ class TranslationFilesCreator
                 if (!$dryRun) {
                     $service->addTranslation($file->getSource(), $target, $file->getPattern());
                 }
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_FILE, new GenericEvent($this, [
-                    'target'  => $target,
-                    'source'  => $file->getSource(),
-                    'dry_run' => $dryRun,
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'target' => $target,
+                        'source' => $file->getSource(),
+                        'dry_run' => $dryRun,
+                    ]),
+                    Events::CROWDIN_CREATE_FILE,
+                );
             }
             if (null !== $service->getTranslations() && count($service->getTranslations()) > 0) {
                 $service->execute();
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_FILES);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_CREATE_FILES);
     }
 
     /**
@@ -95,10 +87,13 @@ class TranslationFilesCreator
         $result = [];
 
         foreach ($files as $file) {
-            if (!in_array($this->targetResolver->getTarget(
-                $file->getProjectDir(),
-                $file->getSource()
-            ), $existingFiles)) {
+            if (!in_array(
+                $this->targetResolver->getTarget(
+                    $file->getProjectDir(),
+                    $file->getSource()
+                ),
+                $existingFiles
+            )) {
                 $result[] = $file;
             }
         }

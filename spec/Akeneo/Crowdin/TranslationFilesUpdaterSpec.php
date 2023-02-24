@@ -9,6 +9,7 @@ use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslationFilesUpdaterSpec extends ObjectBehavior
 {
@@ -17,6 +18,7 @@ class TranslationFilesUpdaterSpec extends ObjectBehavior
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 

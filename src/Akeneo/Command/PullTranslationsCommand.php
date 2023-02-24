@@ -69,7 +69,7 @@ class PullTranslationsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->registerSubscribers();
 
@@ -77,6 +77,8 @@ class PullTranslationsCommand extends Command
         $options['dry_run'] = $input->getOption('dry-run');
 
         $this->pullTranslationsExecutor->execute($this->githubBranches, $options);
+
+        return Command::SUCCESS;
     }
 
     /**

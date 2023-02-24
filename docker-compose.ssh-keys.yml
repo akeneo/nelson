@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+    php:
+        volumes:
+            - './ssh:/home/docker/.ssh:ro'

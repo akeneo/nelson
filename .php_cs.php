@@ -4,8 +4,8 @@ $finder->name('*.php')
     ->notName('*Spec.php')
     ->files();
 
-return PhpCsFixer\Config::create()
-    ->setUsingCache(false)
+$config = new PhpCsFixer\Config();
+return $config->setUsingCache(false)
     ->setRules([
         '@PSR2' => true,
         'linebreak_after_opening_tag' => true,

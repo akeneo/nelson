@@ -1,5 +1,7 @@
 <?php
 
+namespace Akeneo;
+
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -11,23 +13,20 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Class Application
- *
  * @author    Clement Gautier <clement.gautier@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class Application extends BaseApplication
 {
-    /** @var ContainerInterface */
-    protected $container;
+    protected ContainerInterface|ContainerBuilder $container;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct($name = 'crowdin', $version = 'UNKNOWN')
+    public function __construct()
     {
-        parent::__construct($name, $version);
+        parent::__construct('crowdin');
 
         $this->container = new ContainerBuilder();
 
@@ -35,9 +34,9 @@ class Application extends BaseApplication
 
         $input = new ArgvInput();
         $configFilename = $input->getParameterOption(['--config_file', '-c'], getenv('CROWDIN_CONFIG') ?: 'config.yml');
-        $configFilePath = sprintf(__DIR__ . '/../config/%s', $configFilename);
+        $configFilePath = sprintf('%s/config/%s', $this->getProjectDir(), $configFilename);
 
-        if (!file_exists(sprintf($configFilePath))) {
+        if (!file_exists($configFilePath)) {
             $output = new ConsoleOutput();
             $output->writeln(
                 sprintf(
@@ -50,7 +49,7 @@ class Application extends BaseApplication
                 )
             );
         } else {
-            $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__));
+            $loader = new YamlFileLoader($this->container, new FileLocator());
             $loader->load($configFilePath);
             $this->container->compile();
         }
@@ -65,11 +64,11 @@ class Application extends BaseApplication
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../src/Akeneo/Command')
+            ->in($this->getProjectDir() . '/src/Akeneo/Command')
             ->name('*Command.php');
 
         foreach ($finder as $file) {
-            $reflection = new ReflectionClass(
+            $reflection = new \ReflectionClass(
                 sprintf('\\Akeneo\\Command\\%s', $file->getBasename('.php'))
             );
 
@@ -90,7 +89,7 @@ class Application extends BaseApplication
     {
         $finder = new Finder();
         $finder->files()
-            ->in(__DIR__ . '/../src/Akeneo/DependencyInjection/Extension')
+            ->in($this->getProjectDir() . '/src/Akeneo/DependencyInjection/Extension')
             ->name('*Extension.php');
 
         foreach ($finder as $file) {
@@ -103,7 +102,7 @@ class Application extends BaseApplication
     /**
      * {@inheritdoc}
      */
-    protected function getDefaultInputDefinition()
+    protected function getDefaultInputDefinition(): \Symfony\Component\Console\Input\InputDefinition
     {
         $input = parent::getDefaultInputDefinition();
         $input->addOption(
@@ -111,5 +110,10 @@ class Application extends BaseApplication
         );
 
         return $input;
+    }
+
+    public function getProjectDir(): string
+    {
+        return \dirname(__DIR__, 2);
     }
 }

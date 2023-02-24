@@ -2,8 +2,8 @@ services:
     crowdin.client:
         class: Akeneo\Crowdin\Client
         arguments:
-            - %crowdin.project%
-            - %crowdin.key%
+            - '%crowdin.project%'
+            - '%crowdin.key%'
 
     crowdin.console_logger:
         class: Akeneo\Crowdin\ConsoleLogger
@@ -56,6 +56,6 @@ services:
         arguments:
             - '@crowdin.client'
             - '@event_dispatcher'
-            - %crowdin.min_translated_progress%
-            - %crowdin.folders%
-            - %github.branches%
+            - '%crowdin.min_translated_progress%'
+            - '%crowdin.folders%'
+            - '%github.branches%'

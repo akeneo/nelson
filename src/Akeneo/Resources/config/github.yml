@@ -2,7 +2,7 @@ services:
     github.client:
         class: Github\Client
         calls:
-            - ['authenticate', [%github.token%, null, 'http_token']]
+            - ['authenticate', ['%github.token%', null, 'http_token']]
 
     github.console_logger:
         class: Akeneo\Git\ConsoleLogger
@@ -15,9 +15,9 @@ services:
             - '@github.client'
             - '@system.executor'
             - '@event_dispatcher'
-            - %github.fork_owner%
-            - %github.owner%
-            - %github.repository%
+            - '%github.fork_owner%'
+            - '%github.owner%'
+            - '%github.repository%'
 
     github.pull_request_creator:
         class: Akeneo\Git\PullRequestCreator
@@ -25,9 +25,9 @@ services:
             - '@system.executor'
             - '@github.client'
             - '@event_dispatcher'
-            - %github.fork_owner%
-            - %github.owner%
-            - %github.repository%
+            - '%github.fork_owner%'
+            - '%github.owner%'
+            - '%github.repository%'
 
     github.diff_checker:
         class: Akeneo\Git\DiffChecker

@@ -2,14 +2,14 @@ services:
     logger.handler:
         class: Monolog\Handler\StreamHandler
         arguments:
-            - %nelson.log_file%
+            - '%nelson.log_file%'
             - 200
 
     logger:
         class: Monolog\Logger
         arguments:
             - 'nelson'
-            - [@logger.handler]
+            - ['@logger.handler']
 
     console_logger:
         class: Monolog\Logger
@@ -22,13 +22,13 @@ services:
     system.executor:
         class: Akeneo\System\Executor
         arguments:
-            - @logger
-            - %nelson.log_file%
+            - '@logger'
+            - '%nelson.log_file%'
 
     system.translator:
         class: Akeneo\System\Translator
         arguments:
-            - %nelson.log_locale%
+            - '%nelson.log_locale%'
 
     Akeneo\Command\InfoTranslatedProgressCommand:
         class: Akeneo\Command\InfoTranslatedProgressCommand

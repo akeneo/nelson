@@ -108,9 +108,9 @@ class TranslatedProgressSelector
             if ((null !== $branch) && ('branch' === (string)$mainNode->node_type) && ($branch === (string)$mainNode->name)) {
                 foreach ($mainNode->files->item as $mainDir) {
                     if (null === $this->folders || [null] === $this->folders || in_array(
-                            (string)$mainDir->name,
-                            $this->folders
-                        )) {
+                        (string)$mainDir->name,
+                        $this->folders
+                    )) {
                         $approved += (int)$mainDir->approved;
                     }
                 }

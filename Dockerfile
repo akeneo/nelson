@@ -14,26 +14,26 @@ RUN echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' > /etc/apt/
     apt-get --yes install \
         curl \
         git \
-        php7.2-bcmath  \
-        php7.2-cli \
-        php7.2-curl \
-        php7.2-fpm \
-        php7.2-intl \
-        php7.2-mbstring \
-        php7.2-opcache \
-        php7.2-xdebug \
-        php7.2-xml \
-        php7.2-zip \
+        php8.1-bcmath  \
+        php8.1-cli \
+        php8.1-curl \
+        php8.1-fpm \
+        php8.1-intl \
+        php8.1-mbstring \
+        php8.1-opcache \
+        php8.1-xdebug \
+        php8.1-xml \
+        php8.1-zip \
         ssh \
         unzip &&\
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/sbin/php-fpm7.2 /usr/local/sbin/php-fpm
+    ln -s /usr/sbin/php-fpm8.1 /usr/local/sbin/php-fpm
 
-COPY docker/xdebug.ini /etc/php/7.2/mods-available/nelson.ini
+COPY docker/xdebug.ini /etc/php/8.1/mods-available/nelson.ini
 RUN phpenmod nelson
 
-COPY --from=composer:1 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.3 /usr/bin/composer /usr/local/bin/composer
 RUN chmod +x /usr/local/bin/composer \
     && useradd -m docker \
     && mkdir -p /home/docker/.composer/cache \

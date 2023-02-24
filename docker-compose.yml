@@ -2,7 +2,7 @@ version: '3'
 
 services:
     php:
-        image: 'akeneo/nelson:7.2'
+        image: 'akeneo/nelson:php-8.1'
         build:
             context: .
         user: 'docker'

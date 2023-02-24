@@ -6,7 +6,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * This class is an event subscriber and contains methods to display messages on console.
@@ -17,18 +17,10 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 abstract class AbstractConsoleLogger implements EventSubscriberInterface
 {
-    /** @var ConsoleOutputInterface */
-    protected $output;
+    protected ConsoleOutputInterface|ConsoleOutput $output;
 
-    /** @var TranslatorInterface */
-    protected $translator;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(protected TranslatorInterface $translator)
     {
-        $this->translator = $translator;
         $this->output     = new ConsoleOutput();
 
         $formatter = $this->output->getFormatter();
@@ -38,10 +30,8 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
 
     /**
      * Return the time to suffix console messages
-     *
-     * @return string
      */
-    protected function getTime()
+    protected function getTime(): string
     {
         return date('[Y-m-d H:i:s]');
     }
@@ -49,10 +39,9 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
     /**
      * Write a processing message
      *
-     * @param string   $message
      * @param string[] $messageParams
      */
-    protected function writeProcessing($message, $messageParams = [])
+    protected function writeProcessing(string $message, array $messageParams = [])
     {
         $this->output->writeln(sprintf(
             '%s <comment>%s<blink>...</blink></comment>',
@@ -98,7 +87,7 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      *
      * @return array
      */
-    protected function prepareTranslationParams($params)
+    protected function prepareTranslationParams($params): array
     {
         $result = [];
         foreach ($params as $key => $value) {
@@ -115,17 +104,12 @@ abstract class AbstractConsoleLogger implements EventSubscriberInterface
      *
      * @return string
      */
-    protected function formatDryRun($dryRun)
+    protected function formatDryRun($dryRun): string
     {
         return $dryRun ? '<info>[dry-run]</info> ' : '';
     }
 
-    /**
-     * @param array $messageParams
-     *
-     * @return string
-     */
-    private function getPrefix($messageParams)
+    private function getPrefix(array $messageParams): string
     {
         return sprintf(
             '%s%s',

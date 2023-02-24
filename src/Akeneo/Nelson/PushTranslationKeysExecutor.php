@@ -40,21 +40,21 @@ class PushTranslationKeysExecutor
         Executor $systemExecutor,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->cloner             = $cloner;
-        $this->projectInfo        = $projectInfo;
+        $this->cloner = $cloner;
+        $this->projectInfo = $projectInfo;
         $this->directoriesCreator = $directoriesCreator;
-        $this->filesCreator       = $filesCreator;
-        $this->filesUpdater       = $filesUpdater;
-        $this->filesProvider      = $filesProvider;
-        $this->systemExecutor     = $systemExecutor;
-        $this->eventDispatcher    = $eventDispatcher;
+        $this->filesCreator = $filesCreator;
+        $this->filesUpdater = $filesUpdater;
+        $this->filesProvider = $filesProvider;
+        $this->systemExecutor = $systemExecutor;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Push translation keys from Github to Crowdin.
      *
      * @param array $branches [githubBranch => crowdinFolder] or [branch]
-     *                        where branch is the same name between Github and Crowdin folder
+     *                             where branch is the same name between Github and Crowdin folder
      */
     public function execute(array $branches, array $options)
     {

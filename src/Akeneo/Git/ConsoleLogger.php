@@ -4,8 +4,8 @@ namespace Akeneo\Git;
 
 use Akeneo\Event\Events;
 use Akeneo\System\AbstractConsoleLogger;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Subscriber listening to Git events to display messages in console
@@ -37,97 +37,61 @@ class ConsoleLogger extends AbstractConsoleLogger
         ];
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preGithubClone(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_CLONE, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postGithubClone(Event $event)
     {
         $this->writeSuccess(Events::POST_GITHUB_CLONE);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preGithubSetBranch(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_SET_BRANCH, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postGithubSetBranch(Event $event)
     {
         $this->writeSuccess(Events::POST_GITHUB_SET_BRANCH);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preGithubUpdate(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_UPDATE, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postGithubUpdate(Event $event)
     {
         $this->writeSuccess(Events::POST_GITHUB_UPDATE);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preGithubCreatePR(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_CREATE_PR, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postGithubCreatePR(Event $event)
     {
         $this->writeSuccess(Events::POST_GITHUB_CREATE_PR);
     }
 
-    /**
-     * @param Event $event
-     */
     public function preGithubCheckDiff(Event $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_CHECK_DIFF);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function postGithubCheckDiff(GenericEvent $event)
     {
         $this->writeSuccess(sprintf('%s difference(s) found!', $event->getArgument('diff')));
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preGithubMergePR(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_GITHUB_MERGE_PR, $event->getArguments());
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function postGithubMergePR(GenericEvent $event)
     {
         $this->writeProcessing(Events::POST_GITHUB_MERGE_PR, $event->getArguments());

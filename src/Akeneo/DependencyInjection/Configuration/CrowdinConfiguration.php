@@ -19,10 +19,9 @@ class CrowdinConfiguration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $builder = new TreeBuilder();
+        $builder = new TreeBuilder('crowdin');
 
-        return $builder
-            ->root('crowdin')
+        return $builder->getRootNode()
                 ->children()
                     ->integerNode('min_translated_progress')
                         ->defaultValue(0)

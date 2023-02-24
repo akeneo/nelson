@@ -1,0 +1,5 @@
+includes:
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+parameters:
+    paths:
+        - src

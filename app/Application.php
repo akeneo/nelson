@@ -1,5 +1,9 @@
 <?php
 
+use Akeneo\Command\InfoTranslatedProgressCommand;
+use Akeneo\Command\PullTranslationsCommand;
+use Akeneo\Command\PushTranslationKeysCommand;
+use Akeneo\Command\RefreshPackagesCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -33,7 +37,6 @@ class Application extends BaseApplication
         $this->container = new ContainerBuilder();
 
         $this->registerExtensions();
-        $this->registerCommands();
 
         $input = new ArgvInput();
         $configFilename = $input->getParameterOption(['--config_file', '-c'], getenv('CROWDIN_CONFIG') ?: 'config.yml');
@@ -54,6 +57,8 @@ class Application extends BaseApplication
             $loader->load($configFilePath);
             $this->container->compile();
         }
+
+        $this->registerCommands();
     }
 
     /**
@@ -61,27 +66,10 @@ class Application extends BaseApplication
      */
     protected function registerCommands()
     {
-        $finder = new Finder();
-        $finder->files()
-            ->in(__DIR__ . '/../src/Akeneo/Command')
-            ->name('*Command.php');
-
-        foreach ($finder as $file) {
-            $reflection = new ReflectionClass(sprintf('\\Akeneo\\Command\\%s', $file->getBasename('.php')));
-
-            // Exclude abstract layers
-            if ($reflection->isAbstract()) {
-                continue;
-            }
-
-            $command = $reflection->newInstance();
-
-            if ($command instanceof ContainerAwareInterface) {
-                $command->setContainer($this->container);
-            }
-
-            $this->add($command);
-        }
+        $this->add($this->container->get(InfoTranslatedProgressCommand::class));
+        $this->add($this->container->get(PullTranslationsCommand::class));
+        $this->add($this->container->get(PushTranslationKeysCommand::class));
+        $this->add($this->container->get(RefreshPackagesCommand::class));
     }
 
     /**

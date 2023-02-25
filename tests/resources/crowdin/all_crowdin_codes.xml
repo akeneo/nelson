@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<status>
+  <language>
+    <name>English, United Kingdom</name>
+    <code>en-GB</code>
+    <phrases>16977</phrases>
+    <translated>11857</translated>
+    <approved>11843</approved>
+    <words>79418</words>
+    <words_translated>53378</words_translated>
+    <words_approved>53344</words_approved>
+    <translated_progress>67</translated_progress>
+    <approved_progress>67</approved_progress>
+  </language>
+    <language>
+    <name>French</name>
+    <code>fr</code>
+    <phrases>17218</phrases>
+    <translated>13281</translated>
+    <approved>13273</approved>
+    <words>80759</words>
+    <words_translated>61107</words_translated>
+    <words_approved>61044</words_approved>
+    <translated_progress>75</translated_progress>
+    <approved_progress>75</approved_progress>
+  </language>
+</status>

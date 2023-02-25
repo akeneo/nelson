@@ -2,6 +2,7 @@
 
 namespace Akeneo\Command;
 
+use Akeneo\Crowdin\TranslatedProgressSelectorV2;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,7 +31,7 @@ class InfoTranslatedProgressCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container
-            ->get('crowdin.translated_progress.selector')
+            ->get(TranslatedProgressSelectorV2::class)
             ->display($output);
     }
 }

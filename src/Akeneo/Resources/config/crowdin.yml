@@ -59,3 +59,24 @@ services:
             - %crowdin.min_translated_progress%
             - %crowdin.folders%
             - %github.branches%
+
+    CrowdinApiClient\Crowdin:
+        class: CrowdinApiClient\Crowdin
+        arguments:
+            - access_token: %crowdin.key%
+
+    Akeneo\Crowdin\NelsonClient:
+        class: Akeneo\Crowdin\NelsonClient
+        arguments:
+            - '@CrowdinApiClient\Crowdin'
+            - %crowdin.project%
+
+    Akeneo\Crowdin\TranslatedProgressSelectorV2:
+        class: Akeneo\Crowdin\TranslatedProgressSelectorV2
+        arguments:
+            - '@Akeneo\Crowdin\NelsonClient'
+            - '@event_dispatcher'
+            - %crowdin.min_translated_progress%
+            - %crowdin.folders%
+            - %github.branches%
+

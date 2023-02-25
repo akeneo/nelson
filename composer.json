@@ -36,9 +36,13 @@
         "friendsofphp/php-cs-fixer": "^2.2",
         "phpspec/phpspec": "2.5.*",
         "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-deprecation-rules": "^1.1"
+        "phpstan/phpstan-deprecation-rules": "^1.1",
+        "symfony/phpunit-bridge": "^6.2"
     },
     "autoload": {
         "psr-0": {"Akeneo\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Tests\\Akeneo\\": "tetss/Akeneo/"}
     }
 }

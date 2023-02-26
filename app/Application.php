@@ -1,15 +1,10 @@
 <?php
 
-use Akeneo\Command\InfoTranslatedProgressCommand;
-use Akeneo\Command\PullTranslationsCommand;
-use Akeneo\Command\PushTranslationKeysCommand;
-use Akeneo\Command\RefreshPackagesCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -44,14 +39,16 @@ class Application extends BaseApplication
 
         if (!file_exists(sprintf($configFilePath))) {
             $output = new ConsoleOutput();
-            $output->writeln(sprintf(
-                "\n  The file %s%s%s was not found!".
-                "\n  You need to create your own configuration file.".
-                "\n  You can use --config_file[=CONFIG_FILE] to change default configuration file.\n",
-                __DIR__,
-                DIRECTORY_SEPARATOR,
-                $configFilePath
-            ));
+            $output->writeln(
+                sprintf(
+                    "\n  The file %s%s%s was not found!" .
+                    "\n  You need to create your own configuration file." .
+                    "\n  You can use --config_file[=CONFIG_FILE] to change default configuration file.\n",
+                    __DIR__,
+                    DIRECTORY_SEPARATOR,
+                    $configFilePath
+                )
+            );
         } else {
             $loader = new YamlFileLoader($this->container, new FileLocator(__DIR__));
             $loader->load($configFilePath);
@@ -66,10 +63,24 @@ class Application extends BaseApplication
      */
     protected function registerCommands()
     {
-        $this->add($this->container->get(InfoTranslatedProgressCommand::class));
-        $this->add($this->container->get(PullTranslationsCommand::class));
-        $this->add($this->container->get(PushTranslationKeysCommand::class));
-        $this->add($this->container->get(RefreshPackagesCommand::class));
+        $finder = new Finder();
+        $finder->files()
+            ->in(__DIR__ . '/../src/Akeneo/Command')
+            ->name('*Command.php');
+
+        foreach ($finder as $file) {
+            $reflection = new ReflectionClass(
+                sprintf('\\Akeneo\\Command\\%s', $file->getBasename('.php'))
+            );
+
+            // Exclude abstract layers
+            if ($reflection->isAbstract()) {
+                continue;
+            }
+
+            $classname = $reflection->getName();
+            $this->add($this->container->get($classname));
+        }
     }
 
     /**

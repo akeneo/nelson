@@ -14,6 +14,37 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class TranslatedProgressSelectorIntegration extends TestCase
 {
+
+    public function testPackages(): void
+    {
+        $crowdinClient = $this->createMockCLient();
+
+        $progressSelector = new TranslatedProgressSelector(
+            $crowdinClient,
+            new EventDispatcher(),
+            0,
+            null,
+            ['7.0', 'master']
+        );
+        $packages = $progressSelector->packages(true, 'master');
+        $this->assertEquals(
+            [
+                'en-GB' => 100,
+                'fr' => 98.039215686275,
+            ],
+            $packages
+        );
+
+        $packages = $progressSelector->packages(true, '7.0');
+        $this->assertEquals(
+            [
+                'en-GB' => 43.103448275862064,
+                'fr' => 100
+            ],
+            $packages
+        );
+    }
+
     public function testWithDefaultBranch(): void
     {
         $crowdinClient = $this->createMockCLient();

@@ -43,6 +43,6 @@
         "psr-0": {"Akeneo\\": "src/"}
     },
     "autoload-dev": {
-        "psr-4": {"Tests\\Akeneo\\": "tetss/Akeneo/"}
+        "psr-4": {"Tests\\Akeneo\\": "tests/Akeneo/"}
     }
 }

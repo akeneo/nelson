@@ -27,4 +27,4 @@ jobs:
               run: docker-compose run --rm php composer install
 
             - name: Run tests
-              run: make tests
+              run: make all-tests

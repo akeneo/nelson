@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": "8.*",
+        "php": "^8.1",
         "ext-simplexml": "*",
         "ext-zip": "*",
         "akeneo/crowdin-api": "1.0.0-alpha7",
@@ -36,7 +36,8 @@
         "friendsofphp/php-cs-fixer": "^v3.14.0",
         "phpspec/phpspec": "^7.3.0",
         "phpstan/phpstan": "^1.10.0",
-        "phpstan/phpstan-deprecation-rules": "^1.1.0"
+        "phpstan/phpstan-deprecation-rules": "^1.1.0",
+        "symfony/phpunit-bridge": "^6.2"
     },
     "autoload": {
         "psr-4": {

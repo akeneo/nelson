@@ -14,7 +14,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class TranslatedProgressSelectorIntegration extends TestCase
 {
-
     public function testPackages(): void
     {
         $crowdinClient = $this->createMockCLient();
@@ -30,7 +29,7 @@ class TranslatedProgressSelectorIntegration extends TestCase
         $this->assertEquals(
             [
                 'en-GB' => 100,
-                'fr' => 98.039215686275,
+                'fr' => 98.0392156862745,
             ],
             $packages
         );

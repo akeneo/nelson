@@ -31,12 +31,12 @@ services:
             - '%nelson.log_locale%'
 
     Akeneo\Command\InfoTranslatedProgressCommand:
-        class: Akeneo\Command\InfoTranslatedProgressCommand
+        public: true
         arguments:
             - '@crowdin.translated_progress.selector'
 
     Akeneo\Command\PullTranslationsCommand:
-        class: Akeneo\Command\PullTranslationsCommand
+        public: true
         arguments:
             - '@nelson.pull_translations_executor'
             - '@event_dispatcher'
@@ -47,7 +47,7 @@ services:
             - '%github.branches%'
 
     Akeneo\Command\PushTranslationKeysCommand:
-        class: Akeneo\Command\PushTranslationKeysCommand
+        public: true
         arguments:
             - '@nelson.push_translation_keys_executor'
             - '@event_dispatcher'
@@ -58,7 +58,7 @@ services:
             - '%github.branches%'
 
     Akeneo\Command\RefreshPackagesCommand:
-        class: Akeneo\Command\RefreshPackagesCommand
+        public: true
         arguments:
             - '@crowdin.packages.builder'
             - '@logger'

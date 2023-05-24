@@ -12,6 +12,4 @@ send_slack ()
   curl -X POST --data-urlencode 'payload={"channel": "'"$SLACK_CHANNEL"'", "username": "Nelson", "text": "'"$1"'\n`'"$CMD"'`", "icon_emoji": ":nelson:"}' $SLACK_URL --insecure
 }
 
-if ! "$CMD"; then
-  send_slack "An error occured during synchronization..."
-fi
+$CMD || send_slack "An error occured during synchronization..."

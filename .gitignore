@@ -1,3 +1,4 @@
+.idea/
 vendor/
 var/
 app/logs/
@@ -11,4 +12,3 @@ config/*
 
 !ssh/.gitkeep
 ssh/*
-

@@ -10,3 +10,11 @@ all-tests:
 	docker-compose run --rm php vendor/bin/phpstan analyse -c phpstan-deprecations.neon --level 1
 	docker-compose run --rm php vendor/bin/phpspec run
 	docker-compose run --rm php vendor/bin/simple-phpunit
+
+dev:
+	cp -n docker-compose.ssh-auth-sock.yml docker-compose.override.yml
+	docker-compose run --rm php composer install
+
+prod:
+	cp -n docker-compose.ssh-keys.yml docker-compose.override.yml
+	docker-compose run --rm php composer install

@@ -3,6 +3,10 @@ version: '3.7'
 services:
     php:
         environment:
+            GIT_AUTHOR_EMAIL: nelson@akeneo.com
+            GIT_AUTHOR_NAME: Nelson
+            GIT_COMMITTER_EMAIL: nelson@akeneo.com
+            GIT_COMMITTER_NAME: Nelson
             SSH_AUTH_SOCK: '/ssh-agent'
         volumes:
             - '${SSH_AUTH_SOCK}:/ssh-agent:ro'

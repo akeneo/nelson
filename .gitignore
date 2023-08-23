@@ -3,12 +3,14 @@ vendor/
 var/
 app/logs/
 docker-compose.override.yml
+
 .php_cs.cache
 .phpunit.result.cache
 
 !config/example.yml
 !config/example-*.yml
 config/*
+slack_wrapper.cfg
 
 !ssh/.gitkeep
 ssh/*

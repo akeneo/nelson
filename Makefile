@@ -13,8 +13,10 @@ all-tests:
 
 dev:
 	cp -n docker-compose.ssh-auth-sock.yml docker-compose.override.yml
+	cp -n slack_wrapper.cfg.example slack_wrapper.cfg
 	docker-compose run --rm php composer install
 
 prod:
 	cp -n docker-compose.ssh-keys.yml docker-compose.override.yml
+	cp -n slack_wrapper.cfg.example slack_wrapper.cfg
 	docker-compose run --rm php composer install

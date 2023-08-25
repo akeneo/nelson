@@ -2,7 +2,7 @@ services:
     github.client:
         class: Github\Client
         calls:
-            - ['authenticate', ['%github.token%', null, 'http_token']]
+            - ['authenticate', ['%github.token%', null, 'access_token_header']]
 
     github.console_logger:
         class: Akeneo\Git\ConsoleLogger

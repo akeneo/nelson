@@ -95,7 +95,7 @@ class PushTranslationKeysExecutor
         $this->filesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
         $this->filesUpdater->update($files, $crowdinFolder, $dryRun);
 
-        $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_NELSON_PUSH);
     }
 
     /**

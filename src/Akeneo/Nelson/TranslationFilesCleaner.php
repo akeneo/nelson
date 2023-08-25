@@ -126,10 +126,13 @@ class TranslationFilesCleaner
             );
 
             if (preg_match($validLocalePattern, $simpleLocale)) {
-                $this->eventDispatcher->dispatch(Events::NELSON_RENAME, new GenericEvent($this, [
-                    'from' => $file,
-                    'to' => $target,
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'from' => $file,
+                        'to' => $target,
+                    ]),
+                    Events::NELSON_RENAME
+                );
 
                 rename($file, $target);
             }
@@ -172,15 +175,20 @@ class TranslationFilesCleaner
                     ->files();
             }
             if ($dirExists && ($projectFinder->count() > 0)) {
-                $this->systemExecutor->execute(sprintf(
-                    'cp %s %s',
-                    $file->getPathname(),
-                    $fullProjectDir
-                ));
+                $this->systemExecutor->execute(
+                    sprintf(
+                        'cp %s %s',
+                        $file->getPathname(),
+                        $fullProjectDir
+                    )
+                );
             } else {
-                $this->eventDispatcher->dispatch(Events::NELSON_DROP_USELESS, new GenericEvent($this, [
-                    'file' => $file->getPathname(),
-                ]));
+                $this->eventDispatcher->dispatch(
+                    Events::NELSON_DROP_USELESS,
+                    new GenericEvent($this, [
+                        'file' => $file->getPathname(),
+                    ])
+                );
             }
         }
 

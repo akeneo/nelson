@@ -11,8 +11,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * Class ProjectCloner
- *
  * @author    Nicolas Dupont <nicolas@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
@@ -32,13 +30,6 @@ class ProjectCloner
     /**
      * Clone the remote repository in a local folder with a specific branch, and synchronize forked repository
      * to the main repository.
-     *
-     * @param string $baseDir
-     * @param string $baseBranch
-     *
-     * @return string The path of the cloned project
-     * @throws \Exception
-     *
      */
     public function cloneProject(string $baseDir, string $baseBranch = null, bool $dryRun = false): string
     {
@@ -68,7 +59,7 @@ class ProjectCloner
      *
      * @throws \Exception
      */
-    protected function validateRepository()
+    protected function validateRepository(): void
     {
         /** @var Repo $service */
         $service = $this->client->api('repo');
@@ -77,10 +68,10 @@ class ProjectCloner
         } catch (RuntimeException $exception) {
             throw new \Exception(
                 sprintf(
-                    "The fork repository %s/%s can not be found.\n" .
-                    "Please check it exists and your configured user have permission to clone it.",
+                    "The fork repository %s/%s can not be found: %s",
                     $this->fork_owner,
-                    $this->repository
+                    $this->repository,
+                    $exception->getMessage(),
                 )
             );
         }
@@ -93,7 +84,7 @@ class ProjectCloner
      *
      * @throws \Exception
      */
-    protected function cloneUpstream($projectDir)
+    protected function cloneUpstream($projectDir): void
     {
         $this->eventDispatcher->dispatch(
             new GenericEvent($this, [
@@ -125,7 +116,7 @@ class ProjectCloner
                 $this->repository
             )
         );
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CLONE);
+        $this->eventDispatcher->dispatch(New GenericEvent(), Events::POST_GITHUB_CLONE);
     }
 
     /**
@@ -136,7 +127,7 @@ class ProjectCloner
      *
      * @throws \Exception
      */
-    protected function createBranch($baseBranch, $projectDir)
+    protected function createBranch($baseBranch, $projectDir): void
     {
         $this->eventDispatcher->dispatch(
             new GenericEvent($this, [
@@ -233,6 +224,6 @@ class ProjectCloner
             );
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_UPDATE);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_UPDATE);
     }
 }

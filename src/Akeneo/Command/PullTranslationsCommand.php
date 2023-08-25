@@ -4,7 +4,6 @@ namespace Akeneo\Command;
 
 use Akeneo\Nelson\PullTranslationsExecutor;
 use Akeneo\System\AbstractConsoleLogger;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,20 +20,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class PullTranslationsCommand extends Command
 {
-    /** @var PullTranslationsExecutor */
-    private $pullTranslationsExecutor;
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-    /** @var AbstractConsoleLogger */
-    private $nelsonLogger;
-    /** @var AbstractConsoleLogger */
-    private $githubLogger;
-    /** @var AbstractConsoleLogger */
-    private $crowdinLogger;
-    /** @var array */
-    private $crowdinDownloadConfig;
-    /** @var array */
-    private $githubBranches;
+    private PullTranslationsExecutor $pullTranslationsExecutor;
+    private EventDispatcherInterface $eventDispatcher;
+    private AbstractConsoleLogger $nelsonLogger;
+    private AbstractConsoleLogger $githubLogger;
+    private AbstractConsoleLogger $crowdinLogger;
+    private array $crowdinDownloadConfig;
+    private array $githubBranches;
 
     public function __construct(
         PullTranslationsExecutor $pullTranslationsExecutor,
@@ -58,7 +50,7 @@ class PullTranslationsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('nelson:pull-translations')
@@ -84,7 +76,7 @@ class PullTranslationsCommand extends Command
     /**
      * Manually register subscribers for event dispatcher
      */
-    protected function registerSubscribers()
+    protected function registerSubscribers(): void
     {
         $this->eventDispatcher->addSubscriber($this->nelsonLogger);
         $this->eventDispatcher->addSubscriber($this->githubLogger);

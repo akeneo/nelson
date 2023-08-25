@@ -22,13 +22,15 @@ class PullRequestMergerSpec extends ObjectBehavior
     public function it_merges_a_pull_request(Client $client, PullRequest $githubMerger)
     {
         $client->api('pull_request')->willReturn($githubMerger);
-        $githubMerger->merge('nelson', 'akeneo/repo', 78556, 'Merge pull request #78556')->shouldBeCalled();
+        $githubMerger->merge('nelson', 'akeneo/repo', 78556, 'Merge pull request #78556', 'pr_sha')
+            ->shouldBeCalled();
 
         $this->mergePullRequest([
             'number' => 78556,
             'base' => [
                 'user' => ['login' => 'nelson'],
                 'repo' => ['name' => 'akeneo/repo'],
+                'sha' => 'pr_sha',
             ],
         ]);
     }

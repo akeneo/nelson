@@ -116,7 +116,7 @@ class ProjectCloner
                 $this->repository
             )
         );
-        $this->eventDispatcher->dispatch(New GenericEvent(), Events::POST_GITHUB_CLONE);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_CLONE);
     }
 
     /**

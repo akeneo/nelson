@@ -94,7 +94,7 @@ class PullTranslationsExecutor
 
         if ($this->diffChecker->haveDiff($projectDir)) {
             $pullRequest = $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
-            if (null !== $pullRequest) {
+            if (!$dryRun && null !== $pullRequest) {
                 $this->pullRequestMerger->mergePullRequest($pullRequest);
             }
         }

@@ -61,16 +61,8 @@ class PullRequestCreator
 
     /**
      * Create a new Pull Request
-     *
-     * @param string|null $baseBranch
-     * @param string      $baseDir
-     * @param string      $projectDir
-     * @param boolean     $dryRun
-     *
-     * @return array|null
-     * @throws \Exception
      */
-    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false): ?array
+    public function create(?string $baseBranch, string $baseDir, string $projectDir, bool $dryRun = false): ?array
     {
         $branch = $this->getBranchName($baseBranch);
 

@@ -86,8 +86,8 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
         $statusApi->execute()->willReturn(self::XML_STATUS);
         $client->api('language-status')->willReturn($languageStatusApi);
 
-        $languageStatusApi->setLanguage('af')->shouldBeCalled();
-        $languageStatusApi->setLanguage('fr')->shouldBeCalled();
+        $languageStatusApi->setLanguage('af')->willReturn($languageStatusApi)->shouldBeCalled();
+        $languageStatusApi->setLanguage('fr')->willReturn($languageStatusApi)->shouldBeCalled();
         $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
 
         $this->display(new ConsoleOutput());

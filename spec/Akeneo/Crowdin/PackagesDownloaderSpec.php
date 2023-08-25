@@ -29,11 +29,11 @@ class PackagesDownloaderSpec extends ObjectBehavior
         Download $downloadApi
     ) {
         $client->api('export')->willReturn($exportApi);
-        $exportApi->setBranch('master')->shouldBeCalled();
+        $exportApi->setBranch('master')->willReturn($exportApi)->shouldBeCalled();
         $exportApi->execute()->shouldBeCalled();
 
         $client->api('download')->willReturn($downloadApi);
-        $downloadApi->setBranch('master')->shouldBeCalled();
+        $downloadApi->setBranch('master')->willReturn($downloadApi)->shouldBeCalled();
         $downloadApi->setCopyDestination('/tmp/')->shouldBeCalled()->willReturn($downloadApi);
 
         $downloadApi->setPackage('fr.zip')->shouldBeCalled()->willReturn($downloadApi);

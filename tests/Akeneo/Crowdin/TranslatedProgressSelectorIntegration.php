@@ -126,7 +126,7 @@ class TranslatedProgressSelectorIntegration extends TestCase
         );
 
         $languageStatus = $this->createMock(LanguageStatus::class);
-        $languageStatus->method('setLanguage')->willReturn(null);
+        $languageStatus->method('setLanguage')->willReturn($languageStatus);
         $languageStatus->expects($this->atLeast(2))
             ->method('execute')
             ->willReturnOnConsecutiveCalls(

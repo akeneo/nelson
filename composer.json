@@ -22,7 +22,7 @@
         "php": "^8.1",
         "ext-simplexml": "*",
         "ext-zip": "*",
-        "akeneo/crowdin-api": "dev-PCA-43",
+        "akeneo/crowdin-api": "^2.0.0",
         "guzzlehttp/guzzle": "^6.5",
         "http-interop/http-factory-guzzle": "^1.2",
         "knplabs/github-api": "@stable",

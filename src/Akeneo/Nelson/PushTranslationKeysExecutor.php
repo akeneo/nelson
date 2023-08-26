@@ -40,21 +40,21 @@ class PushTranslationKeysExecutor
         Executor $systemExecutor,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->cloner             = $cloner;
-        $this->projectInfo        = $projectInfo;
+        $this->cloner = $cloner;
+        $this->projectInfo = $projectInfo;
         $this->directoriesCreator = $directoriesCreator;
-        $this->filesCreator       = $filesCreator;
-        $this->filesUpdater       = $filesUpdater;
-        $this->filesProvider      = $filesProvider;
-        $this->systemExecutor     = $systemExecutor;
-        $this->eventDispatcher    = $eventDispatcher;
+        $this->filesCreator = $filesCreator;
+        $this->filesUpdater = $filesUpdater;
+        $this->filesProvider = $filesProvider;
+        $this->systemExecutor = $systemExecutor;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Push translation keys from Github to Crowdin.
      *
-     * @param array $branches [githubBranch => crowdinFolder] or [branch]
-     *                        where branch is the same name between Github and Crowdin folder
+     * @param array $branches      [githubBranch => crowdinFolder] or [branch]
+     *                             where branch is the same name between Github and Crowdin folder
      */
     public function execute(array $branches, array $options)
     {
@@ -82,11 +82,11 @@ class PushTranslationKeysExecutor
         $dryRun = $options['dry_run'];
 
         $this->eventDispatcher->dispatch(
-            Events::PRE_NELSON_PUSH,
             new GenericEvent($this, [
                 'githubBranch' => (null === $githubBranch ? 'master' : $githubBranch),
                 'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder),
-            ])
+            ]),
+            Events::PRE_NELSON_PUSH,
         );
 
         $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch, $dryRun);
@@ -95,7 +95,7 @@ class PushTranslationKeysExecutor
         $this->filesCreator->create($files, $this->projectInfo, $crowdinFolder, $dryRun);
         $this->filesUpdater->update($files, $crowdinFolder, $dryRun);
 
-        $this->eventDispatcher->dispatch(Events::POST_NELSON_PUSH);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_NELSON_PUSH);
     }
 
     /**

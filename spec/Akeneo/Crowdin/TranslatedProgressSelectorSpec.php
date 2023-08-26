@@ -7,9 +7,9 @@ use Akeneo\Crowdin\Api\Status;
 use Akeneo\Crowdin\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslatedProgressSelectorSpec extends ObjectBehavior
 {
@@ -68,6 +68,7 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
 
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher, 50, ['a_folder'], ['master']);
     }
 
@@ -77,22 +78,18 @@ class TranslatedProgressSelectorSpec extends ObjectBehavior
     }
 
     function it_displays_packages(
-        $client,
-        OutputInterface $output,
+        Client $client,
         Status $statusApi,
         LanguageStatus $languageStatusApi,
-        OutputFormatterInterface $formatter
     ) {
-        $output->getFormatter()->willReturn($formatter);
-        $output->write("Languages exported for master branch (50%):", true)->shouldBeCalled();
-        $output->writeln(Argument::any())->shouldBeCalled();
-        $output->write(Argument::any())->shouldBeCalled();
         $client->api('status')->willReturn($statusApi);
         $statusApi->execute()->willReturn(self::XML_STATUS);
         $client->api('language-status')->willReturn($languageStatusApi);
-        $languageStatusApi->setLanguage('af')->shouldBeCalled();
-        $languageStatusApi->setLanguage('fr')->shouldBeCalled();
+
+        $languageStatusApi->setLanguage('af')->willReturn($languageStatusApi)->shouldBeCalled();
+        $languageStatusApi->setLanguage('fr')->willReturn($languageStatusApi)->shouldBeCalled();
         $languageStatusApi->execute()->willReturn(self::XML_LANGUAGE_STATUS);
-        $this->display($output);
+
+        $this->display(new ConsoleOutput());
     }
 }

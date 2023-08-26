@@ -23,58 +23,18 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class PullTranslationsExecutor
 {
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var Executor */
-    private $systemExecutor;
-
-    /** @var TranslationFilesCleaner */
-    private $translationsCleaner;
-
-    /** @var PackagesExtractor */
-    private $extractor;
-
-    /** @var TranslatedProgressSelector */
-    private $status;
-
-    /** @var PackagesDownloader */
-    private $downloader;
-
-    /** @var PullRequestCreator */
-    private $pullRequestCreator;
-
-    /** @var ProjectCloner */
-    private $cloner;
-
-    /** @var DiffChecker */
-    private $diffChecker;
-
-    /** @var PullRequestMerger */
-    private $pullRequestMerger;
-
     public function __construct(
-        ProjectCloner $cloner,
-        PullRequestCreator $pullRequestCreator,
-        PackagesDownloader $downloader,
-        TranslatedProgressSelector $status,
-        PackagesExtractor $extractor,
-        TranslationFilesCleaner $translationsCleaner,
-        Executor $systemExecutor,
-        EventDispatcherInterface $eventDispatcher,
-        DiffChecker $diffChecker,
-        PullRequestMerger $pullRequestMerger
+        private readonly ProjectCloner $cloner,
+        private readonly PullRequestCreator $pullRequestCreator,
+        private readonly PackagesDownloader $downloader,
+        private readonly TranslatedProgressSelector $status,
+        private readonly PackagesExtractor $extractor,
+        private readonly TranslationFilesCleaner $translationsCleaner,
+        private readonly Executor $systemExecutor,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly DiffChecker $diffChecker,
+        private readonly PullRequestMerger $pullRequestMerger
     ) {
-        $this->cloner              = $cloner;
-        $this->pullRequestCreator  = $pullRequestCreator;
-        $this->downloader          = $downloader;
-        $this->status              = $status;
-        $this->extractor           = $extractor;
-        $this->translationsCleaner = $translationsCleaner;
-        $this->systemExecutor      = $systemExecutor;
-        $this->eventDispatcher     = $eventDispatcher;
-        $this->diffChecker = $diffChecker;
-        $this->pullRequestMerger = $pullRequestMerger;
     }
 
     /**
@@ -85,7 +45,7 @@ class PullTranslationsExecutor
      *                             Where branch is the same name between Github and Crowdin folder
      * @param array      $options
      */
-    public function execute($branches, array $options)
+    public function execute(?array $branches, array $options): void
     {
         $isMapped = $this->isArrayAssociative($branches);
 
@@ -103,22 +63,23 @@ class PullTranslationsExecutor
         }
     }
 
-    /**
-     * @param string $githubBranch
-     * @param string $crowdinFolder
-     * @param array  $packages
-     * @param array  $options
-     */
-    protected function pullTranslations($githubBranch, $crowdinFolder, array $packages, array $options)
-    {
-        $updateDir  = $options['base_dir'] . '/update';
+    protected function pullTranslations(
+        ?string $githubBranch,
+        ?string $crowdinFolder,
+        array $packages,
+        array $options
+    ): void {
+        $updateDir = $options['base_dir'] . '/update';
         $cleanerDir = $options['base_dir'] . '/clean';
-        $dryRun     = isset($options['dry_run']) && $options['dry_run'];
+        $dryRun = isset($options['dry_run']) && $options['dry_run'];
 
-        $this->eventDispatcher->dispatch(Events::PRE_NELSON_PULL, new GenericEvent($this, [
-            'githubBranch'  => (null === $githubBranch ? 'master' : $githubBranch),
-            'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder)
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'githubBranch' => (null === $githubBranch ? 'master' : $githubBranch),
+                'crowdinFolder' => (null === $crowdinFolder ? 'master' : $crowdinFolder),
+            ]),
+            Events::PRE_NELSON_PULL
+        );
 
         $projectDir = $this->cloner->cloneProject($updateDir, $githubBranch, $dryRun);
         $this->downloader->download($packages, $options['base_dir'], $crowdinFolder);
@@ -133,20 +94,15 @@ class PullTranslationsExecutor
 
         if ($this->diffChecker->haveDiff($projectDir)) {
             $pullRequest = $this->pullRequestCreator->create($githubBranch, $options['base_dir'], $projectDir, $dryRun);
-            if (null !== $pullRequest) {
+            if (!$dryRun && null !== $pullRequest) {
                 $this->pullRequestMerger->mergePullRequest($pullRequest);
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_NELSON_PULL);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_NELSON_PULL);
     }
 
-    /**
-     * @param array $array
-     *
-     * @return bool
-     */
-    protected function isArrayAssociative(array $array)
+    protected function isArrayAssociative(array $array): bool
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0;
     }

@@ -4,8 +4,8 @@ namespace Akeneo\Nelson;
 
 use Akeneo\Event\Events;
 use Akeneo\System\AbstractConsoleLogger;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Subscriber listening to Nelson events to display messages in console
@@ -19,7 +19,7 @@ class ConsoleLogger extends AbstractConsoleLogger
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::PRE_NELSON_PULL     => 'preNelsonPull',
@@ -31,49 +31,31 @@ class ConsoleLogger extends AbstractConsoleLogger
         ];
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preNelsonPull(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_NELSON_PULL, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postNelsonPull(Event $event)
     {
         $this->writeSuccess(Events::POST_NELSON_PULL);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function preNelsonPush(GenericEvent $event)
     {
         $this->writeProcessing(Events::PRE_NELSON_PUSH, $event->getArguments());
     }
 
-    /**
-     * @param Event $event
-     */
     public function postNelsonPush(Event $event)
     {
         $this->writeSuccess(Events::POST_NELSON_PUSH);
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function nelsonRename(GenericEvent $event)
     {
         $this->writeSuccess(Events::NELSON_RENAME, $event->getArguments());
     }
 
-    /**
-     * @param GenericEvent $event
-     */
     public function nelsonDropUseless(GenericEvent $event)
     {
         $this->writeSuccess(Events::NELSON_DROP_USELESS, $event->getArguments());

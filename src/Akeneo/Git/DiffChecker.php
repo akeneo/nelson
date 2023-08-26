@@ -10,11 +10,8 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class DiffChecker
 {
-    /** @var Executor */
-    private $executor;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private Executor $executor;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         Executor $executor,
@@ -26,21 +23,21 @@ class DiffChecker
 
     /**
      * Check if current repository has diff, so we know if we have to create PR or not.
-     *
-     * @param string $projectDir
-     *
-     * @return bool
-     * @throws Exception
      */
-    public function haveDiff($projectDir)
+    public function haveDiff(string $projectDir): bool
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CHECK_DIFF);
+        $this->eventDispatcher->dispatch(
+            new GenericEvent(),
+            Events::PRE_GITHUB_CHECK_DIFF
+        );
 
         $commands = [
             sprintf('cd %s && git diff|wc -l|awk \'{$1=$1};1\'', $projectDir),
             sprintf('cd %s && git ls-files --others --exclude-standard|wc -l|awk \'{$1=$1};1\'', $projectDir),
         ];
+
         $diff = 0;
+
         foreach ($commands as $command) {
             $result = $this->executor->execute($command, true);
             $matches = null;
@@ -48,9 +45,12 @@ class DiffChecker
             $diff += intval($matches['diff']);
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CHECK_DIFF, new GenericEvent($this, [
-            'diff' => $diff
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'diff' => $diff,
+            ]),
+            Events::POST_GITHUB_CHECK_DIFF
+        );
 
         return intval(0 !== $diff);
     }

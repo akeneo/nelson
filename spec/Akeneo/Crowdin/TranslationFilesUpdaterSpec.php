@@ -9,6 +9,7 @@ use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslationFilesUpdaterSpec extends ObjectBehavior
 {
@@ -17,6 +18,7 @@ class TranslationFilesUpdaterSpec extends ObjectBehavior
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
@@ -38,7 +40,7 @@ class TranslationFilesUpdaterSpec extends ObjectBehavior
         $file->getPattern()->willReturn('Project/src/fr.yml');
         $resolver->getTarget('/tmp/', '/tmp/src/fr.yml')->willReturn('fr.yml');
 
-        $updateFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->shouldBeCalled();
+        $updateFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->willReturn($updateFileApi)->shouldBeCalled();
         $updateFileApi->getTranslations()->willReturn(['a_translation']);
         $updateFileApi->execute()->shouldBeCalled();
 

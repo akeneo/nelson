@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Akeneo\Git;
 
 use Akeneo\Event\Events;
@@ -37,12 +36,12 @@ class PullRequestCreator
     protected $repository;
 
     /**
-     * @param Executor                 $executor
-     * @param Client                   $client
+     * @param Executor $executor
+     * @param Client $client
      * @param EventDispatcherInterface $eventDispatcher
-     * @param string                   $fork_owner
-     * @param string                   $owner
-     * @param string                   $repository
+     * @param string $fork_owner
+     * @param string $owner
+     * @param string $repository
      */
     public function __construct(
         Executor $executor,
@@ -52,26 +51,18 @@ class PullRequestCreator
         $owner,
         $repository
     ) {
-        $this->executor        = $executor;
-        $this->client          = $client;
+        $this->executor = $executor;
+        $this->client = $client;
         $this->eventDispatcher = $eventDispatcher;
-        $this->fork_owner      = $fork_owner;
-        $this->owner           = $owner;
-        $this->repository      = $repository;
+        $this->fork_owner = $fork_owner;
+        $this->owner = $owner;
+        $this->repository = $repository;
     }
 
     /**
      * Create a new Pull Request
-     *
-     * @param string|null $baseBranch
-     * @param string      $baseDir
-     * @param string      $projectDir
-     * @param boolean     $dryRun
-     *
-     * @return array|null
-     * @throws \Exception
      */
-    public function create($baseBranch, $baseDir, $projectDir, $dryRun = false): ?array
+    public function create(?string $baseBranch, string $baseDir, string $projectDir, bool $dryRun = false): ?array
     {
         $branch = $this->getBranchName($baseBranch);
 
@@ -79,11 +70,14 @@ class PullRequestCreator
             $baseBranch = 'master';
         }
 
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CREATE_PR, new GenericEvent($this, [
-            'name'   => $branch,
-            'branch' => $baseBranch,
-            'dryRun' => $dryRun,
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'name' => $branch,
+                'branch' => $baseBranch,
+                'dryRun' => $dryRun,
+            ]),
+            Events::PRE_GITHUB_CREATE_PR
+        );
 
         $pullRequest = null;
 
@@ -100,19 +94,17 @@ class PullRequestCreator
                 $this->owner,
                 $this->repository,
                 [
-                    'head'  => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
-                    'base'  => $baseBranch,
+                    'head' => sprintf('%s:crowdin/%s', $this->fork_owner, $branch),
+                    'base' => $baseBranch,
                     'title' => 'Update translations from nelson',
-                    'body'  => 'Updated on ' . $branch,
+                    'body' => 'Updated on ' . $branch,
                 ]
             );
 
             $this->executor->execute(sprintf('cd %s/ && rm -rf *.zip', $baseDir));
-
-//            $this->executor->execute(sprintf('cd %s && ' . 'git checkout master', $projectDir));
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CREATE_PR);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_CREATE_PR);
 
         return $pullRequest;
     }

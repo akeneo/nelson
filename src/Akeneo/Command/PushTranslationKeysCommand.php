@@ -69,7 +69,7 @@ class PushTranslationKeysCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->registerSubscribers();
 
@@ -79,6 +79,8 @@ class PushTranslationKeysCommand extends Command
         ];
 
         $this->pushTranslationKeysExecutor->execute($this->githubBranches, $options);
+
+        return Command::SUCCESS;
     }
 
     /**

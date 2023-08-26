@@ -10,6 +10,7 @@ use Akeneo\Nelson\TranslationFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TranslationFilesCreatorSpec extends ObjectBehavior
 {
@@ -18,6 +19,7 @@ class TranslationFilesCreatorSpec extends ObjectBehavior
         EventDispatcherInterface $eventDispatcher,
         TargetResolver $resolver
     ) {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher, $resolver);
     }
 
@@ -40,8 +42,8 @@ class TranslationFilesCreatorSpec extends ObjectBehavior
         $file->getPattern()->willReturn('Project/src/fr.yml');
         $resolver->getTarget('/tmp/', '/tmp/src/fr.yml')->willReturn('fr.yml');
 
-        $addFileApi->setBranch('master')->shouldBeCalled();
-        $addFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->shouldBeCalled();
+        $addFileApi->setBranch('master')->willReturn($addFileApi)->shouldBeCalled();
+        $addFileApi->addTranslation('/tmp/src/fr.yml', 'fr.yml', 'Project/src/fr.yml')->willReturn($addFileApi)->shouldBeCalled();
         $addFileApi->getTranslations()->willReturn(['a_translation']);
         $addFileApi->execute()->shouldBeCalled();
 

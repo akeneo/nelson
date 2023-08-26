@@ -8,11 +8,13 @@ use Akeneo\Crowdin\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PackagesDownloaderSpec extends ObjectBehavior
 {
     function let(Client $client, EventDispatcherInterface $eventDispatcher)
     {
+        $eventDispatcher->dispatch(Argument::any(), Argument::type('string'))->willReturn(new Event());
         $this->beConstructedWith($client, $eventDispatcher);
     }
 
@@ -22,16 +24,16 @@ class PackagesDownloaderSpec extends ObjectBehavior
     }
 
     function it_download_every_locale(
-        $client,
+        Client $client,
         Export $exportApi,
         Download $downloadApi
     ) {
         $client->api('export')->willReturn($exportApi);
-        $exportApi->setBranch('master')->shouldBeCalled();
+        $exportApi->setBranch('master')->willReturn($exportApi)->shouldBeCalled();
         $exportApi->execute()->shouldBeCalled();
 
         $client->api('download')->willReturn($downloadApi);
-        $downloadApi->setBranch('master')->shouldBeCalled();
+        $downloadApi->setBranch('master')->willReturn($downloadApi)->shouldBeCalled();
         $downloadApi->setCopyDestination('/tmp/')->shouldBeCalled()->willReturn($downloadApi);
 
         $downloadApi->setPackage('fr.zip')->shouldBeCalled()->willReturn($downloadApi);

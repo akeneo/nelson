@@ -2,21 +2,21 @@ services:
     nelson.translation_files.provider:
         class: Akeneo\Nelson\TranslationFilesProvider
         arguments:
-            - %nelson.finder_options%
-            - %nelson.pattern_suffix%
+            - '%nelson.finder_options%'
+            - '%nelson.pattern_suffix%'
 
     nelson.target_resolver:
         class: Akeneo\Nelson\TargetResolver
         arguments:
-            - %nelson.target_rules%
+            - '%nelson.target_rules%'
 
     nelson.translation_files.cleaner:
         class: Akeneo\Nelson\TranslationFilesCleaner
         arguments:
-            - @system.executor
-            - @event_dispatcher
-            - %nelson.pattern_suffix%
-            - %nelson.finder_options%
+            - '@system.executor'
+            - '@event_dispatcher'
+            - '%nelson.pattern_suffix%'
+            - '%nelson.finder_options%'
 
     nelson.console_logger:
         class: Akeneo\Nelson\ConsoleLogger
@@ -26,25 +26,25 @@ services:
     nelson.pull_translations_executor:
         class: Akeneo\Nelson\PullTranslationsExecutor
         arguments:
-            - @github.cloner
-            - @github.pull_request_creator
-            - @crowdin.packages.downloader
-            - @crowdin.translated_progress.selector
-            - @crowdin.packages.extractor
-            - @nelson.translation_files.cleaner
-            - @system.executor
-            - @event_dispatcher
-            - @github.diff_checker
-            - @github.pull_request_merger
+            - '@github.cloner'
+            - '@github.pull_request_creator'
+            - '@crowdin.packages.downloader'
+            - '@crowdin.translated_progress.selector'
+            - '@crowdin.packages.extractor'
+            - '@nelson.translation_files.cleaner'
+            - '@system.executor'
+            - '@event_dispatcher'
+            - '@github.diff_checker'
+            - '@github.pull_request_merger'
 
     nelson.push_translation_keys_executor:
         class: Akeneo\Nelson\PushTranslationKeysExecutor
         arguments:
-            - @github.cloner
-            - @crowdin.translation_files.project_info
-            - @crowdin.translation_files.directories_creator
-            - @crowdin.translation_files.files_creator
-            - @crowdin.translation_files.updater
-            - @nelson.translation_files.provider
-            - @system.executor
-            - @event_dispatcher
+            - '@github.cloner'
+            - '@crowdin.translation_files.project_info'
+            - '@crowdin.translation_files.directories_creator'
+            - '@crowdin.translation_files.files_creator'
+            - '@crowdin.translation_files.updater'
+            - '@nelson.translation_files.provider'
+            - '@system.executor'
+            - '@event_dispatcher'

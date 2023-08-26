@@ -11,66 +11,25 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * Class ProjectCloner
- *
  * @author    Nicolas Dupont <nicolas@akeneo.com>
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 class ProjectCloner
 {
-    /** @var Client */
-    protected $client;
-
-    /** @var Executor */
-    protected $executor;
-
-    /** @var EventDispatcherInterface */
-    protected $eventDispatcher;
-
-    /** @var string */
-    protected $fork_owner;
-
-    /** @var string */
-    protected $owner;
-
-    /** @var string */
-    protected $repository;
-
-    /**
-     * @param Client                   $client
-     * @param Executor                 $executor
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string                   $fork_owner
-     * @param string                   $owner
-     * @param string                   $repository
-     */
     public function __construct(
-        Client $client,
-        Executor $executor,
-        EventDispatcherInterface $eventDispatcher,
-        $fork_owner,
-        $owner,
-        $repository
+        protected Client $client,
+        protected Executor $executor,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected string $fork_owner,
+        protected string $owner,
+        protected string $repository
     ) {
-        $this->client          = $client;
-        $this->executor        = $executor;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fork_owner      = $fork_owner;
-        $this->owner           = $owner;
-        $this->repository      = $repository;
     }
 
     /**
      * Clone the remote repository in a local folder with a specific branch, and synchronize forked repository
      * to the main repository.
-     *
-     * @param string $baseDir
-     * @param string $baseBranch
-     *
-     * @throws \Exception
-     *
-     * @return string The path of the cloned project
      */
     public function cloneProject(string $baseDir, string $baseBranch = null, bool $dryRun = false): string
     {
@@ -100,19 +59,21 @@ class ProjectCloner
      *
      * @throws \Exception
      */
-    protected function validateRepository()
+    protected function validateRepository(): void
     {
         /** @var Repo $service */
         $service = $this->client->api('repo');
         try {
             $service->show($this->fork_owner, $this->repository);
         } catch (RuntimeException $exception) {
-            throw new \Exception(sprintf(
-                "The fork repository %s/%s can not be found.\n".
-                "Please check it exists and your configured user have permission to clone it.",
-                $this->fork_owner,
-                $this->repository
-            ));
+            throw new \Exception(
+                sprintf(
+                    "The fork repository %s/%s can not be found: %s",
+                    $this->fork_owner,
+                    $this->repository,
+                    $exception->getMessage(),
+                )
+            );
         }
     }
 
@@ -123,32 +84,39 @@ class ProjectCloner
      *
      * @throws \Exception
      */
-    protected function cloneUpstream($projectDir)
+    protected function cloneUpstream($projectDir): void
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_CLONE, new GenericEvent($this, [
-            'fork_owner'  => $this->fork_owner,
-            'repository'  => $this->repository,
-            'project_dir' => $projectDir,
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'fork_owner' => $this->fork_owner,
+                'repository' => $this->repository,
+                'project_dir' => $projectDir,
+            ]),
+            Events::PRE_GITHUB_CLONE,
+        );
 
         $this->validateRepository();
 
         // Clone the forked repository
-        $this->executor->execute(sprintf(
-            'git clone git@github.com:%s/%s.git %s',
-            $this->fork_owner,
-            $this->repository,
-            $projectDir
-        ));
+        $this->executor->execute(
+            sprintf(
+                'git clone git@github.com:%s/%s.git %s',
+                $this->fork_owner,
+                $this->repository,
+                $projectDir
+            )
+        );
 
         // Set upstream to main repository
-        $this->executor->execute(sprintf(
-            'cd %s && git remote add upstream git@github.com:%s/%s.git',
-            $projectDir,
-            $this->owner,
-            $this->repository
-        ));
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_CLONE);
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git remote add upstream git@github.com:%s/%s.git',
+                $projectDir,
+                $this->owner,
+                $this->repository
+            )
+        );
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_CLONE);
     }
 
     /**
@@ -156,30 +124,45 @@ class ProjectCloner
      *
      * @param $baseBranch
      * @param $projectDir
+     *
      * @throws \Exception
      */
-    protected function createBranch($baseBranch, $projectDir)
+    protected function createBranch($baseBranch, $projectDir): void
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_SET_BRANCH, new GenericEvent($this, [
-            'branch' => $baseBranch
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'branch' => $baseBranch,
+            ]),
+            Events::PRE_GITHUB_SET_BRANCH,
+        );
 
         // If the branch does not exist on the fork repository
         try {
-            $this->executor->execute(sprintf('cd %s && git rev-parse --verify remotes/origin/%s', $projectDir, $baseBranch));
+            $this->executor->execute(
+                sprintf('cd %s && git rev-parse --verify remotes/origin/%s', $projectDir, $baseBranch)
+            );
         } catch (\Exception $e) {
-            $this->executor->execute(sprintf('cd %s && git fetch upstream && git checkout %s && git push origin %s', $projectDir, $baseBranch, $baseBranch));
+            $this->executor->execute(
+                sprintf(
+                    'cd %s && git fetch upstream && git checkout %s && git push origin %s',
+                    $projectDir,
+                    $baseBranch,
+                    $baseBranch
+                )
+            );
         }
 
         // Set branch
-        $this->executor->execute(sprintf(
-            'cd %s && git checkout --track -B %s origin/%s',
-            $projectDir,
-            $baseBranch,
-            $baseBranch
-        ));
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git checkout --track -B %s origin/%s',
+                $projectDir,
+                $baseBranch,
+                $baseBranch
+            )
+        );
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_SET_BRANCH);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_SET_BRANCH);
     }
 
     /**
@@ -187,47 +170,60 @@ class ProjectCloner
      */
     protected function update(string $baseBranch, string $projectDir, bool $dryRun = false): void
     {
-        $this->eventDispatcher->dispatch(Events::PRE_GITHUB_UPDATE, new GenericEvent($this, [
-            'owner'      => $this->owner,
-            'repository' => $this->repository
-        ]));
+        $this->eventDispatcher->dispatch(
+            new GenericEvent($this, [
+                'owner' => $this->owner,
+                'repository' => $this->repository,
+            ]),
+            Events::PRE_GITHUB_UPDATE,
+        );
 
         // Pull last updates of the main repository
-        $this->executor->execute(sprintf(
-            'cd %s && git pull origin %s',
-            $projectDir,
-            $baseBranch
-        ));
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git pull origin %s',
+                $projectDir,
+                $baseBranch
+            )
+        );
 
         // Checkout branch
-        $this->executor->execute(sprintf(
-            'cd %s && git checkout %s',
-            $projectDir,
-            $baseBranch
-        ));
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git checkout %s',
+                $projectDir,
+                $baseBranch
+            )
+        );
 
         // Fetch upstream
-        $this->executor->execute(sprintf(
-            'cd %s && git fetch upstream',
-            $projectDir
-        ));
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git fetch upstream',
+                $projectDir
+            )
+        );
 
         // Merge upstream
-        $this->executor->execute(sprintf(
-            'cd %s && git merge upstream/%s',
-            $projectDir,
-            $baseBranch
-        ));
+        $this->executor->execute(
+            sprintf(
+                'cd %s && git merge upstream/%s',
+                $projectDir,
+                $baseBranch
+            )
+        );
 
         // Push latest updates
         if (!$dryRun) {
-            $this->executor->execute(sprintf(
-                'cd %s && git push origin %s',
-                $projectDir,
-                $baseBranch
-            ));
+            $this->executor->execute(
+                sprintf(
+                    'cd %s && git push origin %s',
+                    $projectDir,
+                    $baseBranch
+                )
+            );
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_GITHUB_UPDATE);
+        $this->eventDispatcher->dispatch(new GenericEvent(), Events::POST_GITHUB_UPDATE);
     }
 }

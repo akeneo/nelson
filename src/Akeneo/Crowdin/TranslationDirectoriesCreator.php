@@ -8,6 +8,7 @@ use Akeneo\Nelson\TargetResolver;
 use Akeneo\Nelson\TranslationFile;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This class creates all the missing directories of a Crowdin project.
@@ -18,28 +19,11 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class TranslationDirectoriesCreator
 {
-    /** @var Client */
-    protected $client;
-
-    /** @var EventDispatcherInterface */
-    protected $eventDispatcher;
-
-    /** @var TargetResolver */
-    protected $targetResolver;
-
-    /**
-     * @param Client                   $client
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param TargetResolver           $targetResolver
-     */
     public function __construct(
-        Client $client,
-        EventDispatcherInterface $eventDispatcher,
-        TargetResolver $targetResolver
+        protected Client $client,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected TargetResolver $targetResolver
     ) {
-        $this->client          = $client;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->targetResolver  = $targetResolver;
     }
 
     /**
@@ -51,9 +35,9 @@ class TranslationDirectoriesCreator
      * @param string                 $baseBranch
      * @param boolean                $dryRun
      */
-    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false)
+    public function create(array $files, TranslationProjectInfo $projectInfo, $baseBranch, $dryRun = false): void
     {
-        $this->eventDispatcher->dispatch(Events::PRE_CROWDIN_CREATE_DIRECTORIES);
+        $this->eventDispatcher->dispatch(new Event(), Events::PRE_CROWDIN_CREATE_DIRECTORIES);
 
         /** @var AddDirectory $service */
         $service = $this->client->api('add-directory');
@@ -63,10 +47,13 @@ class TranslationDirectoriesCreator
         $existingFolders = $projectInfo->getExistingFolders($baseBranch);
         foreach ($this->getDirectoriesFromFiles($files) as $directory) {
             if (!in_array($directory, $existingFolders) && !in_array($directory, ['/', ''])) {
-                $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_DIRECTORY, new GenericEvent($this, [
-                    'directory' => $directory,
-                    'dry_run'   => $dryRun
-                ]));
+                $this->eventDispatcher->dispatch(
+                    new GenericEvent($this, [
+                        'directory' => $directory,
+                        'dry_run' => $dryRun,
+                    ]),
+                    Events::CROWDIN_CREATE_DIRECTORY
+                );
                 if (!$dryRun) {
                     $service->setDirectory($directory);
                     $service->execute();
@@ -74,7 +61,7 @@ class TranslationDirectoriesCreator
             }
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CROWDIN_CREATE_DIRECTORIES);
+        $this->eventDispatcher->dispatch(new Event(), Events::POST_CROWDIN_CREATE_DIRECTORIES);
     }
 
     /**
@@ -87,7 +74,7 @@ class TranslationDirectoriesCreator
      *
      * @return string[]
      */
-    protected function explodeDirectory($dir)
+    protected function explodeDirectory($dir): array
     {
         $directories = [];
         $folders = explode('/', $dir);
@@ -117,16 +104,19 @@ class TranslationDirectoriesCreator
      *
      * @return string[]
      */
-    protected function getDirectoriesFromFiles($files)
+    protected function getDirectoriesFromFiles($files): array
     {
         $allDirs = [''];
         foreach ($files as $file) {
-            $allDirs = array_merge($allDirs, $this->explodeDirectory(
-                $this->targetResolver->getTargetDirectory(
-                    $file->getProjectDir(),
-                    $file->getSource()
+            $allDirs = array_merge(
+                $allDirs,
+                $this->explodeDirectory(
+                    $this->targetResolver->getTargetDirectory(
+                        $file->getProjectDir(),
+                        $file->getSource()
+                    )
                 )
-            ));
+            );
         }
         $allDirs = array_unique($allDirs);
         sort($allDirs);
@@ -140,16 +130,19 @@ class TranslationDirectoriesCreator
      * @param string|null            $baseBranch
      * @param TranslationProjectInfo $projectInfo
      */
-    protected function createBranchIfNotExists($baseBranch, $projectInfo)
+    protected function createBranchIfNotExists($baseBranch, $projectInfo): void
     {
         if (null === $baseBranch) {
             return;
         }
 
         if (!$projectInfo->isBranchCreated($baseBranch)) {
-            $this->eventDispatcher->dispatch(Events::CROWDIN_CREATE_BRANCH, new GenericEvent($this, [
-                'branch' => $baseBranch
-            ]));
+            $this->eventDispatcher->dispatch(
+                new GenericEvent($this, [
+                    'branch' => $baseBranch,
+                ]),
+                Events::CROWDIN_CREATE_BRANCH,
+            );
 
             /** @var AddDirectory $serviceBranch */
             $serviceBranch = $this->client->api('add-directory');

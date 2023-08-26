@@ -43,9 +43,11 @@ class RefreshPackagesCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->packagesBuilder->build();
         $this->logger->addInfo('Crowdin packages have been built');
+
+        return Command::SUCCESS;
     }
 }

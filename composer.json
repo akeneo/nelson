@@ -27,7 +27,7 @@
         "symfony/finder": "2.7.3",
         "symfony/config": "^2.7",
         "monolog/monolog": "~1.0",
-        "akeneo/crowdin-api": "1.0.0-alpha7",
+        "akeneo/crowdin-api": "^1.0.0",
         "knplabs/github-api": "1.4.14",
         "symfony/dependency-injection": "^2.7",
         "symfony/translation": "^2.7"

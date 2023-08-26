@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "542cb331fb370f1523173a5e94e99645",
+    "content-hash": "c84aebf1c69e1caf8ab09ec5e9a074af",
     "packages": [
         {
             "name": "akeneo/crowdin-api",
-            "version": "1.0.0-alpha7",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akeneo/php-crowdin-api.git",
@@ -257,6 +257,10 @@
                 "rest",
                 "web service"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/guzzle/issues",
+                "source": "https://github.com/guzzle/guzzle/tree/6.5.8"
+            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -355,16 +359,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.9.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "e98e3e6d4f86621a9b75f623996e6bbdeb4b9318"
+                "reference": "e4490cabc77465aaee90b20cfc9a770f8c04be6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/e98e3e6d4f86621a9b75f623996e6bbdeb4b9318",
-                "reference": "e98e3e6d4f86621a9b75f623996e6bbdeb4b9318",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/e4490cabc77465aaee90b20cfc9a770f8c04be6b",
+                "reference": "e4490cabc77465aaee90b20cfc9a770f8c04be6b",
                 "shasum": ""
             },
             "require": {
@@ -383,11 +387,6 @@
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.9-dev"
-                }
-            },
             "autoload": {
                 "files": [
                     "src/functions_include.php"
@@ -457,7 +456,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-20T21:43:03+00:00"
+            "time": "2023-04-17T16:00:37+00:00"
         },
         {
             "name": "knplabs/github-api",
@@ -737,6 +736,10 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
+            "support": {
+                "issues": "https://github.com/ralouphie/getallheaders/issues",
+                "source": "https://github.com/ralouphie/getallheaders/tree/develop"
+            },
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
@@ -1137,6 +1140,9 @@
                 "polyfill",
                 "portable"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1221,6 +1227,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-idn/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1302,6 +1311,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1382,6 +1394,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1455,6 +1470,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php72/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -2106,6 +2124,10 @@
                 "reflection",
                 "static analysis"
             ],
+            "support": {
+                "issues": "https://github.com/phpDocumentor/ReflectionCommon/issues",
+                "source": "https://github.com/phpDocumentor/ReflectionCommon/tree/2.x"
+            },
             "time": "2020-06-27T09:03:43+00:00"
         },
         {
@@ -2159,6 +2181,10 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
+            "support": {
+                "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
+                "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/5.3.0"
+            },
             "time": "2021-10-19T17:43:47+00:00"
         },
         {
@@ -3285,6 +3311,9 @@
                 "portable",
                 "shim"
             ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -3553,14 +3582,16 @@
                 "check",
                 "validate"
             ],
+            "support": {
+                "issues": "https://github.com/webmozarts/assert/issues",
+                "source": "https://github.com/webmozarts/assert/tree/1.11.0"
+            },
             "time": "2022-06-03T18:03:27+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "akeneo/crowdin-api": 15
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

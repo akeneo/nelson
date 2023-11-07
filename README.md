@@ -98,7 +98,7 @@ You can use the shipped docker container to develop and test.
 Launch tests in the docker container:
 
 ```
-make tests
+make all-tests
 ```
 
 Launch a command with XDebug:

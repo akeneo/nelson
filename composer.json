@@ -22,10 +22,10 @@
         "php": "^8.1",
         "ext-simplexml": "*",
         "ext-zip": "*",
-        "akeneo/crowdin-api": "^2.0.0",
+        "akeneo/crowdin-api": "v2.0.4",
         "guzzlehttp/guzzle": "^6.5",
         "http-interop/http-factory-guzzle": "^1.2",
-        "knplabs/github-api": "@stable",
+        "knplabs/github-api": "v3.9.0",
         "monolog/monolog": "@stable",
         "symfony/config": "^6.2.0",
         "symfony/console": "^6.2.0",
@@ -39,6 +39,7 @@
         "phpspec/phpspec": "^7.3.0",
         "phpstan/phpstan": "^1.10.0",
         "phpstan/phpstan-deprecation-rules": "^1.1.0",
+        "phpunit/phpunit": "^9",
         "symfony/phpunit-bridge": "^6.2"
     },
     "autoload": {

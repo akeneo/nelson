@@ -34,7 +34,7 @@ class PullRequestMerger
             $mergeTitle,
         );
 
-	$this->eventDispatcher->dispatch(
+        $this->eventDispatcher->dispatch(
             new GenericEvent($this, [
                 'number' => $pullRequest['number'],
             ]),

@@ -184,10 +184,10 @@ class TranslationFilesCleaner
                 );
             } else {
                 $this->eventDispatcher->dispatch(
-                    Events::NELSON_DROP_USELESS,
                     new GenericEvent($this, [
                         'file' => $file->getPathname(),
-                    ])
+                    ]),
+                    Events::NELSON_DROP_USELESS,
                 );
             }
         }

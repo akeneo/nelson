@@ -21,10 +21,11 @@ class PullRequestMerger
 
         $mergeTitle = sprintf('Merge pull request #%s', $pullRequest['number']);
 
-        $this->eventDispatcher->dispatch(
+	$this->eventDispatcher->dispatch(
             new GenericEvent($this, [
                 'number' => $pullRequest['number'],
-            ]),
+	        'commit_sha' => $pullRequest['head']['sha'],// TODO remove
+	    ]),
             Events::PRE_GITHUB_MERGE_PR,
         );
 
@@ -33,10 +34,10 @@ class PullRequestMerger
             $pullRequest['base']['repo']['name'],
             $pullRequest['number'],
             $mergeTitle,
-            $pullRequest['base']['sha'],
+            $pullRequest['head']['sha'],
         );
 
-        $this->eventDispatcher->dispatch(
+	$this->eventDispatcher->dispatch(
             new GenericEvent($this, [
                 'number' => $pullRequest['number'],
             ]),

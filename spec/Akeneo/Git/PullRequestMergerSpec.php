@@ -30,6 +30,9 @@ class PullRequestMergerSpec extends ObjectBehavior
             'base' => [
                 'user' => ['login' => 'nelson'],
                 'repo' => ['name' => 'akeneo/repo'],
+                'sha' => 'master_branch_sha',
+            ],
+            'head' => [
                 'sha' => 'pr_sha',
             ],
         ]);
